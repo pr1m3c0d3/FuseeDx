@@ -1,4 +1,5 @@
-﻿using Fusee.Engine;
+﻿using System.IO;
+using Fusee.Engine;
 using Fusee.Math;
 
 namespace Examples.DreieckDx11
@@ -13,6 +14,7 @@ namespace Examples.DreieckDx11
         public override void RenderAFrame()
         {
             // is called once a frame
+            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
         }
 
         public override void Resize()

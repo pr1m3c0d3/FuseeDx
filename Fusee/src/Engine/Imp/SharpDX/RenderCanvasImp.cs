@@ -57,7 +57,7 @@ namespace Fusee.Engine
 
         public void Present()
         {
-
+            
         }
 
         public void Run()
@@ -75,6 +75,7 @@ namespace Fusee.Engine
         {
             if (Init != null)
                 Init(this, new InitEventArgs());
+
         }
 
         internal void DoUnLoad()
@@ -87,6 +88,7 @@ namespace Fusee.Engine
         {
             if (Render != null)
                 Render(this, new RenderEventArgs());
+
         }
 
         internal void DoResize()
