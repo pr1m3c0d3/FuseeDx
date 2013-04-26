@@ -1,0 +1,239 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Fusee.Engine.Common</name>
+    </assembly>
+    <members>
+        <member name="T:Fusee.Engine.IAudioStream">
+            <summary>
+            Loaded files with <see cref="!:Audio"/> class can be controlled via this IAudioStream interface.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.IAudioStream.Play">
+            <summary>
+            Plays this <see cref="T:Fusee.Engine.IAudioStream"/>.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.IAudioStream.Play(System.Boolean)">
+            <summary>
+            Plays this <see cref="T:Fusee.Engine.IAudioStream"/>.
+            </summary>
+            <param name="loop"><c>true</c> if this <see cref="T:Fusee.Engine.IAudioStream"/> shall be looped; otherwise, <c>false</c>.</param>
+        </member>
+        <member name="M:Fusee.Engine.IAudioStream.Pause">
+            <summary>
+            Pauses this <see cref="T:Fusee.Engine.IAudioStream"/>.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.IAudioStream.Stop">
+            <summary>
+            Stops this <see cref="T:Fusee.Engine.IAudioStream"/>.
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.IAudioStream.Volume">
+            <summary>
+            Gets or sets the volume of this <see cref="T:Fusee.Engine.IAudioStream"/> (0 - 100).
+            </summary>
+            <value>
+            The volume of this <see cref="T:Fusee.Engine.IAudioStream"/> (0 - 100).
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.IAudioStream.Loop">
+            <summary>
+            Gets or sets a value indicating whether this <see cref="T:Fusee.Engine.IAudioStream"/> shall be looped.
+            </summary>
+            <value>
+              <c>true</c> if this <see cref="T:Fusee.Engine.IAudioStream"/> shall be looped; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.IAudioStream.Panning">
+            <summary>
+            Gets or sets the panning of this <see cref="T:Fusee.Engine.IAudioStream"/> (-100 to +100).
+            </summary>
+            <value>
+            The panning of this <see cref="T:Fusee.Engine.IAudioStream"/> (-100 to +100).
+            </value>
+        </member>
+        <member name="T:Fusee.Engine.ClearFlags">
+             <summary>
+            Specifies the buffer to use when calling the Clear method. 
+             </summary>
+        </member>
+        <member name="T:Fusee.Engine.KeyCodes">
+            <summary>
+            Specifies the possible key values on a keyboard. 
+            </summary>
+        </member>
+        <member name="T:Fusee.Engine.MouseButtons">
+            <summary>
+            Specifies constants that define which mouse button was pressed.
+            </summary>
+        </member>
+        <member name="T:Fusee.Engine.InputAxis">
+            <summary>
+            Specifies the axis type. 
+            </summary>
+        </member>
+        <member name="T:Fusee.Engine.KeyEventArgs">
+            <summary>
+            Provides data for the KeyDown or KeyUp event. 
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.KeyEventArgs.Shift">
+            <summary>
+            Gets or sets a value indicating whether this <see cref="T:Fusee.Engine.KeyEventArgs"/> is shift.
+            </summary>
+            <value>
+              <c>true</c> if shift; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.KeyEventArgs.Alt">
+            <summary>
+            Gets or sets a value indicating whether this <see cref="T:Fusee.Engine.KeyEventArgs"/> is alt.
+            </summary>
+            <value>
+              <c>true</c> if alt; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.KeyEventArgs.Control">
+            <summary>
+            Gets or sets a value indicating whether this <see cref="T:Fusee.Engine.KeyEventArgs"/> is control.
+            </summary>
+            <value>
+              <c>true</c> if control; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.KeyEventArgs.KeyCode">
+            <summary>
+            Gets or sets the key code.
+            </summary>
+            <value>
+            The key code.
+            </value>
+        </member>
+        <member name="T:Fusee.Engine.Point">
+            <summary>
+            Sets a point in 3D space.
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Point.x">
+            <summary>
+            The x-coordinate
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Point.y">
+            <summary>
+            The y-coordinate
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Point.z">
+            <summary>
+            The z-coordinate
+            </summary>
+        </member>
+        <member name="T:Fusee.Engine.MouseEventArgs">
+            <summary>
+            Provides data for the MouseUp, MouseDown, and MouseMove events.
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.MouseEventArgs.Button">
+            <summary>
+            Gets or sets the button.
+            </summary>
+            <value>
+            The button.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.MouseEventArgs.Position">
+            <summary>
+            Gets or sets the position.
+            </summary>
+            <value>
+            The position.
+            </value>
+        </member>
+        <member name="T:Fusee.Engine.IInputImp">
+            <summary>
+            To be implemented on certain platforms
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.IInputImp.FrameTick(System.Double)">
+            <summary>
+            Implement this to receive callbacks once a frame if your implementation needs
+            regular updates.
+            </summary>
+            <param name="time">The elapsed time since the last frame.</param>
+        </member>
+        <member name="M:Fusee.Engine.IInputImp.GetMousePos">
+            <summary>
+            Implement this to deliver mouse information.
+            </summary>
+            <returns>The point containing window X and Y values.</returns>
+        </member>
+        <member name="M:Fusee.Engine.IInputImp.GetMouseWheelPos">
+            <summary>
+            Implement this to return the absolute mouse wheel position
+            </summary>
+            <returns>The mouse wheel position.</returns>
+        </member>
+        <member name="E:Fusee.Engine.IInputImp.MouseButtonDown">
+            <summary>
+            Trigger this event on any mouse button pressed down (and held).
+            </summary>
+        </member>
+        <member name="E:Fusee.Engine.IInputImp.MouseButtonUp">
+            <summary>
+            Trigger this event on any mouse button release.
+            </summary>
+        </member>
+        <member name="E:Fusee.Engine.IInputImp.KeyDown">
+            <summary>
+            Trigger this event once a key on the keyboard is pressed down.
+            </summary>
+        </member>
+        <member name="E:Fusee.Engine.IInputImp.KeyUp">
+            <summary>
+            Trigger this event in your implementation once a key on the keyboard is released.
+            </summary>
+        </member>
+        <member name="T:Fusee.Engine.ImageData">
+            <summary>
+            Struct containing Image Data for further processing (e.g. texturing)
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.ImageData.Width">
+            <summary>
+            The width  
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.ImageData.Height">
+            <summary>
+            The height
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.ImageData.Stride">
+            <summary>
+            Number of bytes in one row 
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.ImageData.PixelData">
+            <summary>
+            The pixel data array
+            </summary>
+        </member>
+        <member name="T:Fusee.Engine.IShaderParam">
+            <summary>
+             This is a markup-only for different types of handling shader parameters.
+             The implementation is render-platform specific and differs among platforms 
+             like OpenGL, DirectX, or WebGL
+            </summary>
+        </member>
+        <member name="T:Fusee.Engine.ITexture">
+            <summary>
+             This is a markup-only for different types of Texture-handles.
+             The implementation is render-platform specific: e.g. int in OpenGL, 
+             ISurface in DirectX, TextureObject in WebGL, ...
+            </summary>
+        </member>
+    </members>
+</doc>

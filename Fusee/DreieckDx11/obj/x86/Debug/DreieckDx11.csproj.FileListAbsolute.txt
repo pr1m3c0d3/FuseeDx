@@ -1,0 +1,5 @@
+D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\Bin\Debug\Examples\DreieckDx11\Examples.DreieckDx11.exe
+D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\Bin\Debug\Examples\DreieckDx11\Examples.DreieckDx11.pdb
+D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\DreieckDx11\obj\x86\Debug\DreieckDx11.csprojResolveAssemblyReference.cache
+D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\DreieckDx11\obj\x86\Debug\Examples.DreieckDx11.exe
+D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\DreieckDx11\obj\x86\Debug\Examples.DreieckDx11.pdb

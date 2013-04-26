@@ -1,0 +1,1076 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Fusee.Engine.Core</name>
+    </assembly>
+    <members>
+        <member name="T:Fusee.Engine.Time">
+             <summary>
+             The Time class provides all time information. It is accessible from everywhere.
+             
+             E.g. : int smoothedFramerate;
+            
+                    smoothedFramerate = Time.Instance.FramePerSecondSmooth. 
+             
+                    Time.Instance.TimeFlow = 2;                             
+             </summary>
+        </member>
+        <member name="P:Fusee.Engine.Time.FramePerSecondSmooth">
+            <summary>
+            Provides the average framerate of the last second (read only).
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.Time.RealTimeSinceStart">
+            <summary>
+            Provides the passed time since start of the application uneffected by TimeFlow (read only).
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.Time.FramePerSecond">
+            <summary>
+            Provides the peek framerate, updated every frame (read only).
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.Time.Frames">
+            <summary>
+            Provides the total number of rendered frames (read only).
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.Time.DeltaTime">
+            <summary>
+            Provides the DeltaTime that is effected by the TimeFlow (read only).
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.Time.RealDeltaTime">
+            <summary>
+            Provides the DeltaTime that is uneffected by the TimeFlow (read only).
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.Time.TimeSinceStart">
+            <summary>
+            Provides the passed time since start of the application effected by TimeFlow (read only).
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.Time.TimeFlow">
+            <summary>
+            The timeFlow modifies the speed of the time.
+            
+            0 the time stops.
+            1 normal time speed.
+            Smaller then 1 time passes slower. 
+            Bigger then 1 time passes faster.
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.Time.Instance">
+            <summary>
+            Provides the Instance of the Time Class.
+            </summary>
+        </member>
+        <member name="T:Fusee.Engine.Geometry">
+            <summary>
+            Stores threedimensional, polygonal geometry and provides methods for manipulation.
+            To actually render the geometry in the engine, convert Geometry to <see cref="T:Fusee.Engine.Mesh"/> objects.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.Geometry.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Fusee.Engine.Geometry"/> class.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.Geometry.AddVertex(Fusee.Math.double3)">
+            <summary>
+            Adds a vertex.
+            </summary>
+            <param name="v">A 3D vector.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Fusee.Engine.Geometry.AddTexCoord(Fusee.Math.double2)">
+            <summary>
+            Adds the texture coordinates.
+            </summary>
+            <param name="uv">Texture coordinate</param>
+            <returns></returns>
+        </member>
+        <member name="M:Fusee.Engine.Geometry.AddNormal(Fusee.Math.double3)">
+            <summary>
+            Adds the normal.
+            </summary>
+            <param name="normal">The normal.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Fusee.Engine.Geometry.AddFace(System.Int32[],System.Int32[],System.Int32[])">
+            <summary>
+            Adds the face.
+            </summary>
+            <param name="vertInx">The vert inx.</param>
+            <param name="texCoordInx">The tex coord inx.</param>
+            <param name="normalInx">The normal inx.</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException">vertInx</exception>
+            <exception cref="T:System.ArgumentException">
+            "Vertex index out of range: vertInx[i]"
+            or
+            "Number of texture coordinate indices must match number of vertex indices"
+            or
+            "Texture coordinate index out of range: texCoordInx[i]"
+            or
+            "Number of normal indices must match number of vertex indices"
+            or
+            "Normal index out of range: normalInx[i]"
+            </exception>
+        </member>
+        <member name="M:Fusee.Engine.Geometry.GetAllFacesContainingVertex(System.Int32,System.Collections.Generic.IList{System.Int32}@)">
+            <summary>
+            Gets all faces containing vertex.
+            </summary>
+            <param name="iV">The i V.</param>
+            <param name="vertInFace">The vert in face.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Fusee.Engine.Geometry.CalcFaceNormal(Fusee.Engine.Geometry.Face)">
+            <summary>
+            Calcs the face normal.
+            </summary>
+            <param name="f">The face.</param>
+            <returns>The nomal vectorfor the face.</returns>
+            <exception cref="T:System.Exception">"Cannot calculate normal of degenerate face with only  + f.InxVert.Length +  vertices."</exception>
+        </member>
+        <member name="M:Fusee.Engine.Geometry.CreateNormals(System.Double)">
+            <summary>
+            Creates the normals.
+            </summary>
+            <param name="smoothingAngle">The smoothing angle.</param>
+        </member>
+        <member name="M:Fusee.Engine.Geometry.ToMesh">
+            <summary>
+            Converts the whole geomentry to a <see cref="T:Fusee.Engine.Mesh"/>.
+            </summary>
+            <returns><see cref="T:Fusee.Engine.Mesh"/></returns>
+        </member>
+        <member name="P:Fusee.Engine.Geometry.Vertices">
+            <summary>
+            The list of vertices (3D positions).
+            </summary>
+            <value>
+            The vertices.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Geometry.Normals">
+            <summary>
+            Gets or sets the normals.
+            </summary>
+            <value>
+            The normals.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Geometry.TexCoords">
+            <summary>
+            Gets or sets the texture coordinates.
+            </summary>
+            <value>
+            The texture coordinates.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Geometry.Faces">
+            <summary>
+            Gets or sets the faces.
+            </summary>
+            <value>
+            The faces.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Geometry.HasNormals">
+            <summary>
+            Gets a value indicating whether this instance has normals.
+            </summary>
+            <value>
+            <c>true</c> if this instance has normals; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Geometry.HasTexCoords">
+            <summary>
+            Gets a value indicating whether this instance has tex coords.
+            </summary>
+            <value>
+            <c>true</c> if this instance has texture coordinates; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="T:Fusee.Engine.Geometry.Face">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Geometry.Face.InxVert">
+            <summary>
+            The inx vert
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Geometry.Face.InxNormal">
+            <summary>
+            The inx normal
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Geometry.Face.InxTexCoord">
+            <summary>
+            The inx tex coord
+            </summary>
+        </member>
+        <member name="T:Fusee.Engine.Geometry.TripleInx">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Geometry.TripleInx.iV">
+            <summary>
+            The i V
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Geometry.TripleInx.iT">
+            <summary>
+            The i V
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Geometry.TripleInx.iN">
+            <summary>
+            The i V
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.Geometry.TripleInx.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+            </returns>
+        </member>
+        <member name="T:Fusee.Engine.Mesh">
+            <summary>
+            Provides the abillity to create or interact directly with the point data.
+            </summary>
+            <remarks>For an example how you can use it, see <see cref="T:Fusee.Engine.Cube"/>.</remarks>
+        </member>
+        <member name="P:Fusee.Engine.Mesh.Vertices">
+            <summary>
+            Gets or sets the vertices.
+            </summary>
+            <value>
+            The vertices.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Mesh.VerticesSet">
+            <summary>
+            Gets a value indicating whether vertices are set.
+            </summary>
+            <value>
+              <c>true</c> if vertices are set; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Mesh.Colors">
+            <summary>
+            Gets or sets the color of a single vertex.
+            </summary>
+            <value>
+            The color.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Mesh.ColorsSet">
+            <summary>
+            Gets a value indicating whether a color is set.
+            </summary>
+            <value>
+              <c>true</c> if a colore is set; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Mesh.Normals">
+            <summary>
+            Gets or sets the normals.
+            </summary>
+            <value>
+            The normals..
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Mesh.NormalsSet">
+            <summary>
+            Gets a value indicating whether normals are set.
+            </summary>
+            <value>
+              <c>true</c> if normals are set; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Mesh.UVs">
+            <summary>
+            Gets or sets the UV-coordinates.
+            </summary>
+            <value>
+            The UV-coordinates.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Mesh.UVsSet">
+            <summary>
+            Gets a value indicating whether UVs are set.
+            </summary>
+            <value>
+              <c>true</c> if UVs are set; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Mesh.Triangles">
+            <summary>
+            Gets or sets the triangles.
+            </summary>
+            <value>
+            The triangles.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Mesh.TrianglesSet">
+            <summary>
+            Gets a value indicating whether triangles are set.
+            </summary>
+            <value>
+              <c>true</c> if triangles are set; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="T:Fusee.Engine.Audio">
+             <summary>
+             The Audio class provides all audio functionality. It is accessible from everywhere.
+             
+             Supported file formats are: mp3, ogg, wav, flac, aiff, au, raw, paf, svx, nist, voc,
+             ircam, w64, mat4, mat5 pvf, htk, sds, avr, sd2, caf, wve, mpc2k, rf64
+             
+             Audio can be either buffered completely or be played as a stream.
+             
+             E.g. : IAudioStream myAudio1;
+            
+                    myAudio1 = Audio.Instance.LoadFile("Assets/Music.ogg"). 
+             
+                    myAudio1.play();                            
+             </summary>
+        </member>
+        <member name="M:Fusee.Engine.Audio.LoadFile(System.String,System.Boolean)">
+            <summary>
+            Loads an audiofile.
+            </summary>
+            <param name="fileName">Path to the file.</param>
+            <param name="streaming"><c>true</c> if the audiofile shall be streamed; otherwise, <c>false</c>.</param>
+            <returns>The audiofile as an <see cref="T:Fusee.Engine.IAudioStream"/></returns>
+        </member>
+        <member name="M:Fusee.Engine.Audio.Stop">
+            <summary>
+            Stops all <see cref="T:Fusee.Engine.IAudioStream"/>s.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.Audio.SetVolume(System.Single)">
+            <summary>
+            Sets the main volume (0 to 100)
+            </summary>
+            <param name="val">The value</param>
+        </member>
+        <member name="M:Fusee.Engine.Audio.GetVolume">
+            <summary>
+            Gets the main volume.
+            </summary>
+            <returns>The main value (0 to 100)</returns>
+        </member>
+        <member name="M:Fusee.Engine.Audio.SetPanning(System.Single)">
+            <summary>
+            Sets the panning of all <see cref="T:Fusee.Engine.IAudioStream"/>s (-100 to +100)
+            </summary>
+            <param name="val">The value</param>
+        </member>
+        <member name="P:Fusee.Engine.Audio.Instance">
+            <summary>
+            Provides the Instance of the Audio Class.
+            </summary>
+            <value>
+            The instance.
+            </value>
+        </member>
+        <member name="T:Fusee.Engine.RenderContext">
+            <summary>
+            The render context contains all functions necessary to manipulate the underlying rendering hardware. Use this class' elements
+            to render geometry to the RenderCanvas associated with this context. If you are worked with OpenGL or DirectX before you will find
+            many similarities in this class' methods and properties.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.#ctor(Fusee.Engine.IRenderContextImp)">
+             <summary>
+            
+             </summary>
+             <param name="rci"></param>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.CreateImage(System.Int32,System.Int32,System.String)">
+            <summary>
+            Creates a new Image with a specified size and color.
+            </summary>
+            <param name="width">The width of the image.</param>
+            <param name="height">The height of the image.</param>
+            <param name="bgColor">The color of the image. Value must be JS compatible.</param>
+            <returns>An ImageData struct containing all necessary information for further processing.</returns>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.TextOnImage(Fusee.Engine.ImageData,System.String,System.Single,System.String,System.String,System.Single,System.Single)">
+            <summary>
+            Maps a specified text with on an image.
+            </summary>
+            <param name="imgData">The ImageData struct with the PixelData from the image.</param>
+            <param name="fontName">The name of the text-font.</param>
+            <param name="fontSize">The size of the text-font.</param>
+            <param name="text">The text that sould be mapped on the iamge.</param>
+            <param name="textColor">The color of the text-font.</param>
+            <param name="startPosX">The horizontal start-position of the text on the image.</param>
+            <param name="startPosY">The vertical start-position of the text on the image.</param>
+            <returns>An ImageData struct containing all necessary information for further processing</returns>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.CreateTexture(Fusee.Engine.ImageData)">
+            <summary>
+            Creates a new texture and binds it to the shader.
+            </summary>
+            <remarks>
+            Method should be called after LoadImage method to process
+            the BitmapData an make them available for the shader.
+            </remarks>
+            <param name="imgData">An ImageData struct, containing necessary information for the upload to the graphics card.</param>
+            <returns>
+            An ITexture that can be used for texturing in the shader.
+            </returns>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.LoadImage(System.String)">
+            <summary>
+            Loads an image file from disk and creates a new Bitmap-object out of it.
+            </summary>
+            <remarks>
+            This is the first step for the texturing Process.
+            The Bitmap-bits get locked in the memory and are made available for
+            further processing. The returned ImageData-Struct can be used in the
+            CreateTexture method.
+            </remarks>
+            <param name="filename">Path to the image file</param>
+            <returns>
+            An ImageData struct with all necessary information for the texture-binding process.
+            </returns>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.SetShaderParamTexture(Fusee.Engine.IShaderParam,Fusee.Engine.ITexture)">
+            <summary>
+            Sets a Shader Parameter to a created texture.
+            </summary>
+            <param name="param">Shader Parameter used for texture binding.</param>
+            <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.SetLightActive(System.Int32,System.Int32)">
+            <summary>
+            Activates the light with the given index.
+            </summary>
+            <param name="lightInx">The light to activate. Can range from 0 to 7. Up to eight lights are supported.</param>
+            <param name="active">1 - activate the light. 0 - deactiv</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.SetLightAmbient(System.Int32,Fusee.Math.float4)">
+            <summary>
+            Sets the ambient color component on the light with the given index.
+            </summary>
+            <param name="lightInx">The light to set the ambient color on. Can range from 0 to 7. Up to eight lights are supported.</param>
+            <param name="ambientColor">
+            The ambient color to be emitted by the given light. The value is interpreted as a (Red, Green, Blue, Alpha) quadruple with
+            component values ranging from 0.0f to 1.0f. The Alpha component will be ignored.
+            </param>
+            <remarks>
+            An ambient light component represents a fixed-intensity and fixed-color light that affects all parts of all objects in the scene equally.
+            </remarks>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.SetLightDiffuse(System.Int32,Fusee.Math.float4)">
+            <summary>
+            Sets the diffuse color component on the light with the given index.
+            </summary>
+            <param name="lightInx">The light to set the diffuse color on. Can range from 0 to 7. Up to eight lights are supported.</param>
+            <param name="diffuseColor">
+            The diffuse color to be emitted by the given light. The value is interpreted as a (Red, Green, Blue, Alpha) quadruple with
+            component values ranging from 0.0f to 1.0f. The Alpha component will be ignored.
+            </param>
+            <remarks>
+            A diffuse light component results in different parts of objects shaded with different intensites based on the angle of the incoming
+            light ray at each given spot on the object surface. This component is what makes objects look "3D" - e.g. coloring the different faces of a cube with
+            different intensities or creating brightness gradients on curved surfaces like a sphere.
+            </remarks>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.SetLightSpecular(System.Int32,Fusee.Math.float4)">
+            <summary>
+            Sets the specular color component on the light with the given index.
+            </summary>
+            <param name="lightInx">The light to set the specular color on. Can range from 0 to 7. Up to eight lights are supported.</param>
+            <param name="specularColor">
+            The specular color to be emitted by the given light. The value is interpreted as a (Red, Green, Blue, Alpha) quadruple with
+            component values ranging from 0.0f to 1.0f. The Alpha component will be ignored.
+            </param>
+            <remarks>
+            A specular light component results in highlights created on the lit surfaces where the light source is mirrored into the viewers' eye.
+            Bright highlights with small radii make objects' materials look glossy. The specular light component adds realism to 3D scenes in
+            walk-through animations because the specualar light's intensity at a given point on an object's surface depends not only on the
+            incoming light ray angle but also on the positon of the viewer. With a moving camera, also the specular highlights move on the
+            objects' surfaces.
+            </remarks>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.SetLightPosition(System.Int32,Fusee.Math.float3)">
+            <summary>
+            Sets the position of the light with the given index.
+            </summary>
+            <param name="lightInx">The light to set the position on. Can range from 0 to 7. Up to eight lights are supported.</param>
+            <param name="position">The position of the light in 3D space.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.SetLightDirection(System.Int32,Fusee.Math.float3)">
+            <summary>
+            Sets the direction of the light with the given index.
+            </summary>
+            <param name="lightInx">The light to set the direction on. Can range from 0 to 7. Up to eight lights are supported.</param>
+            <param name="direction">The direction vector into which the light emits rays.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.CreateShader(System.String,System.String)">
+            <summary>
+            Creates a shader object from vertex shader source code and pixel shader source code.
+            </summary>
+            <param name="vs">A string containing the vertex shader source.</param>
+            <param name="ps">A string containing the pixel (fragment) shader source code.</param>
+            <returns>A shader program object identifying the combination of the given vertex and pixel shader.</returns>
+            <remarks>
+            Currently only shaders in GLSL (or rather GLSL/ES) source language(s) are supported.
+            The result is already compiled to code executable on the GPU. <see cref="M:Fusee.Engine.RenderContext.SetShader(Fusee.Engine.ShaderProgram)"/>
+            to activate the result as the current shader used for rendering geometry passed to the RenderContext.
+            </remarks>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.SetShader(Fusee.Engine.ShaderProgram)">
+            <summary>
+            Activates the passed shader program as the current shader for geometry rendering.
+            </summary>
+            <param name="program">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>
+            <seealso cref="M:Fusee.Engine.RenderContext.CreateShader(System.String,System.String)"/>
+            <seealso cref="M:Fusee.Engine.RenderContext.Render(Fusee.Engine.Mesh)"/>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.GetShaderParamList(Fusee.Engine.ShaderProgram)">
+            <summary>
+            Get a list of (uniform) shader parameters accessed by the given shader.
+            </summary>
+            <param name="program">The shader program to query for parameters.</param>
+            <returns>
+            A list of shader parameters accessed by the shader code of the given shader program. The parameters listed here
+            are the so-called uniform parameters of the shader (in contrast to the varying parameters). The list contains all
+            uniform parameters that are accessed by either the vertex shader, the pixel shader, or both shaders compiled into
+            the given shader.
+            </returns>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.GetShaderParam(Fusee.Engine.ShaderProgram,System.String)">
+            <summary>
+            Returns an identifiyer for the named (uniform) parameter used in the specified shader program.
+            </summary>
+            <param name="program">The shader program using the parameter.</param>
+            <param name="paramName">Name of the shader parameter.</param>
+            <returns>A handle object to identify the given parameter in subsequent calls to SetShaderParam.</returns>
+            <remarks>
+            The returned handle can be used to assign values to a (uniform) shader paramter.
+            </remarks>
+            <seealso cref="M:Fusee.Engine.RenderContext.SetShaderParam(Fusee.Engine.IShaderParam,System.Single)"/>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.GetParamValue(Fusee.Engine.ShaderProgram,Fusee.Engine.IShaderParam)">
+            <summary>
+            Gets the value of a shader parameter.
+            </summary>
+            <param name="program">The program.</param>
+            <param name="handle">The handle.</param>
+            <returns>The float value.</returns>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.SetShaderParam(Fusee.Engine.IShaderParam,System.Single)">
+            <summary>
+            Sets the specified shader parameter to a float value.
+            </summary>
+            <param name="param">The shader parameter identifier.</param>
+            <param name="val">The float value that should be assigned to the shader parameter.</param>
+            <remarks>
+            <see cref="M:Fusee.Engine.RenderContext.GetShaderParam(Fusee.Engine.ShaderProgram,System.String)"/> to see how to retrieve an identifier for
+            a given uniform parameter name used in a shader program.
+            </remarks>
+            <seealso cref="M:Fusee.Engine.RenderContext.GetShaderParamList(Fusee.Engine.ShaderProgram)"/>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.SetShaderParam(Fusee.Engine.IShaderParam,Fusee.Math.float2)">
+            <summary>
+            Sets the shader parameter to a float2 value.
+            </summary>
+            <param name="param">The shader parameter identifier.</param>
+            <param name="val">The float2 value that should be assigned to the shader parameter.</param>
+            <remarks>
+            <see cref="M:Fusee.Engine.RenderContext.GetShaderParam(Fusee.Engine.ShaderProgram,System.String)"/> to see how to retrieve an identifier for
+            a given uniform parameter name used in a shader program.
+            </remarks>
+            <seealso cref="M:Fusee.Engine.RenderContext.GetShaderParamList(Fusee.Engine.ShaderProgram)"/>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.SetShaderParam(Fusee.Engine.IShaderParam,Fusee.Math.float3)">
+            <summary>
+            Sets the shader parameter to a float3 value.
+            </summary>
+            <param name="param">The shader parameter identifier.</param>
+            <param name="val">The float3 value that should be assigned to the shader parameter.</param>
+            <remarks>
+            <see cref="M:Fusee.Engine.RenderContext.GetShaderParam(Fusee.Engine.ShaderProgram,System.String)"/> to see how to retrieve an identifier for
+            a given uniform parameter name used in a shader program.
+            </remarks>
+            <seealso cref="M:Fusee.Engine.RenderContext.GetShaderParamList(Fusee.Engine.ShaderProgram)"/>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.SetShaderParam(Fusee.Engine.IShaderParam,Fusee.Math.float4)">
+            <summary>
+            Sets the shader parameter to a float4 value.
+            </summary>
+            <param name="param">The shader parameter identifier.</param>
+            <param name="val">The float4 value that should be assigned to the shader parameter.</param>
+            <remarks>
+            <see cref="M:Fusee.Engine.RenderContext.GetShaderParam(Fusee.Engine.ShaderProgram,System.String)"/> to see how to retrieve an identifier for
+            a given uniform parameter name used in a shader program.
+            </remarks>
+            <seealso cref="M:Fusee.Engine.RenderContext.GetShaderParamList(Fusee.Engine.ShaderProgram)"/>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.SetShaderParam(Fusee.Engine.IShaderParam,Fusee.Math.float4x4)">
+            <summary>
+            Sets the shader parameter to a float4x4 matrixvalue.
+            </summary>
+            <param name="param">The shader parameter identifier.</param>
+            <param name="val">The float4x4 matrix that should be assigned to the shader parameter.</param>
+            <remarks>
+            <see cref="M:Fusee.Engine.RenderContext.GetShaderParam(Fusee.Engine.ShaderProgram,System.String)"/> to see how to retrieve an identifier for
+            a given uniform parameter name used in a shader program.
+            </remarks>
+            <seealso cref="M:Fusee.Engine.RenderContext.GetShaderParamList(Fusee.Engine.ShaderProgram)"/>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.SetShaderParam(Fusee.Engine.IShaderParam,System.Int32)">
+            <summary>
+            Sets the shader parameter to a integer value.
+            </summary>
+            <param name="param">The shader parameter identifier.</param>
+            <param name="val">The integer value that should be assigned to the shader parameter.</param>
+            <remarks>
+            <see cref="M:Fusee.Engine.RenderContext.GetShaderParam(Fusee.Engine.ShaderProgram,System.String)"/> to see how to retrieve an identifier for
+            a given uniform parameter name used in a shader program.
+            </remarks>
+            <seealso cref="M:Fusee.Engine.RenderContext.GetShaderParamList(Fusee.Engine.ShaderProgram)"/>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.Clear(Fusee.Engine.ClearFlags)">
+            <summary>
+            Erases the contents of the speciefied rendering buffers.
+            </summary>
+            <param name="flags">A combination of flags specifying the rendering buffers to clear.</param>
+            <remarks>
+            Calling this method erases all contents of the rendering buffers. A typical use case for this method
+            is to erase the contents of the color buffer and the depth buffer (z-buffer) before rendering starts
+            at the beginning of a rendering loop. Thus, rendering the current frame starts with an empty color and
+            z-buffer. <see cref="T:Fusee.Engine.ClearFlags"/> for a list of possible buffers to clear. Make sure to use the bitwisee
+            or-operator (|) to combine several buffers to clear.
+            </remarks>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.Render(Fusee.Engine.Mesh)">
+            <summary>
+            Renders the specified mesh.
+            </summary>
+            <param name="m">The mesh that should be rendered.</param>
+            <remarks>
+            Passes geometry to be pushed through the rendering pipeline. <see cref="T:Fusee.Engine.Mesh"/> for a description how geometry is made up.
+            The geometry is transformed and rendered by the currently active shader program.
+            </remarks>
+        </member>
+        <member name="M:Fusee.Engine.RenderContext.Viewport(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Sets the rectangular output region within the output buffer(s).
+            </summary>
+            <param name="x">leftmost pixel of the rectangular output region within the output buffer.</param>
+            <param name="y">topmost pixel of the rectangular output region within the output buffer.</param>
+            <param name="width">horizontal size (in pixels) of the output region.</param>
+            <param name="height">vertical size (in pixels) of the ouput region.</param>
+            <remarks>
+            Setting the Viewport limits the rendering ouptut to the specified rectangular region.
+            </remarks>
+        </member>
+        <member name="P:Fusee.Engine.RenderContext.ModelView">
+            <summary>
+            The ModelView matrix used by the rendering pipeline.
+            </summary>
+            <value>
+            The 4x4 ModelView matrix defining the transformation applied to model coordinates yielding view coordinates.
+            </value>
+            <remarks>
+            Model coordinates are the coordinates directly taken from the model (the mesh geometry - <see cref="T:Fusee.Engine.Mesh"/>). The rendering pipeline
+            transforms these coordinates into View coordinates. Further down the pipeline the coordinates will be transformed to screen coordinates to allow the
+            geometry to be rendered to pixel positions on the screen. The ModelView matrix defines the transformations performed on the original model coordinates
+            to yield view coordinates. In most cases the matrix is a composition of several translations, rotations, and scale operations.
+            </remarks>
+        </member>
+        <member name="P:Fusee.Engine.RenderContext.Projection">
+            <summary>
+            The projection matrix used by the rendering pipeline
+            </summary>
+            <value>
+            The 4x4 projection matrix applied to view coordinates yielding clip space coordinates.
+            </value>
+            <remarks>
+            View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="P:Fusee.Engine.RenderContext.ModelView"/>).
+            The coordinate system of the view space has its origin in the camera center with the z axis aligned to the viewing direction, and the x- and
+            y axes aligned to the viewing plane. Still, no projection from 3d space to the viewing plane has been performed. This is done by multiplying
+            view coordinate geometry wihth the projection matrix. Typically, the projection matrix either performs a parallel projection or a perspective
+            projection.
+            </remarks>
+        </member>
+        <member name="P:Fusee.Engine.RenderContext.ModelViewProjection">
+            <summary>
+            The combination of the ModelView and Projection matrices.
+            </summary>
+            <value>
+            The 4x4 matrix resulting from the matrix multiplaction of the ModelView and the Projection matrix.
+            </value>
+            <remarks>
+            <see cref="P:Fusee.Engine.RenderContext.ModelView"/> and <see cref="P:Fusee.Engine.RenderContext.Projection"/>.
+            </remarks>
+        </member>
+        <member name="P:Fusee.Engine.RenderContext.InvModelView">
+            <summary>
+            The inverse of the ModelView matrix.
+            </summary>
+            <value>
+            The 4x4 matrix resulting from the matrix inversion applied to the ModelView matrix.
+            </value>
+            <remarks>
+            If the ModelView matrix is orthogonal (i.e. contains no scale component), its inverse matrix
+            is equal to its transpose matrix.
+            </remarks>
+            <seealso cref="P:Fusee.Engine.RenderContext.ModelView"/>
+            <seealso cref="P:Fusee.Engine.RenderContext.TransModelView"/>
+        </member>
+        <member name="P:Fusee.Engine.RenderContext.InvProjection">
+            <summary>
+            The inverse of the Projection matrix.
+            </summary>
+            <value>
+            The 4x4 matrix resulting from the matrix inversion applied to the Projection matrix.
+            </value>
+            <remarks>
+            If the Projection matrix is orthogonal (i.e. contains no scale component), its inverse matrix
+            is equal to its transpose matrix.
+            </remarks>
+            <seealso cref="P:Fusee.Engine.RenderContext.Projection"/>
+            <seealso cref="P:Fusee.Engine.RenderContext.TransProjection"/>
+        </member>
+        <member name="P:Fusee.Engine.RenderContext.InvModelViewProjection">
+            <summary>
+            The inverse of the ModelViewProjection matrix.
+            </summary>
+            <value>
+            The 4x4 matrix resulting from the matrix inversion applied to the ModelViewProjection matrix.
+            </value>
+            <remarks>
+            If the ModelViewProjection matrix is orthogonal (i.e. contains no scale component), its inverse matrix
+            is equal to its transpose matrix.
+            </remarks>
+            <seealso cref="P:Fusee.Engine.RenderContext.ModelViewProjection"/>
+            <seealso cref="P:Fusee.Engine.RenderContext.TransModelViewProjection"/>
+        </member>
+        <member name="P:Fusee.Engine.RenderContext.TransModelView">
+            <summary>
+            The transpose of the ModelView matrix.
+            </summary>
+            <value>
+            The 4x4 matrix resulting from the matrix transpose applied to the ModelView matrix.
+            </value>
+            <remarks>
+            If the ModelView matrix is orthogonal (i.e. contains no scale component), its transpose matrix
+            is equal to its inverse matrix.
+            </remarks>
+            <seealso cref="P:Fusee.Engine.RenderContext.ModelView"/>
+            <seealso cref="P:Fusee.Engine.RenderContext.InvModelView"/>
+        </member>
+        <member name="P:Fusee.Engine.RenderContext.TransProjection">
+            <summary>
+            The transpose of the Projection matrix.
+            </summary>
+            <value>
+            The 4x4 matrix resulting from the matrix transpose applied to the Projection matrix.
+            </value>
+            <remarks>
+            If the Projection matrix is orthogonal (i.e. contains no scale component), its transpose matrix
+            is equal to its inverse matrix.
+            </remarks>
+            <seealso cref="P:Fusee.Engine.RenderContext.Projection"/>
+            <seealso cref="P:Fusee.Engine.RenderContext.InvProjection"/>
+        </member>
+        <member name="P:Fusee.Engine.RenderContext.TransModelViewProjection">
+            <summary>
+            The transpose of the ModelViewProjection matrix.
+            </summary>
+            <value>
+            The 4x4 matrix resulting from the matrix transpose applied to the ModelViewProjection matrix.
+            </value>
+            <remarks>
+            If the ModelViewProjection matrix is orthogonal (i.e. contains no scale component), its transpose matrix
+            is equal to its inverse matrix.
+            </remarks>
+            <seealso cref="P:Fusee.Engine.RenderContext.ModelViewProjection"/>
+            <seealso cref="P:Fusee.Engine.RenderContext.InvModelViewProjection"/>
+        </member>
+        <member name="P:Fusee.Engine.RenderContext.InvTransModelView">
+            <summary>
+            The inverse transpose of the ModelView matrix.
+            </summary>
+            <value>
+            The 4x4 matrix resulting from the matrix inversion and transpose applied to the ModelView matrix.
+            </value>
+            <remarks>
+            If the ModelView matrix is orthogonal (i.e. contains no scale component), its inverse transpose matrix
+            is the same as the original ModelView matrix.
+            </remarks>
+            <seealso cref="P:Fusee.Engine.RenderContext.ModelView"/>
+            <seealso cref="P:Fusee.Engine.RenderContext.InvModelView"/>
+            <seealso cref="P:Fusee.Engine.RenderContext.TransModelView"/>
+        </member>
+        <member name="P:Fusee.Engine.RenderContext.InvTransProjection">
+            <summary>
+            The inverse transpose of the Projection matrix.
+            </summary>
+            <value>
+            The 4x4 matrix resulting from the matrix inversion and transpose applied to the Projection matrix.
+            </value>
+            <remarks>
+            If the Projection matrix is orthogonal (i.e. contains no scale component), its inverse transpose matrix
+            is the same as the original Projection matrix.
+            </remarks>
+            <seealso cref="P:Fusee.Engine.RenderContext.Projection"/>
+            <seealso cref="P:Fusee.Engine.RenderContext.InvProjection"/>
+            <seealso cref="P:Fusee.Engine.RenderContext.TransProjection"/>
+        </member>
+        <member name="P:Fusee.Engine.RenderContext.InvTransModelViewProjection">
+            <summary>
+            The inverse transpose of the ModelViewProjection matrix.
+            </summary>
+            <value>
+            The 4x4 matrix resulting from the matrix inversion and transpose applied to the ModelViewProjection matrix.
+            </value>
+            <remarks>
+            If the ModelViewProjection matrix is orthogonal (i.e. contains no scale component), its inverse transpose matrix
+            is the same as the original ModelViewProjection matrix.
+            </remarks>
+            <seealso cref="P:Fusee.Engine.RenderContext.ModelViewProjection"/>
+            <seealso cref="P:Fusee.Engine.RenderContext.InvModelViewProjection"/>
+            <seealso cref="P:Fusee.Engine.RenderContext.TransModelViewProjection"/>
+        </member>
+        <member name="P:Fusee.Engine.RenderContext.ClearColor">
+            <summary>
+            The color to use when clearing the color buffer.
+            </summary>
+            <value>
+            The color value is interpreted as a (Red, Green, Blue, Alpha) quadruple with
+            component values ranging from 0.0f to 1.0f.
+            </value>
+            <remarks>
+            This is the color that will be copied to all pixels in the output color buffer when Clear is called on the render context.
+            </remarks>
+            <seealso cref="M:Fusee.Engine.RenderContext.Clear(Fusee.Engine.ClearFlags)"/>
+        </member>
+        <member name="P:Fusee.Engine.RenderContext.ClearDepth">
+            <summary>
+            The depth value to use when clearing the color buffer.
+            </summary>
+            <value>
+            Typically set to the highest possible depth value. Typically ranges between 0 and 1.
+            </value>
+            <remarks>
+            This is the depth (z-) value that will be copied to all pixels in the depth (z-) buffer when Clear is called on the render context.
+            </remarks>
+        </member>
+        <member name="T:Fusee.Engine.Input">
+            <summary>
+            The Input class provides takes care of al imputs. It is accessible from everywhere.
+            E.g. : Input.Instance.IsButtonDown(MouseButtons.Left);
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.Input.#ctor">
+            <summary>
+            Create a new instance of the Input class and initialize it with an underlying InputImp instance.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.Input.GetAxis(Fusee.Engine.InputAxis)">
+            <summary>
+            Returns the scalar value for the given axis. Typically these values are used as velocities.
+            </summary>
+            <param name="axis">The axis for which the value is to be returned.</param>
+            <returns>
+            The current deflection of the given axis.
+            </returns>
+        </member>
+        <member name="M:Fusee.Engine.Input.IsKeyDown(Fusee.Engine.KeyCodes)">
+            <summary>
+            Check if a given key is pressed during the current frame.
+            </summary>
+            <param name="key">The key to check.</param>
+            <returns>
+            true if the key is pressed. Otherwise false.
+            </returns>
+        </member>
+        <member name="M:Fusee.Engine.Input.IsButtonDown(Fusee.Engine.MouseButtons)">
+            <summary>
+            Check if a given mouse button is pressed during the current frame.
+            </summary>
+            <param name="button">the button to check.</param>
+            <returns>
+            true if the button is pressed. Otherwise false.
+            </returns>
+        </member>
+        <member name="P:Fusee.Engine.Input.Instance">
+            <summary>
+            Provides the Instance of the Input Class.
+            </summary>
+        </member>
+        <member name="T:Fusee.Engine.ImpFactory">
+            <summary>
+            The implementation factory. Creates all the implementation specific objects and returns
+            their implementation agnostic interfaces. 
+            TODO: replace this with something more Dependency Injection Container like
+            </summary>
+        </member>
+        <member name="T:Fusee.Engine.RenderCanvas">
+            <summary>
+            A render canvas object references the physical output screen space real estate (e.g. the rendering window).
+            A typical Game application will inherit from this class and overrite methods to implement your 
+            user code to be performed on events like initialization, resize,
+            and display refresh.
+            In the future, it will be likely that this class' functionality will be divided at two different places with
+            one containing the more view oriented aspects and the other containing the more application oriented aspects.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvas.#ctor">
+            <summary>
+            The RenderCanvas constructor. Depending on the implementation this constructor instantiates a 3D viewing window or connects a 3D 
+            render context to an existing part of the application window.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvas.RenderAFrame">
+            <summary>
+            Callback method to invoke user code for rendering a frame.
+            </summary>
+            <remarks>
+            Override this method in inherited classes of RenderCanvas to render 3D contents. Typically, an application will
+            use the render context (<see cref="P:Fusee.Engine.RenderCanvas.RC"/>) to achieve this. Consider the code you implement here as the body of the
+            application's rendering loop.
+            </remarks>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvas.Init">
+            <summary>
+            Callback method to invoke user code after initialization of the render canvas.
+            </summary>
+            <remarks>
+            Override this method in inherited classes of RenderCanvas to apply initialization code. Typically, an application
+            will call one-time initialization code on the render context (<see cref="P:Fusee.Engine.RenderCanvas.RC"/>) to set render states.
+            </remarks>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvas.Resize">
+            <summary>
+            Callback method to invoke user code when the render canvas size changes.
+            </summary>
+            <remarks>
+            Override this method in inherited classes of RenderCanvas to apply window resize code. Typically, an application
+            will change the projection matrix of the render context (<see cref="P:Fusee.Engine.RenderCanvas.RC"/>) to match the new aspect ratio.
+            </remarks>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvas.Run">
+            <summary>
+            Runs this instance.
+            </summary>
+            <remarks>
+            Users should call this method of their RenderCanvas instance to start the application. The RenderCanvas will then do all
+            necessary initialization, call the Init method and enter the application main loop.
+            </remarks>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvas.Present">
+            <summary>
+            Presents the contents of the backbuffer on the visible part of this render canvas.
+            </summary>
+            <remarks>
+            Call this method from your rendering code implementation <see cref="M:Fusee.Engine.RenderCanvas.RenderAFrame"/> after rendering geometry on 
+            the rendering context.
+            </remarks>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvas.RC">
+            <summary>
+            Returns the render context object.
+            </summary>
+            <value>
+            Use the render context (<see cref="T:Fusee.Engine.RenderContext"/>) to fill the render canvas with 3d contents.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvas.Width">
+            <summary>
+            Retrieves the width of the canvas.
+            </summary>
+            <value>
+            The width in pixels.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvas.Height">
+            <summary>
+            Retrieves the height of the canvas.
+            </summary>
+            <value>
+            The height in pixels.
+            </value>
+        </member>
+        <member name="T:Fusee.Engine.Diagnostics">
+            <summary>
+            Contains some mostly static functions for diagnostic purposes.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.Diagnostics.Log(System.Object)">
+            <summary>
+            Log a debug output message to the respective output console.
+            </summary>
+            <param name="o">The object to log. Will be converted to a string.</param>
+        </member>
+        <member name="P:Fusee.Engine.Diagnostics.Timer">
+            <summary>
+            High precision timer values.
+            </summary>
+            <value>
+            A double value containing consecutive real time values in milliseconds.
+            </value>
+            <remarks>
+            To measure the elapsed time between two places in code get this value twice and calculate the difference.
+            </remarks>
+        </member>
+        <member name="M:Fusee.Engine.MeshReader.Double_Parse(System.String)">
+            <summary>
+            Replacement for double.Parse(s, [InvariantCulture])
+            Hack needed for JSIL.
+            </summary>
+            <param name="s">string to parse</param>
+            <returns>A double nuber</returns>
+        </member>
+        <member name="M:Fusee.Engine.MeshReader.ReadWavefrontObj(System.IO.TextReader)">
+            <summary>
+            Parses the contents of the TextReader object passed to the method and tries to 
+            interpret the contents as a <a href="http://en.wikipedia.org/wiki/Wavefront_.obj_file">Wavefront obj</a> file.
+            Creates a Mesh object from the contents.
+            </summary>
+            <param name="tr">The initialized TextReader (can be either a StreamReader or a StringReader)</param>
+            <returns>The newly created Mesh object</returns>
+        </member>
+        <member name="M:Fusee.Engine.MeshReader.LoadMesh(System.String)">
+            <summary>
+            This method loads an object file and returns it as a mesh.
+            </summary>
+            <param name="path">Path to the object to load</param>
+            <returns>The newly created Mesh object</returns>
+        </member>
+        <member name="M:Fusee.Engine.MeshReader.FilteredSplit(System.String,System.Char[])">
+            <summary>
+            This method is used to split string in a list of strings based on the separator passed to the method.
+            </summary>
+            <param name="strIn"></param>
+            <param name="separator"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Fusee.Engine.Cube">
+            <summary>
+            Creates a simple cube geomentry straight from the code.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.Cube.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Fusee.Engine.Cube"/> class.
+            </summary>
+        </member>
+    </members>
+</doc>

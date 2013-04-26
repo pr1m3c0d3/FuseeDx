@@ -1,0 +1,12 @@
+D:\users\cm\Dev\FuseeDev\Fusee\Bin\Debug\Fusee.Math.Core.xml
+D:\users\cm\Dev\FuseeDev\Fusee\Bin\Debug\Fusee.Math.Core.dll
+D:\users\cm\Dev\FuseeDev\Fusee\Bin\Debug\Fusee.Math.Core.pdb
+D:\users\cm\Dev\FuseeDev\Fusee\Tmp\Obj\Math\Debug\ResolveAssemblyReference.cache
+D:\users\cm\Dev\FuseeDev\Fusee\Tmp\Obj\Math\Debug\Fusee.Math.Core.dll
+D:\users\cm\Dev\FuseeDev\Fusee\Tmp\Obj\Math\Debug\Fusee.Math.Core.pdb
+D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\Bin\Debug\Fusee.Math.Core.dll
+D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\Bin\Debug\Fusee.Math.Core.pdb
+D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\Tmp\Obj\Math\Debug\Fusee.Math.Core.dll
+D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\Tmp\Obj\Math\Debug\Fusee.Math.Core.pdb
+D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\Tmp\Obj\Math\Debug\Math.Core.csprojResolveAssemblyReference.cache
+D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\Bin\Debug\Fusee.Math.Core.xml
