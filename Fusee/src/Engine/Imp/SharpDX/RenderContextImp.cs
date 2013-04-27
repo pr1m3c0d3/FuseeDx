@@ -22,13 +22,21 @@ namespace Fusee.Engine
 {
     public class RenderContextImp : IRenderContextImp
     {
+        private Device device;
+        private SwapChain swapChain;
+        private DeviceContext context;
+        private InputLayout layout;
+        private VertexShader vertexShader;
+        private PixelShader pixelShader;
+        internal RenderForm _renderForm;
         private int _currentTextureUnit;
         private Dictionary<int, int> _shaderParam2TexUnit;
 
         public RenderContextImp(IRenderCanvasImp renderCanvas)
         {
-            SwapChain swapChain;
             
+            
+
         }
 
         /// <summary>
@@ -171,9 +179,6 @@ namespace Fusee.Engine
            
         }
 
-
-
-
         /// <summary>
         /// Sets a given Shader Parameter to a created texture
         /// </summary>
@@ -210,31 +215,94 @@ namespace Fusee.Engine
 
         public IShaderProgramImp CreateShader(string vs, string ps)
         {
-            
+            var shaders = @"struct VS_IN
+                    {
+	                    float4 pos : POSITION;
+	                    float4 col : COLOR;
+                    };
+
+                    struct PS_IN
+                    {
+	                    float4 pos : SV_POSITION;
+	                    float4 col : COLOR;
+                    };
+
+                    PS_IN VS( VS_IN input )
+                    {
+	                    PS_IN output = (PS_IN)0;
+	
+	                    output.pos = input.pos;
+	                    output.col = input.col;
+	
+	                    return output;
+                    }
+
+                    float4 PS( PS_IN input ) : SV_Target
+                    {
+	                    return input.col;
+                    }";
+
+            var vertexShaderByteCode = ShaderBytecode.Compile(shaders, "VS", "vs_4_0", ShaderFlags.None, EffectFlags.None);
+            vertexShader = new VertexShader(device, vertexShaderByteCode);
+
+            var pixelShaderByteCode = ShaderBytecode.Compile(shaders, "PS", "ps_4_0", ShaderFlags.None, EffectFlags.None);
+            pixelShader = new PixelShader(device, pixelShaderByteCode);
+            layout = new InputLayout(
+                device,
+                ShaderSignature.GetInputSignature(vertexShaderByteCode),
+                new[]
+                    {
+                        new InputElement("POSITION",0, Format.R32G32B32A32_Float, 0,0), 
+                        new InputElement("COLOR",0, Format.R32G32B32A32_Float, 0,0) 
+                    }
+                );
+
             return new ShaderProgramImp {  };
         }
 
 
         public void SetShader(IShaderProgramImp program)
         {
-           
+            context.VertexShader.Set(vertexShader);
+            context.PixelShader.Set(pixelShader);
         }
 
         public void Clear(ClearFlags flags)
         {
-           
+            //hat keinen Effekt
+
+            //context = device.ImmediateContext;
+            //var backBuffer = Texture2D.FromSwapChain<Texture2D>(swapChain, 0);
+            //var renderView = new RenderTargetView(device, backBuffer);
+            //context.ClearRenderTargetView(renderView, SharpDX.Color.CornflowerBlue);
         }
 
 
         public void SetVertices(IMeshImp mr, float3[] vertices)
         {
-            
+            var vertex = Buffer.Create(device, BindFlags.VertexBuffer, new[]
+                                  {
+                                      new Vector4(0.0f, 0.5f, 0.5f, 1.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f),
+                                      new Vector4(0.5f, -0.5f, 0.5f, 1.0f), new Vector4(0.0f, 1.0f, 0.0f, 1.0f),
+                                      new Vector4(-0.5f, -0.5f, 0.5f, 1.0f), new Vector4(0.0f, 0.0f, 1.0f, 1.0f)
+                                  });
+            context.InputAssembler.InputLayout = layout;
+            context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
+            context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertex, 32, 0));
         }
 
 
         public void SetNormals(IMeshImp mr, float3[] normals)
         {
-            
+            var vertex = Buffer.Create(device, BindFlags.VertexBuffer, new[]
+                                  {
+                                      new Vector4(0.0f, 0.5f, 0.5f, 1.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f),
+                                      new Vector4(0.5f, -0.5f, 0.5f, 1.0f), new Vector4(0.0f, 1.0f, 0.0f, 1.0f),
+                                      new Vector4(-0.5f, -0.5f, 0.5f, 1.0f), new Vector4(0.0f, 0.0f, 1.0f, 1.0f)
+                                  });
+            context.InputAssembler.InputLayout = layout;
+            context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
+            context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertex, 32, 0));
         }
 
         public void SetUVs(IMeshImp mr, float2[] uvs)
@@ -250,7 +318,15 @@ namespace Fusee.Engine
 
         public void SetTriangles(IMeshImp mr, short[] triangleIndices)
         {
-           
+            var vertex = Buffer.Create(device, BindFlags.VertexBuffer, new[]
+                                  {
+                                      new Vector4(0.0f, 0.5f, 0.5f, 1.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f),
+                                      new Vector4(0.5f, -0.5f, 0.5f, 1.0f), new Vector4(0.0f, 1.0f, 0.0f, 1.0f),
+                                      new Vector4(-0.5f, -0.5f, 0.5f, 1.0f), new Vector4(0.0f, 0.0f, 1.0f, 1.0f)
+                                  });
+            context.InputAssembler.InputLayout = layout;
+            context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
+            context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertex, 32, 0));
         }
 
         public void Render(IMeshImp mr)
@@ -265,7 +341,7 @@ namespace Fusee.Engine
 
         public void Viewport(int x, int y, int width, int height)
         {
-            
+            context.Rasterizer.SetViewports(new Viewport(0,0,_renderForm.ClientSize.Width,_renderForm.ClientSize.Height, 0.0f,1.0f));
         }
 
         public void ColorMask(bool red, bool green, bool blue, bool alpha)
