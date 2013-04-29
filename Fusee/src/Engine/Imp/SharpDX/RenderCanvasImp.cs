@@ -79,6 +79,11 @@ namespace Fusee.Engine
         
         }
 
+        public DeviceContext getContext()
+        {
+            return this.context;
+        }
+
         public void Run()
         {
             RenderLoop.Run(_renderForm, Present);

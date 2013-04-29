@@ -34,7 +34,9 @@ namespace Fusee.Engine
 
         public RenderContextImp(IRenderCanvasImp renderCanvas)
         {
-            
+            IMeshImp r=new MeshImp();
+            var f = new float3[3];
+            SetVertices(r,f);
             
 
         }
@@ -280,15 +282,19 @@ namespace Fusee.Engine
 
         public void SetVertices(IMeshImp mr, float3[] vertices)
         {
-            var vertex = Buffer.Create(device, BindFlags.VertexBuffer, new[]
-                                  {
-                                      new Vector4(0.0f, 0.5f, 0.5f, 1.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f),
-                                      new Vector4(0.5f, -0.5f, 0.5f, 1.0f), new Vector4(0.0f, 1.0f, 0.0f, 1.0f),
-                                      new Vector4(-0.5f, -0.5f, 0.5f, 1.0f), new Vector4(0.0f, 0.0f, 1.0f, 1.0f)
-                                  });
-            context.InputAssembler.InputLayout = layout;
-            context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
-            context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertex, 32, 0));
+            if (device != null)
+            {
+                var vertex = Buffer.Create(device, BindFlags.VertexBuffer, new[]
+                    {
+                                      
+                        new SharpDX.Vector4(0.0f, 0.5f, 0.5f, 1.0f), new SharpDX.Vector4(1.0f, 0.0f, 0.0f, 1.0f),
+                        new SharpDX.Vector4(0.5f, -0.5f, 0.5f, 1.0f), new SharpDX.Vector4(0.0f, 1.0f, 0.0f, 1.0f),
+                        new SharpDX.Vector4(-0.5f, -0.5f, 0.5f, 1.0f), new SharpDX.Vector4(0.0f, 0.0f, 1.0f, 1.0f)
+                    });
+                context.InputAssembler.InputLayout = layout;
+                context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
+                context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertex, 32, 0));
+            }
         }
 
 
@@ -296,9 +302,9 @@ namespace Fusee.Engine
         {
             var vertex = Buffer.Create(device, BindFlags.VertexBuffer, new[]
                                   {
-                                      new Vector4(0.0f, 0.5f, 0.5f, 1.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f),
-                                      new Vector4(0.5f, -0.5f, 0.5f, 1.0f), new Vector4(0.0f, 1.0f, 0.0f, 1.0f),
-                                      new Vector4(-0.5f, -0.5f, 0.5f, 1.0f), new Vector4(0.0f, 0.0f, 1.0f, 1.0f)
+                                      new SharpDX.Vector4(0.0f, 0.5f, 0.5f, 1.0f), new SharpDX.Vector4(1.0f, 0.0f, 0.0f, 1.0f),
+                                      new SharpDX.Vector4(0.5f, -0.5f, 0.5f, 1.0f), new SharpDX.Vector4(0.0f, 1.0f, 0.0f, 1.0f),
+                                      new SharpDX.Vector4(-0.5f, -0.5f, 0.5f, 1.0f), new SharpDX.Vector4(0.0f, 0.0f, 1.0f, 1.0f)
                                   });
             context.InputAssembler.InputLayout = layout;
             context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
@@ -320,9 +326,9 @@ namespace Fusee.Engine
         {
             var vertex = Buffer.Create(device, BindFlags.VertexBuffer, new[]
                                   {
-                                      new Vector4(0.0f, 0.5f, 0.5f, 1.0f), new Vector4(1.0f, 0.0f, 0.0f, 1.0f),
-                                      new Vector4(0.5f, -0.5f, 0.5f, 1.0f), new Vector4(0.0f, 1.0f, 0.0f, 1.0f),
-                                      new Vector4(-0.5f, -0.5f, 0.5f, 1.0f), new Vector4(0.0f, 0.0f, 1.0f, 1.0f)
+                                      new SharpDX.Vector4(0.0f, 0.5f, 0.5f, 1.0f), new SharpDX.Vector4(1.0f, 0.0f, 0.0f, 1.0f),
+                                      new SharpDX.Vector4(0.5f, -0.5f, 0.5f, 1.0f), new SharpDX.Vector4(0.0f, 1.0f, 0.0f, 1.0f),
+                                      new SharpDX.Vector4(-0.5f, -0.5f, 0.5f, 1.0f), new SharpDX.Vector4(0.0f, 0.0f, 1.0f, 1.0f)
                                   });
             context.InputAssembler.InputLayout = layout;
             context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
