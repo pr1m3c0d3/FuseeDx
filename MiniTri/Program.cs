@@ -198,7 +198,7 @@ namespace MiniTri
             data.Write(cb);
             data.Position = 0;
             context.UpdateSubresource(new DataBox(data.PositionPointer, 0, 0), getUniform, 0);
-            context.VertexShader.SetConstantBuffer(0, getUniform);
+            context.PixelShader.SetConstantBuffer(0, getUniform);
 
             // Main loop
             RenderLoop.Run(form, () =>
