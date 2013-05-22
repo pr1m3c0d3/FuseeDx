@@ -52,16 +52,16 @@ namespace Fusee.Engine
                 new float3{x=-1.0f, y= 1.0f, z=-1.0f},
             };
 
-            Colors = new uint[]
+            Colors = new float4[]
             {
-                0x7F0000FF,
-                0x7F0000FF,
-                0x7F00FFFF,
-                0x7F00FFFF,
-                0x7F0000FF,
-                0x7F0000FF,
-                0x7F00FFFF,
-                0x7F00FFFF,
+                new float4(1.0f,0.0f,1.0f,1.0f), 
+                new float4(1.0f,0.0f,1.0f,1.0f),
+                new float4(1.0f,0.0f,1.0f,1.0f),
+                new float4(1.0f,0.0f,1.0f,1.0f),
+                new float4(1.0f,0.0f,1.0f,1.0f),
+                new float4(1.0f,0.0f,1.0f,1.0f),
+                new float4(1.0f,0.0f,1.0f,1.0f),
+                new float4(1.0f,0.0f,1.0f,1.0f)
             };
         }
     }

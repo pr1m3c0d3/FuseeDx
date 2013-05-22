@@ -28,3 +28,13 @@ D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\Bin\Debug\Fusee.Engine.Imp.SharpD
 D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\src\Engine\Imp\SharpDX\obj\x86\Debug\SharpDX.csprojResolveAssemblyReference.cache
 D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\src\Engine\Imp\SharpDX\obj\x86\Debug\Fusee.Engine.Imp.SharpDX.dll
 D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\src\Engine\Imp\SharpDX\obj\x86\Debug\Fusee.Engine.Imp.SharpDX.pdb
+D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\Bin\Debug\Fusee.Engine.Imp.SharpDX.dll
+D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\Bin\Debug\Fusee.Engine.Imp.SharpDX.pdb
+D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\src\Engine\Imp\SharpDX\obj\x86\Debug\SharpDX.csprojResolveAssemblyReference.cache
+D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\src\Engine\Imp\SharpDX\obj\x86\Debug\Fusee.Engine.Imp.SharpDX.dll
+D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\src\Engine\Imp\SharpDX\obj\x86\Debug\Fusee.Engine.Imp.SharpDX.pdb
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Fusee.Engine.Imp.SharpDX.dll
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Fusee.Engine.Imp.SharpDX.pdb
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Imp\SharpDX\obj\x86\Debug\SharpDX.csprojResolveAssemblyReference.cache
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Imp\SharpDX\obj\x86\Debug\Fusee.Engine.Imp.SharpDX.dll
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Imp\SharpDX\obj\x86\Debug\Fusee.Engine.Imp.SharpDX.pdb

@@ -10,3 +10,14 @@ D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\Tmp\Obj\Engine.Core\Debug\Core.cs
 D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\Tmp\Obj\Engine.Core\Debug\Fusee.Engine.Core.dll
 D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\Tmp\Obj\Engine.Core\Debug\Fusee.Engine.Core.pdb
 D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\Bin\Debug\Fusee.Engine.Core.XML
+D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\Bin\Debug\Fusee.Engine.Core.dll
+D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\Bin\Debug\Fusee.Engine.Core.pdb
+D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\Tmp\Obj\Engine.Core\Debug\Core.csprojResolveAssemblyReference.cache
+D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\Tmp\Obj\Engine.Core\Debug\Fusee.Engine.Core.dll
+D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\Tmp\Obj\Engine.Core\Debug\Fusee.Engine.Core.pdb
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Fusee.Engine.Core.dll
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Fusee.Engine.Core.pdb
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Tmp\Obj\Engine.Core\Debug\Core.csprojResolveAssemblyReference.cache
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Tmp\Obj\Engine.Core\Debug\Fusee.Engine.Core.dll
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Tmp\Obj\Engine.Core\Debug\Fusee.Engine.Core.pdb
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Fusee.Engine.Core.XML

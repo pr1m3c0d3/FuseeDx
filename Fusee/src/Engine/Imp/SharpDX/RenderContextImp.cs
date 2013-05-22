@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using Fusee.Math;
 
 using SharpDX;
@@ -14,30 +15,84 @@ using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using SharpDX.Windows;
 using Buffer = SharpDX.Direct3D11.Buffer;
+using Color = System.Drawing.Color;
 using Device = SharpDX.Direct3D11.Device;
 
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
+using Rectangle = System.Drawing.Rectangle;
+
 //
 namespace Fusee.Engine
 {
     public class RenderContextImp : IRenderContextImp
     {
-        private Device device;
-        private SwapChain swapChain;
-        private DeviceContext context;
-        private InputLayout layout;
-        private VertexShader vertexShader;
-        private PixelShader pixelShader;
-        internal RenderForm _renderForm;
+
         private int _currentTextureUnit;
         private Dictionary<int, int> _shaderParam2TexUnit;
+        internal Device _device;
+        internal SwapChain _swapChain;
+        internal DeviceContext _context;
+        internal RenderTargetView _renderView;
+        internal VertexShader _vertexShader;
+        internal PixelShader _pixelShader;
+        internal InputLayout _layout;
+        //internal Buffer _vertices;
+        //internal Buffer _verticesColor;
+        //internal Buffer _trianglesIndex;
 
         public RenderContextImp(IRenderCanvasImp renderCanvas)
         {
-            IMeshImp r=new MeshImp();
-            var f = new float3[3];
-            SetVertices(r,f);
-            
+
+            RenderCanvasImp dxCanvas = (RenderCanvasImp) renderCanvas;
+            _context = dxCanvas._context;
+            _device = dxCanvas._device;
+            _swapChain = dxCanvas._swapChain;
+            _renderView = dxCanvas._renderView;
+            Viewport(0,0,dxCanvas.Width,dxCanvas.Height);
+           // CreateShader("", "");
+
+
+
+           // // Instantiate Vertex buiffer from vertex data
+           // var vertices = Buffer.Create(_device, BindFlags.VertexBuffer, new[]
+           //                       {
+           //                           new Vector4(-0.9f, -0.2f, 0.0f, 1.0f),
+           //                           new Vector4(0.0f, 0.5f, 0.5f, 1.0f),
+           //                           new Vector4(0.5f, -0.5f, 0.5f, 1.0f), 
+           //                           new Vector4(-0.5f, -0.5f, 0.5f, 1.0f)
+                                     
+           //                       });
+           // // Instantiate Vertex buiffer from vertex data
+           // var verticesColors = Buffer.Create(_device, BindFlags.VertexBuffer, new[]
+           //                       {
+           //                           new Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+           //                           new Vector4(1.0f, 0.0f, 0.0f, 1.0f),
+           //                           new Vector4(0.0f, 1.0f, 0.0f, 1.0f),
+           //                           new Vector4(0.0f, 0.0f, 1.0f, 1.0f)
+           //                       });
+           // var triangles = Buffer.Create(_device, BindFlags.IndexBuffer, new[]
+           //                       {
+           //                           1,
+           //                           2,
+           //                           3
+           //                       });
+
+
+           // // Prepare All the stages
+           // _context.InputAssembler.InputLayout = _layout;
+           // _context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
+           // _context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding[]
+           // {
+           //   new VertexBufferBinding(vertices,16, 0),
+           //   new VertexBufferBinding(verticesColors,16, 0)
+           // }
+
+           // );
+           // _context.InputAssembler.SetIndexBuffer(triangles, Format.R32_UInt, 0);
+           // _context.VertexShader.Set(_vertexShader);
+           //Viewport(0,0,dxCanvas.Width,dxCanvas.Height);
+           // _context.PixelShader.Set(_pixelShader);
+           // _context.OutputMerger.SetTargets(_renderView);
 
         }
 
@@ -52,17 +107,29 @@ namespace Fusee.Engine
         /// <returns>An ImageData object with all necessary information for the texture-binding process.</returns>
         public ImageData LoadImage(String filename)
         {
-            
+            Bitmap bmp = new Bitmap(filename);
+            //Flip y-axis, otherwise texture would be upside down
+            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
-            var ret = new ImageData()
+            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
+            int bytes = (strideAbs) * bmp.Height;
+
+
+            ImageData ret = new ImageData()
             {
-                PixelData = new byte[2],
-                Height = 20,
-                Width = 20
-                
+                PixelData = new byte[bytes],
+                Height = bmpData.Height,
+                Width = bmpData.Width,
+                Stride = bmpData.Stride
 
             };
 
+
+            System.Runtime.InteropServices.Marshal.Copy(bmpData.Scan0, ret.PixelData, 0, bytes);
+
+            bmp.UnlockBits(bmpData);
             return ret;
         }
 
@@ -75,18 +142,33 @@ namespace Fusee.Engine
         /// <returns>An ImageData struct containing all necessary information for further processing.</returns>
         public ImageData CreateImage(int width, int height, String bgColor)
         {
-            var ret = new ImageData()
-            {
-                PixelData = new byte[2],
-                Height = 20,
-                Width = 20
+            Bitmap bmp = new Bitmap(width, height);
+            Graphics gfx = Graphics.FromImage(bmp);
+            Color color = Color.FromName(bgColor);
+            gfx.Clear(color);
 
+            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
+
+            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
+            int bytes = (strideAbs) * bmp.Height;
+
+
+            ImageData ret = new ImageData()
+            {
+                PixelData = new byte[bytes],
+                Height = bmpData.Height,
+                Width = bmpData.Width,
+                Stride = bmpData.Stride
 
             };
 
+
+            System.Runtime.InteropServices.Marshal.Copy(bmpData.Scan0, ret.PixelData, 0, bytes);
+
+            bmp.UnlockBits(bmpData);
             return ret;
-
-
         }
 
         /// <summary>
@@ -103,9 +185,35 @@ namespace Fusee.Engine
         public ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor, float startPosX, float startPosY)
         {
 
-           
+            GCHandle arrayHandle = GCHandle.Alloc(imgData.PixelData,
+                                   GCHandleType.Pinned);
+            Bitmap bmp = new Bitmap(imgData.Width, imgData.Height, imgData.Stride, PixelFormat.Format32bppArgb,
+                                    arrayHandle.AddrOfPinnedObject());
+            Color color = Color.FromName(textColor);
+            Font font = new Font(fontName, fontSize, FontStyle.Regular, GraphicsUnit.World);
 
 
+            Graphics gfx = Graphics.FromImage(bmp);
+            gfx.TextRenderingHint = TextRenderingHint.AntiAlias;
+            gfx.DrawString(text, font, new SolidBrush(color), startPosX, startPosY);
+
+            //Flip y-axis, otherwise texture would be upside down
+            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
+
+            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
+            int bytes = (strideAbs) * bmp.Height;
+
+            imgData.PixelData = new byte[bytes];
+            imgData.Height = bmpData.Height;
+            imgData.Width = bmpData.Width;
+            imgData.Stride = bmpData.Stride;
+
+            Marshal.Copy(bmpData.Scan0, imgData.PixelData, 0, bytes);
+
+
+            bmp.UnlockBits(bmpData);
             return imgData;
 
         }
@@ -206,7 +314,7 @@ namespace Fusee.Engine
         public float4 ClearColor
         {
             get { throw new NotImplementedException(); }
-            set {  }
+            set { }
         }
 
         public float ClearDepth
@@ -217,47 +325,24 @@ namespace Fusee.Engine
 
         public IShaderProgramImp CreateShader(string vs, string ps)
         {
-            var shaders = @"struct VS_IN
-                    {
-	                    float4 pos : POSITION;
-	                    float4 col : COLOR;
-                    };
+            
 
-                    struct PS_IN
-                    {
-	                    float4 pos : SV_POSITION;
-	                    float4 col : COLOR;
-                    };
+            var vertexShaderByteCode = ShaderBytecode.Compile(vs, "VS", "vs_4_0", ShaderFlags.None, EffectFlags.None);
+            _vertexShader = new VertexShader(_device, vertexShaderByteCode);
 
-                    PS_IN VS( VS_IN input )
-                    {
-	                    PS_IN output = (PS_IN)0;
-	
-	                    output.pos = input.pos;
-	                    output.col = input.col;
-	
-	                    return output;
-                    }
+            var pixelShaderByteCode = ShaderBytecode.Compile(ps, "PS", "ps_4_0", ShaderFlags.None, EffectFlags.None);
+            _pixelShader = new PixelShader(_device, pixelShaderByteCode);
 
-                    float4 PS( PS_IN input ) : SV_Target
-                    {
-	                    return input.col;
-                    }";
+            
 
-            var vertexShaderByteCode = ShaderBytecode.Compile(shaders, "VS", "vs_4_0", ShaderFlags.None, EffectFlags.None);
-            vertexShader = new VertexShader(device, vertexShaderByteCode);
-
-            var pixelShaderByteCode = ShaderBytecode.Compile(shaders, "PS", "ps_4_0", ShaderFlags.None, EffectFlags.None);
-            pixelShader = new PixelShader(device, pixelShaderByteCode);
-            layout = new InputLayout(
-                device,
-                ShaderSignature.GetInputSignature(vertexShaderByteCode),
-                new[]
+            _layout = new InputLayout(
+                    _device,
+                    ShaderSignature.GetInputSignature(vertexShaderByteCode),
+                    new[]
                     {
-                        new InputElement("POSITION",0, Format.R32G32B32A32_Float, 0,0), 
-                        new InputElement("COLOR",0, Format.R32G32B32A32_Float, 0,0) 
-                    }
-                );
+                        new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+                        new InputElement("COLOR", 0, Format.R32G32B32A32_Float, 0, 1)
+                    });
 
             return new ShaderProgramImp {  };
         }
@@ -265,79 +350,121 @@ namespace Fusee.Engine
 
         public void SetShader(IShaderProgramImp program)
         {
-            context.VertexShader.Set(vertexShader);
-            context.PixelShader.Set(pixelShader);
+            _context.VertexShader.Set(_vertexShader);
+            _context.PixelShader.Set(_pixelShader);
         }
 
         public void Clear(ClearFlags flags)
         {
             //hat keinen Effekt
 
-            //context = device.ImmediateContext;
-            //var backBuffer = Texture2D.FromSwapChain<Texture2D>(swapChain, 0);
-            //var renderView = new RenderTargetView(device, backBuffer);
-            //context.ClearRenderTargetView(renderView, SharpDX.Color.CornflowerBlue);
+            _context.ClearRenderTargetView(_renderView, SharpDX.Color.CadetBlue);
+           
         }
 
 
         public void SetVertices(IMeshImp mr, float3[] vertices)
         {
-            if (device != null)
+            if (vertices == null || vertices.Length == 0)
             {
-                var vertex = Buffer.Create(device, BindFlags.VertexBuffer, new[]
-                    {
-                                      
-                        new SharpDX.Vector4(0.0f, 0.5f, 0.5f, 1.0f), new SharpDX.Vector4(1.0f, 0.0f, 0.0f, 1.0f),
-                        new SharpDX.Vector4(0.5f, -0.5f, 0.5f, 1.0f), new SharpDX.Vector4(0.0f, 1.0f, 0.0f, 1.0f),
-                        new SharpDX.Vector4(-0.5f, -0.5f, 0.5f, 1.0f), new SharpDX.Vector4(0.0f, 0.0f, 1.0f, 1.0f)
-                    });
-                context.InputAssembler.InputLayout = layout;
-                context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
-                context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertex, 32, 0));
+                throw new ArgumentException("Vertices must not be null or empty");
             }
+            
+            ((MeshImp)mr).VertexBufferObject = Buffer.Create(_device, BindFlags.VertexBuffer, vertices);
+            
         }
 
 
         public void SetNormals(IMeshImp mr, float3[] normals)
         {
-            var vertex = Buffer.Create(device, BindFlags.VertexBuffer, new[]
-                                  {
-                                      new SharpDX.Vector4(0.0f, 0.5f, 0.5f, 1.0f), new SharpDX.Vector4(1.0f, 0.0f, 0.0f, 1.0f),
-                                      new SharpDX.Vector4(0.5f, -0.5f, 0.5f, 1.0f), new SharpDX.Vector4(0.0f, 1.0f, 0.0f, 1.0f),
-                                      new SharpDX.Vector4(-0.5f, -0.5f, 0.5f, 1.0f), new SharpDX.Vector4(0.0f, 0.0f, 1.0f, 1.0f)
-                                  });
-            context.InputAssembler.InputLayout = layout;
-            context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
-            context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertex, 32, 0));
+            if (normals == null || normals.Length == 0)
+            {
+                throw new ArgumentException("Vertices must not be null or empty");
+            }
+            
+            ((MeshImp)mr).NormalBufferObject = Buffer.Create(_device, BindFlags.VertexBuffer, normals);
         }
 
         public void SetUVs(IMeshImp mr, float2[] uvs)
         {
+            if (uvs == null || uvs.Length == 0)
+            {
+                throw new ArgumentException("Vertices must not be null or empty");
+            }
             
+            ((MeshImp)mr).UVBufferObject = Buffer.Create(_device, BindFlags.VertexBuffer, uvs);
         }
 
-        public void SetColors(IMeshImp mr, uint[] colors)
+        public void SetColors(IMeshImp mr, float4[] colors)
         {
+
+
+            if (colors == null || colors.Length == 0)
+            {
+                throw new ArgumentException("Vertices must not be null or empty");
+            }
+            
+            ((MeshImp)mr).ColorBufferObject = Buffer.Create(_device, BindFlags.VertexBuffer, colors);
             
         }
 
 
         public void SetTriangles(IMeshImp mr, short[] triangleIndices)
         {
-            var vertex = Buffer.Create(device, BindFlags.VertexBuffer, new[]
-                                  {
-                                      new SharpDX.Vector4(0.0f, 0.5f, 0.5f, 1.0f), new SharpDX.Vector4(1.0f, 0.0f, 0.0f, 1.0f),
-                                      new SharpDX.Vector4(0.5f, -0.5f, 0.5f, 1.0f), new SharpDX.Vector4(0.0f, 1.0f, 0.0f, 1.0f),
-                                      new SharpDX.Vector4(-0.5f, -0.5f, 0.5f, 1.0f), new SharpDX.Vector4(0.0f, 0.0f, 1.0f, 1.0f)
-                                  });
-            context.InputAssembler.InputLayout = layout;
-            context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
-            context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding(vertex, 32, 0));
+            if (triangleIndices == null || triangleIndices.Length == 0)
+            {
+                throw new ArgumentException("Vertices must not be null or empty");
+            }
+            
+            ((MeshImp)mr).ElementBufferObject = Buffer.Create(_device, BindFlags.IndexBuffer, triangleIndices);
+            ((MeshImp) mr).NElements = triangleIndices.Length;
+
         }
 
         public void Render(IMeshImp mr)
         {
+            var maxCount = 4;
+            if (((MeshImp) mr).VertexBufferBindingObject == null)
+            {
+                List<VertexBufferBinding> binding = new List<VertexBufferBinding>(4);
+                if (((MeshImp)mr).VertexBufferObject != null)
+                {
+                     binding.Add(new VertexBufferBinding(((MeshImp)mr).VertexBufferObject,12, 0)); 
+                }
+
+                if (((MeshImp)mr).ColorBufferObject != null)
+                {
+                    binding.Add(new VertexBufferBinding(((MeshImp)mr).ColorBufferObject, 16, 0));
+                }
+
+                if (((MeshImp)mr).UVBufferObject != null)
+                {
+                    binding.Add(new VertexBufferBinding(((MeshImp)mr).UVBufferObject, 8, 0));
+                }
+
+                if (((MeshImp)mr).NormalBufferObject != null)
+                {
+
+                    binding.Add(new VertexBufferBinding(((MeshImp) mr).NormalBufferObject, 12, 0));
+                }
+                ((MeshImp)mr).VertexBufferBindingObject = binding.ToArray();
+
+            }
+            _context.InputAssembler.SetVertexBuffers(0,((MeshImp)mr).VertexBufferBindingObject);
+
+
+            if (((MeshImp)mr).ElementBufferObject != null)
+            {
+                _context.InputAssembler.InputLayout = _layout;
+                _context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
+
+                _context.InputAssembler.SetIndexBuffer(((MeshImp)mr).ElementBufferObject, Format.R16_UInt, 0);
+                _context.DrawIndexed(((MeshImp)mr).NElements, 0, 0);
+            }
+       
             
+            
+
         }
 
         public IMeshImp CreateMeshImp()
@@ -347,12 +474,12 @@ namespace Fusee.Engine
 
         public void Viewport(int x, int y, int width, int height)
         {
-            context.Rasterizer.SetViewports(new Viewport(0,0,_renderForm.ClientSize.Width,_renderForm.ClientSize.Height, 0.0f,1.0f));
+            _context.Rasterizer.SetViewports(new Viewport(x,y,width,height, 0.0f,1.0f));
         }
 
         public void ColorMask(bool red, bool green, bool blue, bool alpha)
         {
-          
+            
         }
 
         public void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)

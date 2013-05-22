@@ -17,10 +17,10 @@ namespace Fusee.Engine
       
     public class RenderCanvasImp : IRenderCanvasImp
     {
-        private  Device device;
-        private  SwapChain swapChain;
-        private DeviceContext context;
-        private RenderTargetView renderView;
+        internal Device _device;
+        internal SwapChain _swapChain;
+        internal DeviceContext _context;
+        internal RenderTargetView _renderView;
         public int Width { get { return _renderForm.Width; } }
        
         public int Height { get { return _renderForm.Height; } }
@@ -35,7 +35,7 @@ namespace Fusee.Engine
         }
 
         internal RenderForm _renderForm;// RenderForm (Dx)
-        
+          
         public RenderCanvasImp()
         {
             _renderForm = new RenderForm("DX_WINDOW");
@@ -56,50 +56,48 @@ namespace Fusee.Engine
                 SwapEffect = SwapEffect.Discard,
                 Usage = Usage.RenderTargetOutput
             };
-            Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.None, desc, out device, out swapChain);
+            Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.None, desc, out _device, out _swapChain);
 
-            context = device.ImmediateContext;
+            _context = _device.ImmediateContext;
 
-            var factory = swapChain.GetParent<Factory>();
+            var factory = _swapChain.GetParent<Factory>();
             factory.MakeWindowAssociation(_renderForm.Handle,WindowAssociationFlags.IgnoreAll);
-            var backBuffer = Texture2D.FromSwapChain<Texture2D>(swapChain, 0);
-            renderView = new RenderTargetView(device, backBuffer);
-            context.OutputMerger.SetTargets(renderView);
+            var backBuffer = Texture2D.FromSwapChain<Texture2D>(_swapChain, 0);
+            _renderView = new RenderTargetView(_device, backBuffer);
+            _context.OutputMerger.SetTargets(_renderView);
 
         }
 
         public void Present()
         {
             //gehört in Clear von Render Context funktioniert aber dort nicht
-            context.ClearRenderTargetView(renderView, SharpDX.Color.CornflowerBlue);
+            //context.ClearRenderTargetView(renderView, SharpDX.Color.CornflowerBlue);
             
             //Funktioniert nicht
-            //context.Draw(3,0);
-            swapChain.Present(0, PresentFlags.None);
+            
+            _swapChain.Present(0, PresentFlags.None);
         
         }
 
-        public DeviceContext getContext()
-        {
-            return this.context;
-        }
+
 
         public void Run()
         {
-            RenderLoop.Run(_renderForm, Present);
+            DoInit();
+            RenderLoop.Run(_renderForm, DoRender);
             Dispose();
         }
 
       public void Dispose()
       {
          
-          renderView.Dispose();
+          _renderView.Dispose();
     
-          context.ClearState();
-          context.Flush();
-          device.Dispose();
-          context.Dispose();
-          swapChain.Dispose();
+          //context.ClearState();
+          //context.Flush();
+          //device.Dispose();
+          //context.Dispose();
+          //swapChain.Dispose();
           
       }
 

@@ -10,3 +10,14 @@ D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\Tmp\Obj\Math\Debug\Fusee.Math.Cor
 D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\Tmp\Obj\Math\Debug\Fusee.Math.Core.pdb
 D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\Tmp\Obj\Math\Debug\Math.Core.csprojResolveAssemblyReference.cache
 D:\UNI\THESIS_FUSSE_ENGINE_PROJECT_FILES\Fusee\Bin\Debug\Fusee.Math.Core.xml
+D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\Bin\Debug\Fusee.Math.Core.dll
+D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\Bin\Debug\Fusee.Math.Core.pdb
+D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\Tmp\Obj\Math\Debug\Math.Core.csprojResolveAssemblyReference.cache
+D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\Tmp\Obj\Math\Debug\Fusee.Math.Core.dll
+D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\Tmp\Obj\Math\Debug\Fusee.Math.Core.pdb
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Fusee.Math.Core.dll
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Fusee.Math.Core.pdb
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Tmp\Obj\Math\Debug\Math.Core.csprojResolveAssemblyReference.cache
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Tmp\Obj\Math\Debug\Fusee.Math.Core.dll
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Tmp\Obj\Math\Debug\Fusee.Math.Core.pdb
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Fusee.Math.Core.xml

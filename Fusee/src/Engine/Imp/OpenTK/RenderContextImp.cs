@@ -456,7 +456,7 @@ namespace Fusee.Engine
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
-        public void SetColors(IMeshImp mr, uint[] colors)
+        public void SetColors(IMeshImp mr, float4[] colors)
         {
             if (colors == null || colors.Length == 0)
             {

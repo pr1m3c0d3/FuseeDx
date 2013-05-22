@@ -4,31 +4,54 @@
         <name>Fusee.SceneManagement.SceneManagement</name>
     </assembly>
     <members>
-        <member name="T:Fusee.SceneManagement.Properties.Resources">
+        <member name="T:Fusee.SceneManagement.RenderMesh">
             <summary>
-              Eine stark typisierte Ressourcenklasse zum Suchen von lokalisierten Zeichenfolgen usw.
+            Creates a mesh that will be passed to the RenderContext.
             </summary>
         </member>
-        <member name="P:Fusee.SceneManagement.Properties.Resources.ResourceManager">
+        <member name="T:Fusee.SceneManagement.RenderJob">
             <summary>
-              Gibt die zwischengespeicherte ResourceManager-Instanz zurück, die von dieser Klasse verwendet wird.
+            Provides the virtual SubmitWork method.
             </summary>
         </member>
-        <member name="P:Fusee.SceneManagement.Properties.Resources.Culture">
+        <member name="M:Fusee.SceneManagement.RenderJob.SubmitWork(Fusee.Engine.RenderContext)">
             <summary>
-              Überschreibt die CurrentUICulture-Eigenschaft des aktuellen Threads für alle
-              Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
+            The SubmitWork method will be overwritten by a visited Component that "want's" to be rendered.
+            Therefore a RenderContext is needed.
             </summary>
         </member>
-        <member name="T:Fusee.SceneManagement.SpotLight">
+        <member name="M:Fusee.SceneManagement.RenderMesh.#ctor(Fusee.Engine.Mesh)">
             <summary>
-            This class is derived from Light and set's a Spotlight in the scene.
+            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.RenderMesh"/> class. Needs to be provided with a mesh that needs to be rendered.
+            </summary>
+            <param name="mesh">The mesh that need's to be rendered e.g. the mesh of a ingame object.</param>
+        </member>
+        <member name="M:Fusee.SceneManagement.RenderMesh.SubmitWork(Fusee.Engine.RenderContext)">
+            <summary>
+            Overwrites the SubmitWork method of RenderJob class. The mesh will be provided with everything it need's and passed to 
+            RenderContextImplementation. 
+            </summary>
+            <param name="renderContext"></param>
+        </member>
+        <member name="T:Fusee.SceneManagement.RenderMatrix">
+            <summary>
+            Creates a float4x4 matrix that will be passed to the RenderContext.
             </summary>
         </member>
-        <member name="T:Fusee.SceneManagement.Light">
+        <member name="M:Fusee.SceneManagement.RenderMatrix.#ctor(Fusee.Math.float4x4)">
             <summary>
-            Light is the base class for all lightsources in the scene.
-            All lights are derived from this class and this class is derived from Component.
+            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.RenderMatrix"/> class. Needs to be provided with a matrix that needs to be rendered.
+            </summary>
+            <param name="matrix">The matrix that need's to be rendered e.g. the matrix of a object in scene.</param>
+        </member>
+        <member name="M:Fusee.SceneManagement.RenderMatrix.SubmitWork(Fusee.Engine.RenderContext)">
+            <summary>
+            Overwrites the SubmitWork method of RenderJob class. Set's the Model matrix into RendeContext. 
+            </summary>
+        </member>
+        <member name="T:Fusee.SceneManagement.Renderer">
+            <summary>
+            Renderer is derived from Component. Creates a usable ingame object.
             </summary>
         </member>
         <member name="T:Fusee.SceneManagement.Component">
@@ -57,263 +80,9 @@
             Gets or sets the scene entity of this Component.
             </summary>
         </member>
-        <member name="M:Fusee.SceneManagement.Light.#ctor">
+        <member name="M:Fusee.SceneManagement.Renderer.#ctor">
             <summary>
-            Creates a light object.
-            </summary>
-        </member>
-        <member name="T:Fusee.SceneManagement.Light.LightType">
-            <summary>
-            Enums for lighttypes at the moment there are 3
-            </summary>
-        </member>
-        <member name="F:Fusee.SceneManagement.Light.LightType.Directional">
-            <summary>
-            Directional = 0
-            </summary>
-        </member>
-        <member name="F:Fusee.SceneManagement.Light.LightType.Point">
-            <summary>
-            Point = 1
-            </summary>
-        </member>
-        <member name="F:Fusee.SceneManagement.Light.LightType.Spot">
-            <summary>
-            The spot = 2
-            </summary>
-        </member>
-        <member name="M:Fusee.SceneManagement.SpotLight.#ctor(Fusee.Math.float3,Fusee.Math.float3,Fusee.Math.float4,System.Int32)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.SpotLight"/> class. Position, direction, color and the channel are needed.
-            </summary>
-            <param name="position">The position of the spotlight.</param>
-            <param name="direction">The direction of the spotlight.</param>
-            <param name="color">The color of the spotlight(Red, Green, Blue, Alpha).</param>
-            <param name="channel">The memory space of the light(0 - 7).</param>
-        </member>
-        <member name="M:Fusee.SceneManagement.SpotLight.#ctor(System.Int32)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.SpotLight"/> class. Only the channel is needed.
-            </summary>
-            <param name="channel">The memory space of the light(0 - 7).</param>
-        </member>
-        <member name="M:Fusee.SceneManagement.SpotLight.TraverseForRendering(Fusee.SceneManagement.SceneVisitorRendering)">
-            <summary>
-            TraverseForRendering add's Spotlight to the lightqueue.
-            </summary>
-        </member>
-        <member name="T:Fusee.SceneManagement.ActionCode">
-            <summary>
-            ActionCode class grants access to an SceneEntities Components.
-            Supported: DeltaTime, Input recognition
-            </summary>
-        </member>
-        <member name="M:Fusee.SceneManagement.ActionCode.Init(Fusee.SceneManagement.SceneEntity)">
-            <summary>
-            Init is called upon creation of an ActionCode Object and utilizes the access to a SceneEntitie's transform and renderer objects.
-            </summary>
-        </member>
-        <member name="M:Fusee.SceneManagement.ActionCode.TraverseForRendering(Fusee.SceneManagement.SceneVisitorRendering)">
-            <summary>
-            Traverse is giving the Update routine access to the DeltaTime and the Input class and afterwards executes the Update routine.
-            </summary>
-        </member>
-        <member name="M:Fusee.SceneManagement.ActionCode.Start">
-            <summary>
-            Start is called only once. At the time of the call other objects inside the scene are already initialized.
-            </summary>
-        </member>
-        <member name="M:Fusee.SceneManagement.ActionCode.Update">
-            <summary>
-            Update is called every frame. Please avoid placing heavy calculations inside this Function.
-            </summary>
-        </member>
-        <member name="T:Fusee.SceneManagement.RenderMatrix">
-            <summary>
-            Creates a float4x4 matrix that will be passed to the RenderContext.
-            </summary>
-        </member>
-        <member name="T:Fusee.SceneManagement.RenderJob">
-            <summary>
-            Provides the virtual SubmitWork method.
-            </summary>
-        </member>
-        <member name="M:Fusee.SceneManagement.RenderJob.SubmitWork(Fusee.Engine.RenderContext)">
-            <summary>
-            The SubmitWork method will be overwritten by a visited Component that "want's" to be rendered.
-            Therefore a RenderContext is needed.
-            </summary>
-        </member>
-        <member name="M:Fusee.SceneManagement.RenderMatrix.#ctor(Fusee.Math.float4x4)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.RenderMatrix"/> class. Needs to be provided with a matrix that needs to be rendered.
-            </summary>
-            <param name="matrix">The matrix that need's to be rendered e.g. the matrix of a object in scene.</param>
-        </member>
-        <member name="M:Fusee.SceneManagement.RenderMatrix.SubmitWork(Fusee.Engine.RenderContext)">
-            <summary>
-            Overwrites the SubmitWork method of RenderJob class. Set's the Model matrix into RendeContext. 
-            </summary>
-        </member>
-        <member name="T:Fusee.SceneManagement.SceneVisitorSearch">
-            <summary>
-            Derivate of SceneVisitor, used to search for SceneEntities or Components in the scene.
-            </summary>
-        </member>
-        <member name="T:Fusee.SceneManagement.SceneVisitor">
-            <summary>
-            The SceneVisitor is the base class for Scene traversing functions
-            </summary>
-        </member>
-        <member name="M:Fusee.SceneManagement.SceneVisitor.Visit(Fusee.SceneManagement.SceneEntity)">
-            <summary>
-            Visits the specified cEntity to collect data if required by the current Visitor derivate.
-            </summary>
-            <param name="cEntity">The cEntity.</param>
-        </member>
-        <member name="M:Fusee.SceneManagement.SceneVisitor.Visit(Fusee.SceneManagement.ActionCode)">
-            <summary>
-            Visits the specified action code to collect data if required by the current Visitor derivate.
-            </summary>
-            <param name="actionCode">The action code.</param>
-        </member>
-        <member name="M:Fusee.SceneManagement.SceneVisitor.Visit(Fusee.SceneManagement.DirectionalLight)">
-            <summary>
-            Visits the specified directional light to collect data if required by the current Visitor derivate.
-            </summary>
-            <param name="directionalLight">The directional light.</param>
-        </member>
-        <member name="M:Fusee.SceneManagement.SceneVisitor.Visit(Fusee.SceneManagement.PointLight)">
-            <summary>
-            Visits the specified point light to collect data if required by the current Visitor derivate.
-            </summary>
-            <param name="pointLight">The point light.</param>
-        </member>
-        <member name="M:Fusee.SceneManagement.SceneVisitor.Visit(Fusee.SceneManagement.Renderer)">
-            <summary>
-            Visits the specified renderer to collect data if required by the current Visitor derivate.
-            </summary>
-            <param name="renderer">The renderer.</param>
-        </member>
-        <member name="M:Fusee.SceneManagement.SceneVisitor.Visit(Fusee.SceneManagement.SpotLight)">
-            <summary>
-            Visits the specified spot light to collect data if required by the current Visitor derivate.
-            </summary>
-            <param name="spotLight">The spot light.</param>
-        </member>
-        <member name="M:Fusee.SceneManagement.SceneVisitor.Visit(Fusee.SceneManagement.Transformation)">
-            <summary>
-            Visits the specified transformation to collect data if required by the current Visitor derivate.
-            </summary>
-            <param name="transformation">The transformation.</param>
-        </member>
-        <member name="M:Fusee.SceneManagement.SceneVisitor.Visit(Fusee.SceneManagement.Camera)">
-            <summary>
-            Visits the specified camera to collect data if required by the current Visitor derivate.
-            </summary>
-            <param name="camera">The camera.</param>
-        </member>
-        <member name="F:Fusee.SceneManagement.SceneVisitorSearch._name">
-            <summary>
-            The _name that will be searched for.
-            </summary>
-        </member>
-        <member name="F:Fusee.SceneManagement.SceneVisitorSearch._searchresult">
-            <summary>
-            The _searchresult: If a result is found returns this as reference, else null
-            </summary>
-        </member>
-        <member name="M:Fusee.SceneManagement.SceneVisitorSearch.Visit(Fusee.SceneManagement.SceneEntity)">
-            <summary>
-            Visits the specified scene entity to check its name and set _searchresult as reference if the name matches.
-            </summary>
-            <param name="sceneEntity">The scene entity.</param>
-        </member>
-        <member name="M:Fusee.SceneManagement.SceneVisitorSearch.FindSceneEntity(System.Collections.Generic.List{Fusee.SceneManagement.SceneEntity},System.String)">
-            <summary>
-            Finds a scene entity by name.
-            </summary>
-            <param name="sceneEntities">The list of scene entities from SceneManager that will be visited.</param>
-            <param name="name">The searched name of a SceneEntity.</param>
-            <returns></returns>
-        </member>
-        <member name="T:Fusee.SceneManagement.RenderPointLight">
-            <summary>
-            RenderPointLight is derived from Renderjob and is responible for passing the PointLight towards the RenderContext.
-            </summary>
-        </member>
-        <member name="M:Fusee.SceneManagement.RenderPointLight.#ctor(Fusee.Math.float3,Fusee.Math.float4,Fusee.SceneManagement.Light.LightType,System.Int32)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.RenderPointLight"/> class. Position, color, type and channel are needed.
-            </summary>
-            <param name="position">The position of the light.</param>
-            <param name="color">The color of the light (Red, Green, Blue, Alpha).</param>
-            <param name="type">The light type.</param>
-            <param name="channel">The memory space of the light(0 - 7).</param>
-        </member>
-        <member name="M:Fusee.SceneManagement.RenderPointLight.SubmitWork(Fusee.Engine.RenderContext)">
-            <summary>
-             Passes pointlight's parameters to RenderContext. 
-            </summary>
-        </member>
-        <member name="T:Fusee.SceneManagement.RenderDirectionalLight">
-            <summary>
-            RednerDirectionalLight is derived from Renderjob and is responible for passing the DirectionalLight towards the RenderContext.
-            </summary>
-        </member>
-        <member name="M:Fusee.SceneManagement.RenderDirectionalLight.#ctor(Fusee.Math.float3,Fusee.Math.float4,Fusee.SceneManagement.Light.LightType,System.Int32)">
-            <summary>
-            Creates a RenderDirectionalLight needed parameters:( float3, float4, Light.Lighttype, int).
-            </summary>
-            <param name="direction">Direction of the light.</param>
-            <param name="color">Color of the light "Red Green Blue Alpha"</param>
-            <param name="type">The light type.</param>
-            <param name="channel">The memory space of the light(0 - 7).</param>
-        </member>
-        <member name="M:Fusee.SceneManagement.RenderDirectionalLight.SubmitWork(Fusee.Engine.RenderContext)">
-            <summary>
-             Passes directionallight's parameters to RenderContext.
-            </summary>
-        </member>
-        <member name="T:Fusee.SceneManagement.Transformation">
-            <summary>
-            Transformation is derived from Component and stores all positions, angles and movement of all SceneEntitys. 
-            </summary>
-        </member>
-        <member name="M:Fusee.SceneManagement.Transformation.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.Transformation"/> class. No SceneEntity will be set.
-            </summary>
-        </member>
-        <member name="M:Fusee.SceneManagement.Transformation.#ctor(Fusee.SceneManagement.SceneEntity)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.Transformation"/> class. Sets a SceneEntity for Transform.
-            </summary>
-            <param name="entity">The SceneEntity that will be set to in Transform.</param>
-        </member>
-        <member name="P:Fusee.SceneManagement.Transformation.Matrix">
-            <summary>
-            Gets or sets the float4x4 transformMatrix.
-            </summary>
-        </member>
-        <member name="P:Fusee.SceneManagement.Transformation.LocalPosition">
-            <summary>
-            Gets or sets the float3 LocalPosition.
-            </summary>
-        </member>
-        <member name="P:Fusee.SceneManagement.Transformation.LocalScale">
-            <summary>
-            Gets or sets the float3 LocalScale.
-            </summary>
-        </member>
-        <member name="P:Fusee.SceneManagement.Transformation.LocalQuaternion">
-            <summary>
-            Gets or sets the Quaternion LocalQuaternion.
-            </summary>
-        </member>
-        <member name="P:Fusee.SceneManagement.Transformation.LocalEulerAngles">
-            <summary>
-            Gets or sets the float3 LocalEulerAngles.
+            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.Renderer"/> class. Creates usable ingame object from an obj.model file, and a new material.
             </summary>
         </member>
         <member name="T:Fusee.SceneManagement.SceneEntity">
@@ -432,61 +201,6 @@
             The parent.
             </value>
         </member>
-        <member name="T:Fusee.SceneManagement.Renderer">
-            <summary>
-            Renderer is derived from Component. Creates a usable ingame object.
-            </summary>
-        </member>
-        <member name="M:Fusee.SceneManagement.Renderer.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.Renderer"/> class. Creates usable ingame object from an obj.model file, and a new material.
-            </summary>
-        </member>
-        <member name="T:Fusee.SceneManagement.DirectionalLight">
-            <summary>
-            This class is derived from Light and set's a Directionallight in the scene.
-            A direction, a color and the position of the lightsource is needed.
-            </summary>
-        </member>
-        <member name="M:Fusee.SceneManagement.DirectionalLight.#ctor(Fusee.Math.float3,Fusee.Math.float4,Fusee.Math.float3,System.Int32)">
-            <summary>
-            Creates a directional light in the scene. Direction, color, position, and channel is needed.
-            It is possible to set up to 8 lights in the scene.
-            </summary>
-            <param name="direction">Direction of the light.</param>
-            <param name="color">The color of the light.</param>
-            <param name="position">The position in the scene.</param>
-            <param name="channel">The memory space of the light.(0 - 7)</param>
-        </member>
-        <member name="M:Fusee.SceneManagement.DirectionalLight.#ctor(System.Int32)">
-            <summary>
-            Creates a directional light in the scene. Direction, color and position will get standart values.
-            Channel is needed. It is possible to set up to 8 lights in the scene.
-            </summary>
-            <param name="channel">The memory space of the light(0 - 7).</param>
-        </member>
-        <member name="M:Fusee.SceneManagement.DirectionalLight.TraverseForRendering(Fusee.SceneManagement.SceneVisitorRendering)">
-            <summary>
-            TraverseForRendering add's Directionallight to the lightqueue.
-            </summary>
-        </member>
-        <member name="T:Fusee.SceneManagement.RenderCamera">
-            <summary>
-            RenderCamera is derived from Renderjob and is responible for passing the Camera towards the RenderContext.
-            </summary>
-        </member>
-        <member name="M:Fusee.SceneManagement.RenderCamera.#ctor(Fusee.Math.float4x4)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.RenderCamera"/> class. Needs the ViewMatrix of a Camera.
-            </summary>
-            <param name="matrix">The matrix that will be the new ViewMatrix.</param>
-        </member>
-        <member name="M:Fusee.SceneManagement.RenderCamera.SubmitWork(Fusee.Engine.RenderContext)">
-            <summary>
-            Sets the ViewMatrix in the RenderContext.
-            </summary>
-            <param name="renderContext">The RenderContext that handles the rendering.</param>
-        </member>
         <member name="T:Fusee.SceneManagement.Camera">
             <summary>
             This class is derived from Component and set's a Camera in the scene.
@@ -514,6 +228,88 @@
             Allows to set and get the Viewmatrix of the Camera.
             </summary>
         </member>
+        <member name="T:Fusee.SceneManagement.ActionCode">
+            <summary>
+            ActionCode class grants access to an SceneEntities Components.
+            Supported: DeltaTime, Input recognition
+            </summary>
+        </member>
+        <member name="M:Fusee.SceneManagement.ActionCode.Init(Fusee.SceneManagement.SceneEntity)">
+            <summary>
+            Init is called upon creation of an ActionCode Object and utilizes the access to a SceneEntitie's transform and renderer objects.
+            </summary>
+        </member>
+        <member name="M:Fusee.SceneManagement.ActionCode.TraverseForRendering(Fusee.SceneManagement.SceneVisitorRendering)">
+            <summary>
+            Traverse is giving the Update routine access to the DeltaTime and the Input class and afterwards executes the Update routine.
+            </summary>
+        </member>
+        <member name="M:Fusee.SceneManagement.ActionCode.Start">
+            <summary>
+            Start is called only once. At the time of the call other objects inside the scene are already initialized.
+            </summary>
+        </member>
+        <member name="M:Fusee.SceneManagement.ActionCode.Update">
+            <summary>
+            Update is called every frame. Please avoid placing heavy calculations inside this Function.
+            </summary>
+        </member>
+        <member name="T:Fusee.SceneManagement.SpotLight">
+            <summary>
+            This class is derived from Light and set's a Spotlight in the scene.
+            </summary>
+        </member>
+        <member name="T:Fusee.SceneManagement.Light">
+            <summary>
+            Light is the base class for all lightsources in the scene.
+            All lights are derived from this class and this class is derived from Component.
+            </summary>
+        </member>
+        <member name="M:Fusee.SceneManagement.Light.#ctor">
+            <summary>
+            Creates a light object.
+            </summary>
+        </member>
+        <member name="T:Fusee.SceneManagement.Light.LightType">
+            <summary>
+            Enums for lighttypes at the moment there are 3
+            </summary>
+        </member>
+        <member name="F:Fusee.SceneManagement.Light.LightType.Directional">
+            <summary>
+            Directional = 0
+            </summary>
+        </member>
+        <member name="F:Fusee.SceneManagement.Light.LightType.Point">
+            <summary>
+            Point = 1
+            </summary>
+        </member>
+        <member name="F:Fusee.SceneManagement.Light.LightType.Spot">
+            <summary>
+            The spot = 2
+            </summary>
+        </member>
+        <member name="M:Fusee.SceneManagement.SpotLight.#ctor(Fusee.Math.float3,Fusee.Math.float3,Fusee.Math.float4,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.SpotLight"/> class. Position, direction, color and the channel are needed.
+            </summary>
+            <param name="position">The position of the spotlight.</param>
+            <param name="direction">The direction of the spotlight.</param>
+            <param name="color">The color of the spotlight(Red, Green, Blue, Alpha).</param>
+            <param name="channel">The memory space of the light(0 - 7).</param>
+        </member>
+        <member name="M:Fusee.SceneManagement.SpotLight.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.SpotLight"/> class. Only the channel is needed.
+            </summary>
+            <param name="channel">The memory space of the light(0 - 7).</param>
+        </member>
+        <member name="M:Fusee.SceneManagement.SpotLight.TraverseForRendering(Fusee.SceneManagement.SceneVisitorRendering)">
+            <summary>
+            TraverseForRendering add's Spotlight to the lightqueue.
+            </summary>
+        </member>
         <member name="T:Fusee.SceneManagement.RenderRenderer">
             <summary>
             Creates a Renderer Component that will be passed to the RenderContext.
@@ -529,56 +325,63 @@
             Overwrites the SubmitWork method of RenderJob class. Render Component will get shaders and materials and passed to the RenderContextImplementation.
             </summary>
         </member>
-        <member name="T:Fusee.SceneManagement.PointLight">
-            <summary>
-            This class is derived from Light and set's a Pointlight in the scene.
-            A color and the position of the lightsource are needed.
-            </summary>
-        </member>
-        <member name="M:Fusee.SceneManagement.PointLight.#ctor(Fusee.Math.float3,Fusee.Math.float4,System.Int32)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.PointLight"/> class. Position, color and channel are needet.
-            </summary>
-            <param name="position">The position of the pointlight.</param>
-            <param name="color">The color of the pointlight.</param>
-            <param name="channel">The memory space of the light(0 - 7).</param>
-        </member>
-        <member name="M:Fusee.SceneManagement.PointLight.#ctor(System.Int32)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.PointLight"/> class. Only the channel is needed. Other params
-            will be set to default value. 
-            </summary>
-            <param name="channel">The memory space of the light(0 - 7).</param>
-        </member>
-        <member name="M:Fusee.SceneManagement.PointLight.TraverseForRendering(Fusee.SceneManagement.SceneVisitorRendering)">
-            <summary>
-            TraverseForRendering add's Pointlight to the lightqueue.
-            </summary>
-        </member>
-        <member name="T:Fusee.SceneManagement.RenderSpotLight">
-            <summary>
-            RenderSpotLight is derived from Renderjob and is responible for passing the SpotLight towards the RenderContext.
-            </summary>
-        </member>
-        <member name="M:Fusee.SceneManagement.RenderSpotLight.#ctor(Fusee.Math.float3,Fusee.Math.float3,Fusee.Math.float4,Fusee.SceneManagement.Light.LightType,System.Int32)">
-            <summary>
-            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.RenderSpotLight"/> class. Position, direction, color, type and channel.
-            </summary>
-            <param name="position">The position of the light.</param>
-            <param name="direction">The direction of the light.</param>
-            <param name="color">The lightcolor.</param>
-            <param name="type">The type.</param>
-            <param name="channel">The memory space of the light(0 - 7).</param>
-        </member>
-        <member name="M:Fusee.SceneManagement.RenderSpotLight.SubmitWork(Fusee.Engine.RenderContext)">
-            <summary>
-            Passes spotlight's parameters to RenderContext.
-            </summary>
-        </member>
         <member name="T:Fusee.SceneManagement.SceneVisitorRendering">
             <summary>
             A derivate of SceneVisitor, used to Visit Renderer, Transformation and Mesh components and submit to renderqueue.
             </summary>
+        </member>
+        <member name="T:Fusee.SceneManagement.SceneVisitor">
+            <summary>
+            The SceneVisitor is the base class for Scene traversing functions
+            </summary>
+        </member>
+        <member name="M:Fusee.SceneManagement.SceneVisitor.Visit(Fusee.SceneManagement.SceneEntity)">
+            <summary>
+            Visits the specified cEntity to collect data if required by the current Visitor derivate.
+            </summary>
+            <param name="cEntity">The cEntity.</param>
+        </member>
+        <member name="M:Fusee.SceneManagement.SceneVisitor.Visit(Fusee.SceneManagement.ActionCode)">
+            <summary>
+            Visits the specified action code to collect data if required by the current Visitor derivate.
+            </summary>
+            <param name="actionCode">The action code.</param>
+        </member>
+        <member name="M:Fusee.SceneManagement.SceneVisitor.Visit(Fusee.SceneManagement.DirectionalLight)">
+            <summary>
+            Visits the specified directional light to collect data if required by the current Visitor derivate.
+            </summary>
+            <param name="directionalLight">The directional light.</param>
+        </member>
+        <member name="M:Fusee.SceneManagement.SceneVisitor.Visit(Fusee.SceneManagement.PointLight)">
+            <summary>
+            Visits the specified point light to collect data if required by the current Visitor derivate.
+            </summary>
+            <param name="pointLight">The point light.</param>
+        </member>
+        <member name="M:Fusee.SceneManagement.SceneVisitor.Visit(Fusee.SceneManagement.Renderer)">
+            <summary>
+            Visits the specified renderer to collect data if required by the current Visitor derivate.
+            </summary>
+            <param name="renderer">The renderer.</param>
+        </member>
+        <member name="M:Fusee.SceneManagement.SceneVisitor.Visit(Fusee.SceneManagement.SpotLight)">
+            <summary>
+            Visits the specified spot light to collect data if required by the current Visitor derivate.
+            </summary>
+            <param name="spotLight">The spot light.</param>
+        </member>
+        <member name="M:Fusee.SceneManagement.SceneVisitor.Visit(Fusee.SceneManagement.Transformation)">
+            <summary>
+            Visits the specified transformation to collect data if required by the current Visitor derivate.
+            </summary>
+            <param name="transformation">The transformation.</param>
+        </member>
+        <member name="M:Fusee.SceneManagement.SceneVisitor.Visit(Fusee.SceneManagement.Camera)">
+            <summary>
+            Visits the specified camera to collect data if required by the current Visitor derivate.
+            </summary>
+            <param name="camera">The camera.</param>
         </member>
         <member name="F:Fusee.SceneManagement.SceneVisitorRendering._hasTransform">
             <summary>
@@ -771,23 +574,194 @@
             The input.
             </value>
         </member>
-        <member name="T:Fusee.SceneManagement.RenderMesh">
+        <member name="T:Fusee.SceneManagement.RenderSpotLight">
             <summary>
-            Creates a mesh that will be passed to the RenderContext.
+            RenderSpotLight is derived from Renderjob and is responible for passing the SpotLight towards the RenderContext.
             </summary>
         </member>
-        <member name="M:Fusee.SceneManagement.RenderMesh.#ctor(Fusee.Engine.Mesh)">
+        <member name="M:Fusee.SceneManagement.RenderSpotLight.#ctor(Fusee.Math.float3,Fusee.Math.float3,Fusee.Math.float4,Fusee.SceneManagement.Light.LightType,System.Int32)">
             <summary>
-            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.RenderMesh"/> class. Needs to be provided with a mesh that needs to be rendered.
+            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.RenderSpotLight"/> class. Position, direction, color, type and channel.
             </summary>
-            <param name="mesh">The mesh that need's to be rendered e.g. the mesh of a ingame object.</param>
+            <param name="position">The position of the light.</param>
+            <param name="direction">The direction of the light.</param>
+            <param name="color">The lightcolor.</param>
+            <param name="type">The type.</param>
+            <param name="channel">The memory space of the light(0 - 7).</param>
         </member>
-        <member name="M:Fusee.SceneManagement.RenderMesh.SubmitWork(Fusee.Engine.RenderContext)">
+        <member name="M:Fusee.SceneManagement.RenderSpotLight.SubmitWork(Fusee.Engine.RenderContext)">
             <summary>
-            Overwrites the SubmitWork method of RenderJob class. The mesh will be provided with everything it need's and passed to 
-            RenderContextImplementation. 
+            Passes spotlight's parameters to RenderContext.
             </summary>
-            <param name="renderContext"></param>
+        </member>
+        <member name="T:Fusee.SceneManagement.RenderCamera">
+            <summary>
+            RenderCamera is derived from Renderjob and is responible for passing the Camera towards the RenderContext.
+            </summary>
+        </member>
+        <member name="M:Fusee.SceneManagement.RenderCamera.#ctor(Fusee.Math.float4x4)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.RenderCamera"/> class. Needs the ViewMatrix of a Camera.
+            </summary>
+            <param name="matrix">The matrix that will be the new ViewMatrix.</param>
+        </member>
+        <member name="M:Fusee.SceneManagement.RenderCamera.SubmitWork(Fusee.Engine.RenderContext)">
+            <summary>
+            Sets the ViewMatrix in the RenderContext.
+            </summary>
+            <param name="renderContext">The RenderContext that handles the rendering.</param>
+        </member>
+        <member name="T:Fusee.SceneManagement.RenderPointLight">
+            <summary>
+            RenderPointLight is derived from Renderjob and is responible for passing the PointLight towards the RenderContext.
+            </summary>
+        </member>
+        <member name="M:Fusee.SceneManagement.RenderPointLight.#ctor(Fusee.Math.float3,Fusee.Math.float4,Fusee.SceneManagement.Light.LightType,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.RenderPointLight"/> class. Position, color, type and channel are needed.
+            </summary>
+            <param name="position">The position of the light.</param>
+            <param name="color">The color of the light (Red, Green, Blue, Alpha).</param>
+            <param name="type">The light type.</param>
+            <param name="channel">The memory space of the light(0 - 7).</param>
+        </member>
+        <member name="M:Fusee.SceneManagement.RenderPointLight.SubmitWork(Fusee.Engine.RenderContext)">
+            <summary>
+             Passes pointlight's parameters to RenderContext. 
+            </summary>
+        </member>
+        <member name="T:Fusee.SceneManagement.SceneVisitorSearch">
+            <summary>
+            Derivate of SceneVisitor, used to search for SceneEntities or Components in the scene.
+            </summary>
+        </member>
+        <member name="F:Fusee.SceneManagement.SceneVisitorSearch._name">
+            <summary>
+            The _name that will be searched for.
+            </summary>
+        </member>
+        <member name="F:Fusee.SceneManagement.SceneVisitorSearch._searchresult">
+            <summary>
+            The _searchresult: If a result is found returns this as reference, else null
+            </summary>
+        </member>
+        <member name="M:Fusee.SceneManagement.SceneVisitorSearch.Visit(Fusee.SceneManagement.SceneEntity)">
+            <summary>
+            Visits the specified scene entity to check its name and set _searchresult as reference if the name matches.
+            </summary>
+            <param name="sceneEntity">The scene entity.</param>
+        </member>
+        <member name="M:Fusee.SceneManagement.SceneVisitorSearch.FindSceneEntity(System.Collections.Generic.List{Fusee.SceneManagement.SceneEntity},System.String)">
+            <summary>
+            Finds a scene entity by name.
+            </summary>
+            <param name="sceneEntities">The list of scene entities from SceneManager that will be visited.</param>
+            <param name="name">The searched name of a SceneEntity.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Fusee.SceneManagement.RenderDirectionalLight">
+            <summary>
+            RednerDirectionalLight is derived from Renderjob and is responible for passing the DirectionalLight towards the RenderContext.
+            </summary>
+        </member>
+        <member name="M:Fusee.SceneManagement.RenderDirectionalLight.#ctor(Fusee.Math.float3,Fusee.Math.float4,Fusee.SceneManagement.Light.LightType,System.Int32)">
+            <summary>
+            Creates a RenderDirectionalLight needed parameters:( float3, float4, Light.Lighttype, int).
+            </summary>
+            <param name="direction">Direction of the light.</param>
+            <param name="color">Color of the light "Red Green Blue Alpha"</param>
+            <param name="type">The light type.</param>
+            <param name="channel">The memory space of the light(0 - 7).</param>
+        </member>
+        <member name="M:Fusee.SceneManagement.RenderDirectionalLight.SubmitWork(Fusee.Engine.RenderContext)">
+            <summary>
+             Passes directionallight's parameters to RenderContext.
+            </summary>
+        </member>
+        <member name="T:Fusee.SceneManagement.Properties.Resources">
+            <summary>
+              Eine stark typisierte Ressourcenklasse zum Suchen von lokalisierten Zeichenfolgen usw.
+            </summary>
+        </member>
+        <member name="P:Fusee.SceneManagement.Properties.Resources.ResourceManager">
+            <summary>
+              Gibt die zwischengespeicherte ResourceManager-Instanz zurück, die von dieser Klasse verwendet wird.
+            </summary>
+        </member>
+        <member name="P:Fusee.SceneManagement.Properties.Resources.Culture">
+            <summary>
+              Überschreibt die CurrentUICulture-Eigenschaft des aktuellen Threads für alle
+              Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
+            </summary>
+        </member>
+        <member name="T:Fusee.SceneManagement.DirectionalLight">
+            <summary>
+            This class is derived from Light and set's a Directionallight in the scene.
+            A direction, a color and the position of the lightsource is needed.
+            </summary>
+        </member>
+        <member name="M:Fusee.SceneManagement.DirectionalLight.#ctor(Fusee.Math.float3,Fusee.Math.float4,Fusee.Math.float3,System.Int32)">
+            <summary>
+            Creates a directional light in the scene. Direction, color, position, and channel is needed.
+            It is possible to set up to 8 lights in the scene.
+            </summary>
+            <param name="direction">Direction of the light.</param>
+            <param name="color">The color of the light.</param>
+            <param name="position">The position in the scene.</param>
+            <param name="channel">The memory space of the light.(0 - 7)</param>
+        </member>
+        <member name="M:Fusee.SceneManagement.DirectionalLight.#ctor(System.Int32)">
+            <summary>
+            Creates a directional light in the scene. Direction, color and position will get standart values.
+            Channel is needed. It is possible to set up to 8 lights in the scene.
+            </summary>
+            <param name="channel">The memory space of the light(0 - 7).</param>
+        </member>
+        <member name="M:Fusee.SceneManagement.DirectionalLight.TraverseForRendering(Fusee.SceneManagement.SceneVisitorRendering)">
+            <summary>
+            TraverseForRendering add's Directionallight to the lightqueue.
+            </summary>
+        </member>
+        <member name="T:Fusee.SceneManagement.Transformation">
+            <summary>
+            Transformation is derived from Component and stores all positions, angles and movement of all SceneEntitys. 
+            </summary>
+        </member>
+        <member name="M:Fusee.SceneManagement.Transformation.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.Transformation"/> class. No SceneEntity will be set.
+            </summary>
+        </member>
+        <member name="M:Fusee.SceneManagement.Transformation.#ctor(Fusee.SceneManagement.SceneEntity)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.Transformation"/> class. Sets a SceneEntity for Transform.
+            </summary>
+            <param name="entity">The SceneEntity that will be set to in Transform.</param>
+        </member>
+        <member name="P:Fusee.SceneManagement.Transformation.Matrix">
+            <summary>
+            Gets or sets the float4x4 transformMatrix.
+            </summary>
+        </member>
+        <member name="P:Fusee.SceneManagement.Transformation.LocalPosition">
+            <summary>
+            Gets or sets the float3 LocalPosition.
+            </summary>
+        </member>
+        <member name="P:Fusee.SceneManagement.Transformation.LocalScale">
+            <summary>
+            Gets or sets the float3 LocalScale.
+            </summary>
+        </member>
+        <member name="P:Fusee.SceneManagement.Transformation.LocalQuaternion">
+            <summary>
+            Gets or sets the Quaternion LocalQuaternion.
+            </summary>
+        </member>
+        <member name="P:Fusee.SceneManagement.Transformation.LocalEulerAngles">
+            <summary>
+            Gets or sets the float3 LocalEulerAngles.
+            </summary>
         </member>
         <member name="T:Fusee.SceneManagement.SceneManager">
             <summary>
@@ -876,6 +850,32 @@
             <value>
             The RenderContext.
             </value>
+        </member>
+        <member name="T:Fusee.SceneManagement.PointLight">
+            <summary>
+            This class is derived from Light and set's a Pointlight in the scene.
+            A color and the position of the lightsource are needed.
+            </summary>
+        </member>
+        <member name="M:Fusee.SceneManagement.PointLight.#ctor(Fusee.Math.float3,Fusee.Math.float4,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.PointLight"/> class. Position, color and channel are needet.
+            </summary>
+            <param name="position">The position of the pointlight.</param>
+            <param name="color">The color of the pointlight.</param>
+            <param name="channel">The memory space of the light(0 - 7).</param>
+        </member>
+        <member name="M:Fusee.SceneManagement.PointLight.#ctor(System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Fusee.SceneManagement.PointLight"/> class. Only the channel is needed. Other params
+            will be set to default value. 
+            </summary>
+            <param name="channel">The memory space of the light(0 - 7).</param>
+        </member>
+        <member name="M:Fusee.SceneManagement.PointLight.TraverseForRendering(Fusee.SceneManagement.SceneVisitorRendering)">
+            <summary>
+            TraverseForRendering add's Pointlight to the lightqueue.
+            </summary>
         </member>
     </members>
 </doc>

@@ -30,14 +30,14 @@ namespace Fusee.Engine
         /// </value>
         public bool VerticesSet { get { return (_meshImp!= null) && _meshImp.VerticesSet; } }
 
-        private uint[] _colors;
+        private float4[] _colors;
         /// <summary>
         /// Gets or sets the color of a single vertex.
         /// </summary>
         /// <value>
         /// The color.
         /// </value>
-        public uint[] Colors
+        public float4[] Colors
         {
             get { return _colors; }
             set { if (_meshImp != null) _meshImp.InvalidateColors(); _colors = value; }

@@ -885,7 +885,7 @@ namespace Fusee.Engine
         public ShaderProgram CreateShader(string vs, string ps)
         {
             ShaderProgram sp = new ShaderProgram(_rci, _rci.CreateShader(vs, ps));
-            sp._spi = _rci.CreateShader(vs, ps);
+            //sp._spi = _rci.CreateShader(vs, ps);
             /*
 sp.ShaderParamHandlesImp = new ShaderParamHandleImp[MatrixParamNames.Length];
 for (int i=0; i < MatrixParamNames.Length; i++)
@@ -1081,7 +1081,9 @@ sp.ShaderParamHandlesImp[i] = _rci.GetShaderParamHandle(sp.Spi, MatrixParamNames
             if (m.Colors != null && m.Colors.Length != 0 && !m.ColorsSet)
                 _rci.SetColors(m._meshImp, m.Colors);
 
-            if (m.UVs != null && m.UVs.Length != 0 && !m.NormalsSet)
+            //Fabian benachrichtigen Fehler if (m.UVs != null && m.UVs.Length != 0 && !m.NormalsSet)
+
+            if (m.UVs != null && m.UVs.Length != 0 && !m.UVsSet)
                 _rci.SetUVs(m._meshImp, m.UVs);
 
             if (m.Normals != null && m.Normals.Length != 0 && !m.NormalsSet)

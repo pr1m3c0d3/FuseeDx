@@ -1,5 +1,5 @@
 ﻿using System.IO;
-
+using System.Windows.Forms;
 using Fusee.Engine;
 using Fusee.Math;
 
@@ -11,54 +11,106 @@ namespace Examples.DreieckDx11
         public override void Init()
         {
             // is called on startup
-            string Vs = "";
-            string Ps = "";
+            string Vs = @"struct VS_IN
+                    {
+	                    float4 pos : POSITION;
+	                    float4 col : COLOR;
+                    };
+                    struct PS_IN
+                    {
+	                    float4 pos : SV_POSITION;
+	                    float4 col : COLOR;
+                    };
+
+                    PS_IN VS( VS_IN input )
+                    {
+	                    PS_IN output = (PS_IN)0;
+	
+	                    output.pos = input.pos;
+	                    output.col = input.col;
+	
+	                    return output;
+                    }
+
+                    float4 PS( PS_IN input ) : SV_Target
+                    {
+	                    return input.col;
+                    }";
+            string Ps = @"struct VS_IN
+                    {
+	                    float4 pos : POSITION;
+	                    float4 col : COLOR;
+                    };
+
+                    struct PS_IN
+                    {
+	                    float4 pos : SV_POSITION;
+	                    float4 col : COLOR;
+                    };
+
+                    PS_IN VS( VS_IN input )
+                    {
+	                    PS_IN output = (PS_IN)0;
+	
+	                    output.pos = input.pos;
+	                    output.col = input.col;
+	
+	                    return output;
+                    }
+
+                    float4 PS( PS_IN input ) : SV_Target
+                    {
+	                    return input.col;
+                    }";
             ShaderProgram sp = RC.CreateShader(Vs, Ps);
             RC.SetShader(sp);
 
             _myMesh = new Mesh();
-            var myVertices = new float3[4];
+            var myVertices = new float3[]
+            {
+                new float3(0.0f, 0.5f, 0.5f),
+                new float3(0.5f, 0.0f, 0.5f),
+                new float3(-0.5f, 0.0f, 0.5f),
+                new float3(0.0f, -0.5f, 0.5f)
+            };
 
-            myVertices[0] = new float3(-50f, 0, -1 / 3);
-            myVertices[1] = new float3(50f, 0, -2 / 3);
-            myVertices[2] = new float3(0, 0, +4 / 3 * 2);
-            myVertices[3] = new float3(0, 3, 0);
+            //myVertices[0] = new float3(0.0f, 0.5f, 0.5f);
+            //myVertices[1] = new float3(0.5f, -0.5f, 0.5f);
+            //myVertices[2] = new float3(-0.5f, -0.5f, 0.5f);
+            //myVertices[3] = new float3(-0.5f, -2.5f, 0.5f);
 
-            var myNormals = new float3[4];
-            myNormals[0] = new float3(-1, 0, -1);
-            myNormals[1] = new float3(1, 0, -1);
-            myNormals[2] = new float3(0, 0, +1);
-            myNormals[3] = new float3(0, +1, 0);
+            var myColors = new float4[4];
+            myColors[0] = new float4(1.0f, 0.0f, 0.0f,1.0f);
+            myColors[1] = new float4(0.0f, 1.0f, 0.0f, 1.0f);
+            myColors[2] = new float4(0.0f, 0.0f, 1.0f, 1.0f);
+            myColors[3] = new float4(1.0f, 1.0f, 1.0f, 1.0f);
 
-            var myTriangles = new short[12];
-
-            myTriangles[0] = 0;
-            myTriangles[1] = 1;
-            myTriangles[2] = 2;
-
-            myTriangles[3] = 2;
-            myTriangles[4] = 1;
-            myTriangles[5] = 3;
-
-            myTriangles[6] = 1;
-            myTriangles[7] = 0;
-            myTriangles[8] = 3;
-
-            myTriangles[9] = 0;
-            myTriangles[10] = 2;
-            myTriangles[11] = 3;
-
+            var triangles = new short[]
+                {
+                    0,
+                    1,
+                    2,
+                    1,
+                    3,
+                    2
+                };
+           
             _myMesh.Vertices = myVertices;
-            _myMesh.Normals = myNormals;
-            _myMesh.Triangles = myTriangles;
+            _myMesh.Colors = myColors;
+            _myMesh.Triangles = triangles;
+            //RC.ClearColor = new float4(1,1,1,1);
         }
 
         public override void RenderAFrame()
         {
             // is called once a frame
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            RC.Render(_myMesh);
-
+            if (_myMesh != null) RC.Render(_myMesh);
+            else
+            {
+                MessageBox.Show("myMesh is null");
+                
+            }
             Present();
         }
 

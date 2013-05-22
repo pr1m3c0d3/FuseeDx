@@ -4,384 +4,37 @@
         <name>Fusee.Engine.Core</name>
     </assembly>
     <members>
-        <member name="T:Fusee.Engine.Time">
-             <summary>
-             The Time class provides all time information. It is accessible from everywhere.
-             
-             E.g. : int smoothedFramerate;
-            
-                    smoothedFramerate = Time.Instance.FramePerSecondSmooth. 
-             
-                    Time.Instance.TimeFlow = 2;                             
-             </summary>
-        </member>
-        <member name="P:Fusee.Engine.Time.FramePerSecondSmooth">
+        <member name="M:Fusee.Engine.MeshReader.Double_Parse(System.String)">
             <summary>
-            Provides the average framerate of the last second (read only).
+            Replacement for double.Parse(s, [InvariantCulture])
+            Hack needed for JSIL.
             </summary>
+            <param name="s">string to parse</param>
+            <returns>A double nuber</returns>
         </member>
-        <member name="P:Fusee.Engine.Time.RealTimeSinceStart">
+        <member name="M:Fusee.Engine.MeshReader.ReadWavefrontObj(System.IO.TextReader)">
             <summary>
-            Provides the passed time since start of the application uneffected by TimeFlow (read only).
+            Parses the contents of the TextReader object passed to the method and tries to 
+            interpret the contents as a <a href="http://en.wikipedia.org/wiki/Wavefront_.obj_file">Wavefront obj</a> file.
+            Creates a Mesh object from the contents.
             </summary>
+            <param name="tr">The initialized TextReader (can be either a StreamReader or a StringReader)</param>
+            <returns>The newly created Mesh object</returns>
         </member>
-        <member name="P:Fusee.Engine.Time.FramePerSecond">
+        <member name="M:Fusee.Engine.MeshReader.LoadMesh(System.String)">
             <summary>
-            Provides the peek framerate, updated every frame (read only).
+            This method loads an object file and returns it as a mesh.
             </summary>
+            <param name="path">Path to the object to load</param>
+            <returns>The newly created Mesh object</returns>
         </member>
-        <member name="P:Fusee.Engine.Time.Frames">
+        <member name="M:Fusee.Engine.MeshReader.FilteredSplit(System.String,System.Char[])">
             <summary>
-            Provides the total number of rendered frames (read only).
+            This method is used to split string in a list of strings based on the separator passed to the method.
             </summary>
-        </member>
-        <member name="P:Fusee.Engine.Time.DeltaTime">
-            <summary>
-            Provides the DeltaTime that is effected by the TimeFlow (read only).
-            </summary>
-        </member>
-        <member name="P:Fusee.Engine.Time.RealDeltaTime">
-            <summary>
-            Provides the DeltaTime that is uneffected by the TimeFlow (read only).
-            </summary>
-        </member>
-        <member name="P:Fusee.Engine.Time.TimeSinceStart">
-            <summary>
-            Provides the passed time since start of the application effected by TimeFlow (read only).
-            </summary>
-        </member>
-        <member name="P:Fusee.Engine.Time.TimeFlow">
-            <summary>
-            The timeFlow modifies the speed of the time.
-            
-            0 the time stops.
-            1 normal time speed.
-            Smaller then 1 time passes slower. 
-            Bigger then 1 time passes faster.
-            </summary>
-        </member>
-        <member name="P:Fusee.Engine.Time.Instance">
-            <summary>
-            Provides the Instance of the Time Class.
-            </summary>
-        </member>
-        <member name="T:Fusee.Engine.Geometry">
-            <summary>
-            Stores threedimensional, polygonal geometry and provides methods for manipulation.
-            To actually render the geometry in the engine, convert Geometry to <see cref="T:Fusee.Engine.Mesh"/> objects.
-            </summary>
-        </member>
-        <member name="M:Fusee.Engine.Geometry.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Fusee.Engine.Geometry"/> class.
-            </summary>
-        </member>
-        <member name="M:Fusee.Engine.Geometry.AddVertex(Fusee.Math.double3)">
-            <summary>
-            Adds a vertex.
-            </summary>
-            <param name="v">A 3D vector.</param>
+            <param name="strIn"></param>
+            <param name="separator"></param>
             <returns></returns>
-        </member>
-        <member name="M:Fusee.Engine.Geometry.AddTexCoord(Fusee.Math.double2)">
-            <summary>
-            Adds the texture coordinates.
-            </summary>
-            <param name="uv">Texture coordinate</param>
-            <returns></returns>
-        </member>
-        <member name="M:Fusee.Engine.Geometry.AddNormal(Fusee.Math.double3)">
-            <summary>
-            Adds the normal.
-            </summary>
-            <param name="normal">The normal.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Fusee.Engine.Geometry.AddFace(System.Int32[],System.Int32[],System.Int32[])">
-            <summary>
-            Adds the face.
-            </summary>
-            <param name="vertInx">The vert inx.</param>
-            <param name="texCoordInx">The tex coord inx.</param>
-            <param name="normalInx">The normal inx.</param>
-            <returns></returns>
-            <exception cref="T:System.ArgumentNullException">vertInx</exception>
-            <exception cref="T:System.ArgumentException">
-            "Vertex index out of range: vertInx[i]"
-            or
-            "Number of texture coordinate indices must match number of vertex indices"
-            or
-            "Texture coordinate index out of range: texCoordInx[i]"
-            or
-            "Number of normal indices must match number of vertex indices"
-            or
-            "Normal index out of range: normalInx[i]"
-            </exception>
-        </member>
-        <member name="M:Fusee.Engine.Geometry.GetAllFacesContainingVertex(System.Int32,System.Collections.Generic.IList{System.Int32}@)">
-            <summary>
-            Gets all faces containing vertex.
-            </summary>
-            <param name="iV">The i V.</param>
-            <param name="vertInFace">The vert in face.</param>
-            <returns></returns>
-        </member>
-        <member name="M:Fusee.Engine.Geometry.CalcFaceNormal(Fusee.Engine.Geometry.Face)">
-            <summary>
-            Calcs the face normal.
-            </summary>
-            <param name="f">The face.</param>
-            <returns>The nomal vectorfor the face.</returns>
-            <exception cref="T:System.Exception">"Cannot calculate normal of degenerate face with only  + f.InxVert.Length +  vertices."</exception>
-        </member>
-        <member name="M:Fusee.Engine.Geometry.CreateNormals(System.Double)">
-            <summary>
-            Creates the normals.
-            </summary>
-            <param name="smoothingAngle">The smoothing angle.</param>
-        </member>
-        <member name="M:Fusee.Engine.Geometry.ToMesh">
-            <summary>
-            Converts the whole geomentry to a <see cref="T:Fusee.Engine.Mesh"/>.
-            </summary>
-            <returns><see cref="T:Fusee.Engine.Mesh"/></returns>
-        </member>
-        <member name="P:Fusee.Engine.Geometry.Vertices">
-            <summary>
-            The list of vertices (3D positions).
-            </summary>
-            <value>
-            The vertices.
-            </value>
-        </member>
-        <member name="P:Fusee.Engine.Geometry.Normals">
-            <summary>
-            Gets or sets the normals.
-            </summary>
-            <value>
-            The normals.
-            </value>
-        </member>
-        <member name="P:Fusee.Engine.Geometry.TexCoords">
-            <summary>
-            Gets or sets the texture coordinates.
-            </summary>
-            <value>
-            The texture coordinates.
-            </value>
-        </member>
-        <member name="P:Fusee.Engine.Geometry.Faces">
-            <summary>
-            Gets or sets the faces.
-            </summary>
-            <value>
-            The faces.
-            </value>
-        </member>
-        <member name="P:Fusee.Engine.Geometry.HasNormals">
-            <summary>
-            Gets a value indicating whether this instance has normals.
-            </summary>
-            <value>
-            <c>true</c> if this instance has normals; otherwise, <c>false</c>.
-            </value>
-        </member>
-        <member name="P:Fusee.Engine.Geometry.HasTexCoords">
-            <summary>
-            Gets a value indicating whether this instance has tex coords.
-            </summary>
-            <value>
-            <c>true</c> if this instance has texture coordinates; otherwise, <c>false</c>.
-            </value>
-        </member>
-        <member name="T:Fusee.Engine.Geometry.Face">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="F:Fusee.Engine.Geometry.Face.InxVert">
-            <summary>
-            The inx vert
-            </summary>
-        </member>
-        <member name="F:Fusee.Engine.Geometry.Face.InxNormal">
-            <summary>
-            The inx normal
-            </summary>
-        </member>
-        <member name="F:Fusee.Engine.Geometry.Face.InxTexCoord">
-            <summary>
-            The inx tex coord
-            </summary>
-        </member>
-        <member name="T:Fusee.Engine.Geometry.TripleInx">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="F:Fusee.Engine.Geometry.TripleInx.iV">
-            <summary>
-            The i V
-            </summary>
-        </member>
-        <member name="F:Fusee.Engine.Geometry.TripleInx.iT">
-            <summary>
-            The i V
-            </summary>
-        </member>
-        <member name="F:Fusee.Engine.Geometry.TripleInx.iN">
-            <summary>
-            The i V
-            </summary>
-        </member>
-        <member name="M:Fusee.Engine.Geometry.TripleInx.GetHashCode">
-            <summary>
-            Returns a hash code for this instance.
-            </summary>
-            <returns>
-            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-            </returns>
-        </member>
-        <member name="T:Fusee.Engine.Mesh">
-            <summary>
-            Provides the abillity to create or interact directly with the point data.
-            </summary>
-            <remarks>For an example how you can use it, see <see cref="T:Fusee.Engine.Cube"/>.</remarks>
-        </member>
-        <member name="P:Fusee.Engine.Mesh.Vertices">
-            <summary>
-            Gets or sets the vertices.
-            </summary>
-            <value>
-            The vertices.
-            </value>
-        </member>
-        <member name="P:Fusee.Engine.Mesh.VerticesSet">
-            <summary>
-            Gets a value indicating whether vertices are set.
-            </summary>
-            <value>
-              <c>true</c> if vertices are set; otherwise, <c>false</c>.
-            </value>
-        </member>
-        <member name="P:Fusee.Engine.Mesh.Colors">
-            <summary>
-            Gets or sets the color of a single vertex.
-            </summary>
-            <value>
-            The color.
-            </value>
-        </member>
-        <member name="P:Fusee.Engine.Mesh.ColorsSet">
-            <summary>
-            Gets a value indicating whether a color is set.
-            </summary>
-            <value>
-              <c>true</c> if a colore is set; otherwise, <c>false</c>.
-            </value>
-        </member>
-        <member name="P:Fusee.Engine.Mesh.Normals">
-            <summary>
-            Gets or sets the normals.
-            </summary>
-            <value>
-            The normals..
-            </value>
-        </member>
-        <member name="P:Fusee.Engine.Mesh.NormalsSet">
-            <summary>
-            Gets a value indicating whether normals are set.
-            </summary>
-            <value>
-              <c>true</c> if normals are set; otherwise, <c>false</c>.
-            </value>
-        </member>
-        <member name="P:Fusee.Engine.Mesh.UVs">
-            <summary>
-            Gets or sets the UV-coordinates.
-            </summary>
-            <value>
-            The UV-coordinates.
-            </value>
-        </member>
-        <member name="P:Fusee.Engine.Mesh.UVsSet">
-            <summary>
-            Gets a value indicating whether UVs are set.
-            </summary>
-            <value>
-              <c>true</c> if UVs are set; otherwise, <c>false</c>.
-            </value>
-        </member>
-        <member name="P:Fusee.Engine.Mesh.Triangles">
-            <summary>
-            Gets or sets the triangles.
-            </summary>
-            <value>
-            The triangles.
-            </value>
-        </member>
-        <member name="P:Fusee.Engine.Mesh.TrianglesSet">
-            <summary>
-            Gets a value indicating whether triangles are set.
-            </summary>
-            <value>
-              <c>true</c> if triangles are set; otherwise, <c>false</c>.
-            </value>
-        </member>
-        <member name="T:Fusee.Engine.Audio">
-             <summary>
-             The Audio class provides all audio functionality. It is accessible from everywhere.
-             
-             Supported file formats are: mp3, ogg, wav, flac, aiff, au, raw, paf, svx, nist, voc,
-             ircam, w64, mat4, mat5 pvf, htk, sds, avr, sd2, caf, wve, mpc2k, rf64
-             
-             Audio can be either buffered completely or be played as a stream.
-             
-             E.g. : IAudioStream myAudio1;
-            
-                    myAudio1 = Audio.Instance.LoadFile("Assets/Music.ogg"). 
-             
-                    myAudio1.play();                            
-             </summary>
-        </member>
-        <member name="M:Fusee.Engine.Audio.LoadFile(System.String,System.Boolean)">
-            <summary>
-            Loads an audiofile.
-            </summary>
-            <param name="fileName">Path to the file.</param>
-            <param name="streaming"><c>true</c> if the audiofile shall be streamed; otherwise, <c>false</c>.</param>
-            <returns>The audiofile as an <see cref="T:Fusee.Engine.IAudioStream"/></returns>
-        </member>
-        <member name="M:Fusee.Engine.Audio.Stop">
-            <summary>
-            Stops all <see cref="T:Fusee.Engine.IAudioStream"/>s.
-            </summary>
-        </member>
-        <member name="M:Fusee.Engine.Audio.SetVolume(System.Single)">
-            <summary>
-            Sets the main volume (0 to 100)
-            </summary>
-            <param name="val">The value</param>
-        </member>
-        <member name="M:Fusee.Engine.Audio.GetVolume">
-            <summary>
-            Gets the main volume.
-            </summary>
-            <returns>The main value (0 to 100)</returns>
-        </member>
-        <member name="M:Fusee.Engine.Audio.SetPanning(System.Single)">
-            <summary>
-            Sets the panning of all <see cref="T:Fusee.Engine.IAudioStream"/>s (-100 to +100)
-            </summary>
-            <param name="val">The value</param>
-        </member>
-        <member name="P:Fusee.Engine.Audio.Instance">
-            <summary>
-            Provides the Instance of the Audio Class.
-            </summary>
-            <value>
-            The instance.
-            </value>
         </member>
         <member name="T:Fusee.Engine.RenderContext">
             <summary>
@@ -872,6 +525,395 @@
             This is the depth (z-) value that will be copied to all pixels in the depth (z-) buffer when Clear is called on the render context.
             </remarks>
         </member>
+        <member name="T:Fusee.Engine.Geometry">
+            <summary>
+            Stores threedimensional, polygonal geometry and provides methods for manipulation.
+            To actually render the geometry in the engine, convert Geometry to <see cref="T:Fusee.Engine.Mesh"/> objects.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.Geometry.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Fusee.Engine.Geometry"/> class.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.Geometry.AddVertex(Fusee.Math.double3)">
+            <summary>
+            Adds a vertex.
+            </summary>
+            <param name="v">A 3D vector.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Fusee.Engine.Geometry.AddTexCoord(Fusee.Math.double2)">
+            <summary>
+            Adds the texture coordinates.
+            </summary>
+            <param name="uv">Texture coordinate</param>
+            <returns></returns>
+        </member>
+        <member name="M:Fusee.Engine.Geometry.AddNormal(Fusee.Math.double3)">
+            <summary>
+            Adds the normal.
+            </summary>
+            <param name="normal">The normal.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Fusee.Engine.Geometry.AddFace(System.Int32[],System.Int32[],System.Int32[])">
+            <summary>
+            Adds the face.
+            </summary>
+            <param name="vertInx">The vert inx.</param>
+            <param name="texCoordInx">The tex coord inx.</param>
+            <param name="normalInx">The normal inx.</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException">vertInx</exception>
+            <exception cref="T:System.ArgumentException">
+            "Vertex index out of range: vertInx[i]"
+            or
+            "Number of texture coordinate indices must match number of vertex indices"
+            or
+            "Texture coordinate index out of range: texCoordInx[i]"
+            or
+            "Number of normal indices must match number of vertex indices"
+            or
+            "Normal index out of range: normalInx[i]"
+            </exception>
+        </member>
+        <member name="M:Fusee.Engine.Geometry.GetAllFacesContainingVertex(System.Int32,System.Collections.Generic.IList{System.Int32}@)">
+            <summary>
+            Gets all faces containing vertex.
+            </summary>
+            <param name="iV">The i V.</param>
+            <param name="vertInFace">The vert in face.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Fusee.Engine.Geometry.CalcFaceNormal(Fusee.Engine.Geometry.Face)">
+            <summary>
+            Calcs the face normal.
+            </summary>
+            <param name="f">The face.</param>
+            <returns>The nomal vectorfor the face.</returns>
+            <exception cref="T:System.Exception">"Cannot calculate normal of degenerate face with only  + f.InxVert.Length +  vertices."</exception>
+        </member>
+        <member name="M:Fusee.Engine.Geometry.CreateNormals(System.Double)">
+            <summary>
+            Creates the normals.
+            </summary>
+            <param name="smoothingAngle">The smoothing angle.</param>
+        </member>
+        <member name="M:Fusee.Engine.Geometry.ToMesh">
+            <summary>
+            Converts the whole geomentry to a <see cref="T:Fusee.Engine.Mesh"/>.
+            </summary>
+            <returns><see cref="T:Fusee.Engine.Mesh"/></returns>
+        </member>
+        <member name="P:Fusee.Engine.Geometry.Vertices">
+            <summary>
+            The list of vertices (3D positions).
+            </summary>
+            <value>
+            The vertices.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Geometry.Normals">
+            <summary>
+            Gets or sets the normals.
+            </summary>
+            <value>
+            The normals.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Geometry.TexCoords">
+            <summary>
+            Gets or sets the texture coordinates.
+            </summary>
+            <value>
+            The texture coordinates.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Geometry.Faces">
+            <summary>
+            Gets or sets the faces.
+            </summary>
+            <value>
+            The faces.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Geometry.HasNormals">
+            <summary>
+            Gets a value indicating whether this instance has normals.
+            </summary>
+            <value>
+            <c>true</c> if this instance has normals; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Geometry.HasTexCoords">
+            <summary>
+            Gets a value indicating whether this instance has tex coords.
+            </summary>
+            <value>
+            <c>true</c> if this instance has texture coordinates; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="T:Fusee.Engine.Geometry.Face">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Geometry.Face.InxVert">
+            <summary>
+            The inx vert
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Geometry.Face.InxNormal">
+            <summary>
+            The inx normal
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Geometry.Face.InxTexCoord">
+            <summary>
+            The inx tex coord
+            </summary>
+        </member>
+        <member name="T:Fusee.Engine.Geometry.TripleInx">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Geometry.TripleInx.iV">
+            <summary>
+            The i V
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Geometry.TripleInx.iT">
+            <summary>
+            The i V
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Geometry.TripleInx.iN">
+            <summary>
+            The i V
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.Geometry.TripleInx.GetHashCode">
+            <summary>
+            Returns a hash code for this instance.
+            </summary>
+            <returns>
+            A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
+            </returns>
+        </member>
+        <member name="T:Fusee.Engine.Audio">
+             <summary>
+             The Audio class provides all audio functionality. It is accessible from everywhere.
+             
+             Supported file formats are: mp3, ogg, wav, flac, aiff, au, raw, paf, svx, nist, voc,
+             ircam, w64, mat4, mat5 pvf, htk, sds, avr, sd2, caf, wve, mpc2k, rf64
+             
+             Audio can be either buffered completely or be played as a stream.
+             
+             E.g. : IAudioStream myAudio1;
+            
+                    myAudio1 = Audio.Instance.LoadFile("Assets/Music.ogg"). 
+             
+                    myAudio1.play();                            
+             </summary>
+        </member>
+        <member name="M:Fusee.Engine.Audio.LoadFile(System.String,System.Boolean)">
+            <summary>
+            Loads an audiofile.
+            </summary>
+            <param name="fileName">Path to the file.</param>
+            <param name="streaming"><c>true</c> if the audiofile shall be streamed; otherwise, <c>false</c>.</param>
+            <returns>The audiofile as an <see cref="T:Fusee.Engine.IAudioStream"/></returns>
+        </member>
+        <member name="M:Fusee.Engine.Audio.Stop">
+            <summary>
+            Stops all <see cref="T:Fusee.Engine.IAudioStream"/>s.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.Audio.SetVolume(System.Single)">
+            <summary>
+            Sets the main volume (0 to 100)
+            </summary>
+            <param name="val">The value</param>
+        </member>
+        <member name="M:Fusee.Engine.Audio.GetVolume">
+            <summary>
+            Gets the main volume.
+            </summary>
+            <returns>The main value (0 to 100)</returns>
+        </member>
+        <member name="M:Fusee.Engine.Audio.SetPanning(System.Single)">
+            <summary>
+            Sets the panning of all <see cref="T:Fusee.Engine.IAudioStream"/>s (-100 to +100)
+            </summary>
+            <param name="val">The value</param>
+        </member>
+        <member name="P:Fusee.Engine.Audio.Instance">
+            <summary>
+            Provides the Instance of the Audio Class.
+            </summary>
+            <value>
+            The instance.
+            </value>
+        </member>
+        <member name="T:Fusee.Engine.Cube">
+            <summary>
+            Creates a simple cube geomentry straight from the code.
+            </summary>
+        </member>
+        <member name="T:Fusee.Engine.Mesh">
+            <summary>
+            Provides the abillity to create or interact directly with the point data.
+            </summary>
+            <remarks>For an example how you can use it, see <see cref="T:Fusee.Engine.Cube"/>.</remarks>
+        </member>
+        <member name="P:Fusee.Engine.Mesh.Vertices">
+            <summary>
+            Gets or sets the vertices.
+            </summary>
+            <value>
+            The vertices.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Mesh.VerticesSet">
+            <summary>
+            Gets a value indicating whether vertices are set.
+            </summary>
+            <value>
+              <c>true</c> if vertices are set; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Mesh.Colors">
+            <summary>
+            Gets or sets the color of a single vertex.
+            </summary>
+            <value>
+            The color.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Mesh.ColorsSet">
+            <summary>
+            Gets a value indicating whether a color is set.
+            </summary>
+            <value>
+              <c>true</c> if a colore is set; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Mesh.Normals">
+            <summary>
+            Gets or sets the normals.
+            </summary>
+            <value>
+            The normals..
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Mesh.NormalsSet">
+            <summary>
+            Gets a value indicating whether normals are set.
+            </summary>
+            <value>
+              <c>true</c> if normals are set; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Mesh.UVs">
+            <summary>
+            Gets or sets the UV-coordinates.
+            </summary>
+            <value>
+            The UV-coordinates.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Mesh.UVsSet">
+            <summary>
+            Gets a value indicating whether UVs are set.
+            </summary>
+            <value>
+              <c>true</c> if UVs are set; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Mesh.Triangles">
+            <summary>
+            Gets or sets the triangles.
+            </summary>
+            <value>
+            The triangles.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.Mesh.TrianglesSet">
+            <summary>
+            Gets a value indicating whether triangles are set.
+            </summary>
+            <value>
+              <c>true</c> if triangles are set; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="M:Fusee.Engine.Cube.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Fusee.Engine.Cube"/> class.
+            </summary>
+        </member>
+        <member name="T:Fusee.Engine.Time">
+             <summary>
+             The Time class provides all time information. It is accessible from everywhere.
+             
+             E.g. : int smoothedFramerate;
+            
+                    smoothedFramerate = Time.Instance.FramePerSecondSmooth. 
+             
+                    Time.Instance.TimeFlow = 2;                             
+             </summary>
+        </member>
+        <member name="P:Fusee.Engine.Time.FramePerSecondSmooth">
+            <summary>
+            Provides the average framerate of the last second (read only).
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.Time.RealTimeSinceStart">
+            <summary>
+            Provides the passed time since start of the application uneffected by TimeFlow (read only).
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.Time.FramePerSecond">
+            <summary>
+            Provides the peek framerate, updated every frame (read only).
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.Time.Frames">
+            <summary>
+            Provides the total number of rendered frames (read only).
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.Time.DeltaTime">
+            <summary>
+            Provides the DeltaTime that is effected by the TimeFlow (read only).
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.Time.RealDeltaTime">
+            <summary>
+            Provides the DeltaTime that is uneffected by the TimeFlow (read only).
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.Time.TimeSinceStart">
+            <summary>
+            Provides the passed time since start of the application effected by TimeFlow (read only).
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.Time.TimeFlow">
+            <summary>
+            The timeFlow modifies the speed of the time.
+            
+            0 the time stops.
+            1 normal time speed.
+            Smaller then 1 time passes slower. 
+            Bigger then 1 time passes faster.
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.Time.Instance">
+            <summary>
+            Provides the Instance of the Time Class.
+            </summary>
+        </member>
         <member name="T:Fusee.Engine.Input">
             <summary>
             The Input class provides takes care of al imputs. It is accessible from everywhere.
@@ -1029,48 +1071,6 @@
             <remarks>
             To measure the elapsed time between two places in code get this value twice and calculate the difference.
             </remarks>
-        </member>
-        <member name="M:Fusee.Engine.MeshReader.Double_Parse(System.String)">
-            <summary>
-            Replacement for double.Parse(s, [InvariantCulture])
-            Hack needed for JSIL.
-            </summary>
-            <param name="s">string to parse</param>
-            <returns>A double nuber</returns>
-        </member>
-        <member name="M:Fusee.Engine.MeshReader.ReadWavefrontObj(System.IO.TextReader)">
-            <summary>
-            Parses the contents of the TextReader object passed to the method and tries to 
-            interpret the contents as a <a href="http://en.wikipedia.org/wiki/Wavefront_.obj_file">Wavefront obj</a> file.
-            Creates a Mesh object from the contents.
-            </summary>
-            <param name="tr">The initialized TextReader (can be either a StreamReader or a StringReader)</param>
-            <returns>The newly created Mesh object</returns>
-        </member>
-        <member name="M:Fusee.Engine.MeshReader.LoadMesh(System.String)">
-            <summary>
-            This method loads an object file and returns it as a mesh.
-            </summary>
-            <param name="path">Path to the object to load</param>
-            <returns>The newly created Mesh object</returns>
-        </member>
-        <member name="M:Fusee.Engine.MeshReader.FilteredSplit(System.String,System.Char[])">
-            <summary>
-            This method is used to split string in a list of strings based on the separator passed to the method.
-            </summary>
-            <param name="strIn"></param>
-            <param name="separator"></param>
-            <returns></returns>
-        </member>
-        <member name="T:Fusee.Engine.Cube">
-            <summary>
-            Creates a simple cube geomentry straight from the code.
-            </summary>
-        </member>
-        <member name="M:Fusee.Engine.Cube.#ctor">
-            <summary>
-            Initializes a new instance of the <see cref="T:Fusee.Engine.Cube"/> class.
-            </summary>
         </member>
     </members>
 </doc>

@@ -63,7 +63,7 @@ namespace Fusee.Engine
 
         void SetUVs(IMeshImp mr, float2[] uvs);
 
-        void SetColors(IMeshImp mr, uint[] colors);
+        void SetColors(IMeshImp mr, float4[] colors);
 
         void SetTriangles(IMeshImp mr, short[] triangleIndices);
 
