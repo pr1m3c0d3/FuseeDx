@@ -43,7 +43,9 @@
 * THE SOFTWARE.
 */
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using SharpDX;
 using SharpDX.D3DCompiler;
 using SharpDX.Direct3D;
@@ -109,6 +111,7 @@ namespace MiniTri
             var pixelShaderByteCode = ShaderBytecode.CompileFromFile("MiniTri.fx", "PS", "ps_4_0", ShaderFlags.None, EffectFlags.None);
             var pixelShader = new PixelShader(device, pixelShaderByteCode);
 
+          
 
 
             //Layout Color
@@ -194,20 +197,63 @@ namespace MiniTri
             cb.G = 0.0f;
             cb.B = 0.0f;
             cb.A = 1.0f;
+         
+
             var data = new DataStream(sizeof(Variables), true, true);
             data.Write(cb);
             data.Position = 0;
             context.UpdateSubresource(new DataBox(data.PositionPointer, 0, 0), getUniform, 0);
             context.PixelShader.SetConstantBuffer(0, getUniform);
 
-            // Main loop
-            RenderLoop.Run(form, () =>
+
+            //var shaderReflection = new ShaderReflection(pixelShaderByteCode);
+            //var shaderDesc = shaderReflection.GetResourceBindingDescription(0);
+
+            ShaderReflection pRefelector = new ShaderReflection(pixelShaderByteCode);
+            ShaderDescription sDesc = pRefelector.Description;
+            List<InputElement> inputElements = new List<InputElement>();
+
+            for (int i = 0; i < sDesc.ConstantBuffers; ++i)
             {
-                context.ClearRenderTargetView(renderView, Color.Black);
-                
-                context.DrawIndexed(3, 0, 0);
-                swapChain.Present(0, PresentFlags.None);
-            });
+                ShaderParameterDescription paramDesc = pRefelector.GetInputParameterDescription(i);
+                ConstantBuffer cbTemp = pRefelector.GetConstantBuffer(i);
+                ConstantBufferDescription cbDEsc     = cbTemp.Description;
+                //cbDEsc.Name Liefert den Namen der Struktur
+               
+
+                for (int j = 0; j < cbDEsc.VariableCount; j++ )
+                {
+                    ShaderReflectionVariable shaderRefVar = cbTemp.GetVariable(j);
+                    ShaderReflectionType shaderRefType = cbTemp.GetVariable(j).GetVariableType();
+                    ShaderTypeDescription shaderRefTypeDesc = shaderRefType.Description;
+                    //shaderRefVar.GetVariableType().GetMemberTypeName(i);
+                    //shaderRefVar.GetVariableType().GetMemberType(i);
+                    MessageBox.Show("cBuffer name " + cbDEsc.Name);
+                    MessageBox.Show("Variable count "+cbDEsc.VariableCount.ToString());
+                    MessageBox.Show("Variable name "+shaderRefVar.Description.Name);
+                    MessageBox.Show("Variable size "+shaderRefVar.Description.Size.ToString());
+                    MessageBox.Show("Position in Bytes " + shaderRefVar.Description.StartOffset.ToString());
+                    MessageBox.Show("Flags " + shaderRefVar.Description.Flags.ToString());
+                    MessageBox.Show("Variable Type" + shaderRefTypeDesc.Type.ToString());
+                    
+                }
+            }
+           
+            for (int i = 0; i < sDesc.OutputParameters; ++i)
+            {
+                ShaderParameterDescription paramDesc = pRefelector.GetOutputParameterDescription(i);
+                //MessageBox.Show(paramDescC);
+            }
+            
+
+                // Main loop
+                RenderLoop.Run(form, () =>
+                {
+                    context.ClearRenderTargetView(renderView, Color.Black);
+
+                    context.DrawIndexed(3, 0, 0);
+                    swapChain.Present(0, PresentFlags.None);
+                });
 
             // Release all resources
             vertexShaderByteCode.Dispose();
