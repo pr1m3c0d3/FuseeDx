@@ -26,7 +26,7 @@
 
 cbuffer Variables : register(b0){
  float4 TestFarbe;
- float4 testgwjepgwjpg;
+ /*float4 testgwjepgwjpg;*/
 } 
 struct VS_IN
 {

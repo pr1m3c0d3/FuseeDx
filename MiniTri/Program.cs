@@ -50,7 +50,7 @@ using SharpDX;
 using SharpDX.D3DCompiler;
 using SharpDX.Direct3D;
 using SharpDX.Direct3D11;
-
+using System.Data;
 using SharpDX.DXGI;
 using SharpDX.Windows;
 using Buffer = SharpDX.Direct3D11.Buffer;
@@ -64,31 +64,52 @@ namespace MiniTri
     /// 
 
     [StructLayout(LayoutKind.Sequential)]
-    struct Variables
+    internal struct Variables
     {
         public float R, G, B, A;
+    }
+   [StructLayout(LayoutKind.Sequential)]
+    internal struct SharpDxShaderParamInfo
+    {
+       public PixelShader _ps;
+       public VertexShader _vs;
+       public ShaderBytecode _psByteCode;
+       public ShaderBytecode _vsByteCode;
+       public string _buffername;
+       public int _varCount;
+       public string _varName;
+       public int _varSize;
+       public int _varPositionB;
+       public ShaderVariableFlags _flags;
+       public int _varPositionI;
+       public Buffer _sdxBuffer;
     }
 
     internal static class Program
     {
+        internal static ShaderDescription sDesc;
+        internal static ShaderReflection pRefelector;
+
+
         [STAThread]
         private static unsafe void Main()
         {
+
             var form = new RenderForm("SharpDX - MiniTri Direct3D 11 Sample TEST!!!!!!!!!");
 
             // SwapChain description
             var desc = new SwapChainDescription()
-            {
-                BufferCount = 1,
-                ModeDescription =
-                    new ModeDescription(form.ClientSize.Width, form.ClientSize.Height,
-                                        new Rational(60, 1), Format.R8G8B8A8_UNorm),
-                IsWindowed = true,
-                OutputHandle = form.Handle,
-                SampleDescription = new SampleDescription(1, 0),
-                SwapEffect = SwapEffect.Discard,
-                Usage = Usage.RenderTargetOutput
-            };
+                {
+                    BufferCount = 1,
+                    ModeDescription =
+                        new ModeDescription(form.ClientSize.Width, form.ClientSize.Height,
+                                            new Rational(60, 1), Format.R8G8B8A8_UNorm),
+                    IsWindowed = true,
+                    OutputHandle = form.Handle,
+                    SampleDescription = new SampleDescription(1, 0),
+                    SwapEffect = SwapEffect.Discard,
+                    Usage = Usage.RenderTargetOutput
+                };
 
             // Create Device and SwapChain
             Device device;
@@ -105,13 +126,15 @@ namespace MiniTri
             var renderView = new RenderTargetView(device, backBuffer);
 
             // Compile Vertex and Pixel shaders
-            var vertexShaderByteCode = ShaderBytecode.CompileFromFile("MiniTri.fx", "VS", "vs_4_0", ShaderFlags.None, EffectFlags.None);
+            var vertexShaderByteCode = ShaderBytecode.CompileFromFile("MiniTri.fx", "VS", "vs_4_0", ShaderFlags.None,
+                                                                      EffectFlags.None);
             var vertexShader = new VertexShader(device, vertexShaderByteCode);
 
-            var pixelShaderByteCode = ShaderBytecode.CompileFromFile("MiniTri.fx", "PS", "ps_4_0", ShaderFlags.None, EffectFlags.None);
+            var pixelShaderByteCode = ShaderBytecode.CompileFromFile("MiniTri.fx", "PS", "ps_4_0", ShaderFlags.None,
+                                                                     EffectFlags.None);
             var pixelShader = new PixelShader(device, pixelShaderByteCode);
 
-          
+
 
 
             //Layout Color
@@ -127,27 +150,27 @@ namespace MiniTri
 
             // Instantiate Vertex buiffer from vertex data
             var vertices = Buffer.Create(device, BindFlags.VertexBuffer, new[]
-                                  {
-                                      new Vector3(-0.9f, -0.2f, 0.0f),
-                                      new Vector3(0.0f, 0.5f, 0.5f),
-                                      new Vector3(0.5f, -0.5f, 0.5f), 
-                                      new Vector3(-0.5f, -0.5f, 0.5f)
-                                     
-                                  });
+                {
+                    new Vector3(-0.9f, -0.2f, 0.0f),
+                    new Vector3(0.0f, 0.5f, 0.5f),
+                    new Vector3(0.5f, -0.5f, 0.5f),
+                    new Vector3(-0.5f, -0.5f, 0.5f)
+
+                });
             // Instantiate Vertex buiffer from vertex data
             var verticesColors = Buffer.Create(device, BindFlags.VertexBuffer, new[]
-                                  {
-                                      new Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-                                      new Vector4(1.0f, 0.0f, 0.0f, 1.0f),
-                                      new Vector4(0.0f, 1.0f, 0.0f, 1.0f),
-                                      new Vector4(0.0f, 0.0f, 1.0f, 1.0f)
-                                  });
+                {
+                    new Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+                    new Vector4(1.0f, 0.0f, 0.0f, 1.0f),
+                    new Vector4(0.0f, 1.0f, 0.0f, 1.0f),
+                    new Vector4(0.0f, 0.0f, 1.0f, 1.0f)
+                });
             var triangles = Buffer.Create(device, BindFlags.IndexBuffer, new short[]
-                                  {
-                                      1,
-                                      2,
-                                      3
-                                  });
+                {
+                    1,
+                    2,
+                    3
+                });
 
 
 
@@ -155,12 +178,12 @@ namespace MiniTri
             context.InputAssembler.InputLayout = layout;
             context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
             context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding[]
-            {
-              new VertexBufferBinding(vertices,12, 0),
-              new VertexBufferBinding(verticesColors,16, 0)
-            }
+                {
+                    new VertexBufferBinding(vertices, 12, 0),
+                    new VertexBufferBinding(verticesColors, 16, 0)
+                }
 
-            );
+                );
             context.InputAssembler.SetIndexBuffer(triangles, Format.R16_UInt, 0);
             context.VertexShader.Set(vertexShader);
             context.Rasterizer.SetViewports(new Viewport(0, 0, form.ClientSize.Width, form.ClientSize.Height, 0.0f, 1.0f));
@@ -184,70 +207,131 @@ namespace MiniTri
             //Effect handle = new Effect(device, pixelShaderByteCode, EffectFlags.None);
             //handle.GetVariableByName("TestFarbe").AsVector().Set(Color.Red);
 
-            var getUniform = new Buffer(device, new BufferDescription
-            {
-                Usage = ResourceUsage.Default,
-                SizeInBytes = sizeof(Variables),
-                BindFlags = BindFlags.ConstantBuffer,
-                CpuAccessFlags=0
-            });
+            //var getUniform = new Buffer(device, new BufferDescription
+            //{
+            //    Usage = ResourceUsage.Default,
+            //    SizeInBytes = sizeof(Variables),
+            //    BindFlags = BindFlags.ConstantBuffer,
+            //    CpuAccessFlags=0
+            //});
 
-            var cb = new Variables();
-            cb.R = 1.0f;
-            cb.G = 0.0f;
-            cb.B = 0.0f;
-            cb.A = 1.0f;
-         
+            //var cb = new Variables();
+            //cb.R = 1.0f;
+            //cb.G = 0.0f;
+            //cb.B = 0.0f;
+            //cb.A = 1.0f;
 
-            var data = new DataStream(sizeof(Variables), true, true);
-            data.Write(cb);
-            data.Position = 0;
-            context.UpdateSubresource(new DataBox(data.PositionPointer, 0, 0), getUniform, 0);
-            context.PixelShader.SetConstantBuffer(0, getUniform);
+
+            //var data = new DataStream(sizeof(Variables), true, true);
+            //data.Write(cb);
+            //data.Position = 0;
+            //context.UpdateSubresource(new DataBox(data.PositionPointer, 0, 0), getUniform, 0);
+            //context.PixelShader.SetConstantBuffer(0, getUniform);
 
 
             //var shaderReflection = new ShaderReflection(pixelShaderByteCode);
             //var shaderDesc = shaderReflection.GetResourceBindingDescription(0);
 
-            ShaderReflection pRefelector = new ShaderReflection(pixelShaderByteCode);
-            ShaderDescription sDesc = pRefelector.Description;
-            List<InputElement> inputElements = new List<InputElement>();
+
+            pRefelector = new ShaderReflection(pixelShaderByteCode);
+            sDesc = pRefelector.Description;
+
+            List<SharpDxShaderParamInfo> _sDxShaderParams = new List<SharpDxShaderParamInfo>();
+            Dictionary<string, Buffer> _sDxShaderBuffers = new Dictionary<string, Buffer>();
 
             for (int i = 0; i < sDesc.ConstantBuffers; ++i)
             {
                 ShaderParameterDescription paramDesc = pRefelector.GetInputParameterDescription(i);
                 ConstantBuffer cbTemp = pRefelector.GetConstantBuffer(i);
-                ConstantBufferDescription cbDEsc     = cbTemp.Description;
+                ConstantBufferDescription cbDEsc = cbTemp.Description;
                 //cbDEsc.Name Liefert den Namen der Struktur
-               
+                var bufferSize = cbDEsc.Size;
+                var _buffer = new Buffer(device, new BufferDescription
+                {
+                    Usage = ResourceUsage.Default,
+                    SizeInBytes = bufferSize,
+                    BindFlags = BindFlags.ConstantBuffer,
+                    CpuAccessFlags = 0
+                });
 
-                for (int j = 0; j < cbDEsc.VariableCount; j++ )
+                _sDxShaderBuffers.Add(cbDEsc.Name, _buffer);
+                SharpDxShaderParamInfo _params = new SharpDxShaderParamInfo();
+                for (int j = 0; j < cbDEsc.VariableCount; j++)
                 {
                     ShaderReflectionVariable shaderRefVar = cbTemp.GetVariable(j);
                     ShaderReflectionType shaderRefType = cbTemp.GetVariable(j).GetVariableType();
                     ShaderTypeDescription shaderRefTypeDesc = shaderRefType.Description;
                     //shaderRefVar.GetVariableType().GetMemberTypeName(i);
                     //shaderRefVar.GetVariableType().GetMemberType(i);
-                    MessageBox.Show("cBuffer name " + cbDEsc.Name);
-                    MessageBox.Show("Variable count "+cbDEsc.VariableCount.ToString());
-                    MessageBox.Show("Variable name "+shaderRefVar.Description.Name);
-                    MessageBox.Show("Variable size "+shaderRefVar.Description.Size.ToString());
-                    MessageBox.Show("Position in Bytes " + shaderRefVar.Description.StartOffset.ToString());
-                    MessageBox.Show("Flags " + shaderRefVar.Description.Flags.ToString());
-                    MessageBox.Show("Variable Type" + shaderRefTypeDesc.Type.ToString());
-                    
+                    //MessageBox.Show("cBuffer name " + cbDEsc.Name);
+                    //MessageBox.Show("Variable count " + cbDEsc.VariableCount.ToString());
+                    //MessageBox.Show("Variable name " + shaderRefVar.Description.Name);
+                    //MessageBox.Show("Variable size " + shaderRefVar.Description.Size.ToString());
+                    //MessageBox.Show("Position in Bytes " + shaderRefVar.Description.StartOffset.ToString());
+                    //MessageBox.Show("Flags " + shaderRefVar.Description.Flags.ToString());
+                    //MessageBox.Show("Variable Type" + shaderRefTypeDesc.Type.ToString());
+                   
+                    // PixelShader _ps;
+                    // VertexShader _vs;
+                    // ShaderBytecode _psByteCode;
+                    // ShaderBytecode _vsByteCode;
+                    // string _buffername;
+                    // int _varCount;
+                    // string _varName;
+                    // byte _varSize;
+                    // byte _varPositionB;
+                    // string _flags;
+                    // int _varPositionI;
+                    _params._ps = pixelShader;
+                    _params._vs = vertexShader;
+                    _params._psByteCode = pixelShaderByteCode;
+                    _params._vsByteCode = vertexShaderByteCode;
+                    _params._buffername = cbDEsc.Name;
+                    _params._sdxBuffer = _buffer;
+                    _params._flags = shaderRefVar.Description.Flags;
+                    _params._varCount = cbDEsc.VariableCount;
+                    _params._varName = shaderRefVar.Description.Name;
+                    _params._varSize = shaderRefVar.Description.Size;
+                    _params._varPositionB = shaderRefVar.Description.StartOffset;
+                    _params._flags = shaderRefVar.Description.Flags;
+                    _params._varPositionI = j;
+                    _sDxShaderParams.Add(_params);
+                }
+            }
+
+            float R;
+            float G;
+            float B;
+            float A;
+            
+            foreach (var daten in _sDxShaderParams)
+            {
+                if (daten._varSize == 16)
+                {
+                   
+                    R = 1.0f;
+                    G = 1.0f;
+                    B = 0.0f;
+                    A = 1.0f;
+                    var data = new DataStream(16, true, true);
+                    data.Write(R);
+                    data.Write(G);
+                    data.Write(B);
+                    data.Write(A);
+                    data.Position = daten._varPositionB;
+                    context.UpdateSubresource(new DataBox(data.PositionPointer, 0, 0), daten._sdxBuffer, 0);
+                    context.PixelShader.SetConstantBuffer(0, daten._sdxBuffer);
+                }
+                else
+                {
+                    MessageBox.Show("Falsch");
                 }
             }
            
-            for (int i = 0; i < sDesc.OutputParameters; ++i)
-            {
-                ShaderParameterDescription paramDesc = pRefelector.GetOutputParameterDescription(i);
-                //MessageBox.Show(paramDescC);
-            }
-            
 
-                // Main loop
-                RenderLoop.Run(form, () =>
+
+            // Main loop
+            RenderLoop.Run(form, () =>
                 {
                     context.ClearRenderTargetView(renderView, Color.Black);
 
@@ -272,4 +356,6 @@ namespace MiniTri
             factory.Dispose();
         }
     }
+
+
 }
