@@ -7,7 +7,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Fusee.Math;
-
 using SharpDX;
 using SharpDX.D3DCompiler;
 using SharpDX.Direct3D;
@@ -36,6 +35,12 @@ namespace Fusee.Engine
         internal VertexShader _vertexShader;
         internal PixelShader _pixelShader;
         internal InputLayout _layout;
+        internal ShaderReflection _pReflector;
+        internal ShaderReflection _vReflector;
+        internal ShaderDescription _pShaderDescription;
+        internal ShaderDescription _vShaderDescription;
+        internal List<SharpDxShaderParamInfo> _sDxShaderParams = new List<SharpDxShaderParamInfo>();
+        internal Dictionary<string, Buffer> _sDxShaderBuffers = new Dictionary<string, Buffer>();
         //internal Buffer _vertices;
         //internal Buffer _verticesColor;
         //internal Buffer _trianglesIndex;
@@ -239,8 +244,36 @@ namespace Fusee.Engine
 
         public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
         {
-            
-            return  new ShaderParam {  };
+            int pos=0;
+            for (int i = 0; i < _pShaderDescription.ConstantBuffers; ++i)
+            {
+                //ShaderParameterDescription paramDesc = _pRefelector.GetInputParameterDescription(i);
+                ConstantBuffer cbTemp = _pReflector.GetConstantBuffer(i);
+                ConstantBufferDescription cbDesc = cbTemp.Description;
+                //cbDEsc.Name Liefert den Namen der Struktur
+
+                for (int j = 0; j < cbDesc.VariableCount; j++)
+                {
+                    ShaderReflectionVariable shaderRefVar = cbTemp.GetVariable(j);
+                    ShaderReflectionType shaderRefType = cbTemp.GetVariable(j).GetVariableType();
+                    ShaderTypeDescription shaderRefTypeDesc = shaderRefType.Description;
+                    //shaderRefVar.GetVariableType().GetMemberTypeName(i);
+                    //shaderRefVar.GetVariableType().GetMemberType(i);
+                    //MessageBox.Show("cBuffer name " + cbDesc.Name);
+                    //MessageBox.Show("Variable count " + cbDesc.VariableCount.ToString());
+                    //MessageBox.Show("Variable name " + shaderRefVar.Description.Name);
+                    //MessageBox.Show("Variable size " + shaderRefVar.Description.Size.ToString());
+                    //MessageBox.Show("Position in Bytes " + shaderRefVar.Description.StartOffset.ToString());
+                    //MessageBox.Show("Flags " + shaderRefVar.Description.Flags.ToString());
+                    //MessageBox.Show("Variable Type" + shaderRefTypeDesc.Type.ToString());
+                    //8 werte 
+
+                    pos = shaderRefVar.Description.StartOffset;
+                   
+                    
+                }
+            }
+            return new ShaderParam { position = pos};//,size=size_,shaderType=sType
         }
 
         public float GetParamValue(IShaderProgramImp program, IShaderParam handle)
@@ -259,22 +292,97 @@ namespace Fusee.Engine
 
         public void SetShaderParam(IShaderParam param, float val)
         {
-           
+            /*
+             * Ist das hier
+             *  var cb = new Variables();
+             *  cb.R = 1.0f;
+             *  cb.G = 0.0f;
+             *  cb.B = 0.0f;
+             *  cb.A = 1.0f;
+             */
+            foreach (var daten in _sDxShaderParams)
+            {
+                if (daten._varSize == 4)
+                {
+
+                    
+                    var data = new DataStream(4, true, true);
+                    data.Write(val);
+                    data.Position = daten._varPositionB;
+                    _context.UpdateSubresource(new DataBox(data.PositionPointer, 0, 0), daten._sdxBuffer, 0);
+                    _context.PixelShader.SetConstantBuffer(0, daten._sdxBuffer);
+                }
+                else
+                {
+                    
+                }
+            }
+
+            
         }
 
         public void SetShaderParam(IShaderParam param, float2 val)
         {
-            
+            foreach (var daten in _sDxShaderParams)
+            {
+                if (daten._varSize == 8)
+                {
+
+
+                    var data = new DataStream(8, true, true);
+                    data.Write(val);
+                    data.Position = daten._varPositionB;
+                    _context.UpdateSubresource(new DataBox(data.PositionPointer, 0, 0), daten._sdxBuffer, 0);
+                    _context.PixelShader.SetConstantBuffer(0, daten._sdxBuffer);
+                }
+                else
+                {
+
+                }
+            }
         }
 
         public void SetShaderParam(IShaderParam param, float3 val)
         {
-           
+            foreach (var daten in _sDxShaderParams)
+            {
+                if (daten._varSize == 12)
+                {
+
+
+                    var data = new DataStream(12, true, true);
+                    data.Write(val);
+                    data.Position = daten._varPositionB;
+                    _context.UpdateSubresource(new DataBox(data.PositionPointer, 0, 0), daten._sdxBuffer, 0);
+                    _context.PixelShader.SetConstantBuffer(0, daten._sdxBuffer);
+                }
+                else
+                {
+
+                }
+            }
         }
 
         public void SetShaderParam(IShaderParam param, float4 val)
         {
-            
+            //data.Position = ((ShaderParam).param).position;
+            foreach (var daten in _sDxShaderParams)
+            {
+                if (daten._varSize == 16)
+                {
+
+
+                    var data = new DataStream(16, true, true);
+                    data.Write(val);
+                    data.Position = daten._varPositionB;
+                    _context.UpdateSubresource(new DataBox(data.PositionPointer, 0, 0), daten._sdxBuffer, 0);
+                    _context.PixelShader.SetConstantBuffer(0, daten._sdxBuffer);
+                }
+                else
+                {
+
+                }
+            }
         }
 
         // TODO add vector implementations
@@ -344,7 +452,90 @@ namespace Fusee.Engine
                         new InputElement("COLOR", 0, Format.R32G32B32A32_Float, 0, 1)
                     });
 
-            return new ShaderProgramImp {  };
+
+            _pReflector = new ShaderReflection(pixelShaderByteCode);
+            _vReflector = new ShaderReflection(vertexShaderByteCode);
+            _pShaderDescription = _pReflector.Description;
+            _vShaderDescription = _vReflector.Description;
+            _sDxShaderParams = new List<SharpDxShaderParamInfo>();
+            _sDxShaderBuffers = new Dictionary<string, Buffer>();
+            for (int i = 0; i < _pShaderDescription.ConstantBuffers; ++i)
+            {
+
+                ConstantBuffer cbTemp = _pReflector.GetConstantBuffer(i);
+                ConstantBufferDescription cbDEsc = cbTemp.Description;
+                //cbDEsc.Name Liefert den Namen der Struktur
+                var bufferSize = cbDEsc.Size;
+                var _buffer = new Buffer(_device, new BufferDescription
+                {
+                    Usage = ResourceUsage.Default,
+                    SizeInBytes = bufferSize,
+                    BindFlags = BindFlags.ConstantBuffer,
+                    CpuAccessFlags = 0
+                });
+
+                _sDxShaderBuffers.Add(cbDEsc.Name, _buffer);
+                SharpDxShaderParamInfo _psparams = new SharpDxShaderParamInfo();
+                for (int j = 0; j < cbDEsc.VariableCount; j++)
+                {
+                    ShaderReflectionVariable shaderRefVar = cbTemp.GetVariable(j);
+                    ShaderReflectionType shaderRefType = cbTemp.GetVariable(j).GetVariableType();
+                    ShaderTypeDescription shaderRefTypeDesc = shaderRefType.Description;
+                    _psparams._ps = _pixelShader;
+                    _psparams._psByteCode = pixelShaderByteCode;
+                    _psparams._buffername = cbDEsc.Name;
+                    _psparams._sdxBuffer = _buffer;
+                    _psparams._flags = shaderRefVar.Description.Flags;
+                    _psparams._varCount = cbDEsc.VariableCount;
+                    _psparams._varName = shaderRefVar.Description.Name;
+                    _psparams._varSize = shaderRefVar.Description.Size;
+                    _psparams._varPositionB = shaderRefVar.Description.StartOffset;
+                    _psparams._flags = shaderRefVar.Description.Flags;
+                    _psparams._varPositionI = j;
+                    _sDxShaderParams.Add(_psparams);
+
+                }
+            }
+
+            for (int i = 0; i < _vShaderDescription.ConstantBuffers; ++i)
+            {
+
+                ConstantBuffer cbTemp = _pReflector.GetConstantBuffer(i);
+                ConstantBufferDescription cbDEsc = cbTemp.Description;
+                //cbDEsc.Name Liefert den Namen der Struktur
+                var bufferSize = cbDEsc.Size;
+                var _buffer = new Buffer(_device, new BufferDescription
+                {
+                    Usage = ResourceUsage.Default,
+                    SizeInBytes = bufferSize,
+                    BindFlags = BindFlags.ConstantBuffer,
+                    CpuAccessFlags = 0
+                });
+
+                _sDxShaderBuffers.Add(cbDEsc.Name, _buffer);
+                SharpDxShaderParamInfo _vparams = new SharpDxShaderParamInfo();
+                for (int j = 0; j < cbDEsc.VariableCount; j++)
+                {
+                    ShaderReflectionVariable shaderRefVar = cbTemp.GetVariable(j);
+                    ShaderReflectionType shaderRefType = cbTemp.GetVariable(j).GetVariableType();
+                    ShaderTypeDescription shaderRefTypeDesc = shaderRefType.Description;
+                    
+                    _vparams._vs = _vertexShader;
+                    _vparams._vsByteCode = vertexShaderByteCode;
+                    _vparams._buffername = cbDEsc.Name;
+                    _vparams._sdxBuffer = _buffer;
+                    _vparams._flags = shaderRefVar.Description.Flags;
+                    _vparams._varCount = cbDEsc.VariableCount;
+                    _vparams._varName = shaderRefVar.Description.Name;
+                    _vparams._varSize = shaderRefVar.Description.Size;
+                    _vparams._varPositionB = shaderRefVar.Description.StartOffset;
+                    _vparams._flags = shaderRefVar.Description.Flags;
+                    _vparams._varPositionI = j;
+                    _sDxShaderParams.Add(_vparams);
+
+                }
+            }
+            return new ShaderProgramImp {};
         }
 
 

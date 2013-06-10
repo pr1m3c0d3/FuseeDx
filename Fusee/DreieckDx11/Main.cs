@@ -5,13 +5,19 @@ using Fusee.Math;
 
 namespace Examples.DreieckDx11
 {
+
     public class DreieckDx11 : RenderCanvas
     {
         private Mesh _myMesh;
+        protected IShaderParam VColorParam;
         public override void Init()
         {
             // is called on startup
-            string Vs = @"struct VS_IN
+            string Vs = @"cbuffer Variables : register(b0){
+ float4 TestFarbe;
+
+} 
+struct VS_IN
                     {
 	                    float4 pos : POSITION;
 	                    float4 col : COLOR;
@@ -34,9 +40,13 @@ namespace Examples.DreieckDx11
 
                     float4 PS( PS_IN input ) : SV_Target
                     {
-	                    return input.col;
+	                     return TestFarbe;
                     }";
-            string Ps = @"struct VS_IN
+            string Ps = @"cbuffer Variables : register(b0){
+ float4 TestFarbe;
+
+} 
+                    struct VS_IN
                     {
 	                    float4 pos : POSITION;
 	                    float4 col : COLOR;
@@ -60,11 +70,11 @@ namespace Examples.DreieckDx11
 
                     float4 PS( PS_IN input ) : SV_Target
                     {
-	                    return input.col;
+	                     return TestFarbe;
                     }";
             ShaderProgram sp = RC.CreateShader(Vs, Ps);
             RC.SetShader(sp);
-
+            VColorParam = sp.GetShaderParam("TestFarbe");
             _myMesh = new Mesh();
             var myVertices = new float3[]
             {
@@ -96,7 +106,7 @@ namespace Examples.DreieckDx11
                 };
            
             _myMesh.Vertices = myVertices;
-            _myMesh.Colors = myColors;
+            //_myMesh.Colors = myColors;
             _myMesh.Triangles = triangles;
             //RC.ClearColor = new float4(1,1,1,1);
         }
@@ -105,12 +115,19 @@ namespace Examples.DreieckDx11
         {
             // is called once a frame
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            if (_myMesh != null) RC.Render(_myMesh);
+            if (_myMesh != null)
+            {
+                RC.SetShaderParam(VColorParam, new float4(0.0f, 1.0f, 0.0f, 1.0f));
+                RC.Render(_myMesh);
+                
+            }
             else
             {
                 MessageBox.Show("myMesh is null");
-                
+
             }
+
+
             Present();
         }
 

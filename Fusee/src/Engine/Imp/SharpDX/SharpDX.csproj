@@ -70,6 +70,7 @@
     <Compile Include="RenderContextImp.cs" />
     <Compile Include="ShaderParam.cs" />
     <Compile Include="ShaderProgramImp.cs" />
+    <Compile Include="SharpDxShaderParamInfo.cs" />
     <Compile Include="Texture.cs" />
   </ItemGroup>
   <ItemGroup>
