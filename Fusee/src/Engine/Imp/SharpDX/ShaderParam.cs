@@ -9,9 +9,10 @@ namespace Fusee.Engine
     public class ShaderParam : IShaderParam
     {
         internal int position;
+        internal ShaderType shaderType;
         internal int size;
         internal uint flags; //??
-        internal ShaderType shaderType;
+        
         
     }
 }

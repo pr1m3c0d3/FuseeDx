@@ -26,5 +26,8 @@ namespace Fusee.Engine
         public ShaderVariableFlags _flags;
         public int _varPositionI;
         public Buffer _sdxBuffer;
+        public ShaderVariableType _varType;
+        public DataStream _bufferParams;
+        public ShaderReflectionVariable _varValue;
     }
 }

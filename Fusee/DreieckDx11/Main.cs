@@ -9,13 +9,15 @@ namespace Examples.DreieckDx11
     public class DreieckDx11 : RenderCanvas
     {
         private Mesh _myMesh;
+        private Mesh _myMesh_;
         protected IShaderParam VColorParam;
+        protected IShaderParam VColorParam_;
         public override void Init()
         {
             // is called on startup
             string Vs = @"cbuffer Variables : register(b0){
  float4 TestFarbe;
-
+float4 TestF;
 } 
 struct VS_IN
                     {
@@ -44,7 +46,7 @@ struct VS_IN
                     }";
             string Ps = @"cbuffer Variables : register(b0){
  float4 TestFarbe;
-
+float4 TestF;
 } 
                     struct VS_IN
                     {
@@ -70,19 +72,32 @@ struct VS_IN
 
                     float4 PS( PS_IN input ) : SV_Target
                     {
+                       
 	                     return TestFarbe;
                     }";
             ShaderProgram sp = RC.CreateShader(Vs, Ps);
             RC.SetShader(sp);
-            VColorParam = sp.GetShaderParam("TestFarbe");
+            VColorParam = sp.GetShaderParam("TestF");
+            VColorParam_ = sp.GetShaderParam("TestFarbe");
             _myMesh = new Mesh();
+            _myMesh_ = new Mesh();
+            
             var myVertices = new float3[]
             {
                 new float3(0.0f, 0.5f, 0.5f),
                 new float3(0.5f, 0.0f, 0.5f),
                 new float3(-0.5f, 0.0f, 0.5f),
-                new float3(0.0f, -0.5f, 0.5f)
+                //new float3(0.0f, -0.5f, 0.5f)
             };
+
+
+            var myVert = new float3[]
+                {
+                    new float3(0.5f, 0.0f, 0.5f),
+                    new float3(-0.5f, 0.0f, 0.5f),
+                    new float3(0.2f, -0.8f, 0.5f)
+               
+                };
 
             //myVertices[0] = new float3(0.0f, 0.5f, 0.5f);
             //myVertices[1] = new float3(0.5f, -0.5f, 0.5f);
@@ -99,16 +114,27 @@ struct VS_IN
                 {
                     0,
                     1,
+                    2
+
+                };
+
+
+            var triangles_ = new short[]
+                {
                     2,
                     1,
-                    3,
-                    2
+                    0
                 };
-           
+
             _myMesh.Vertices = myVertices;
             //_myMesh.Colors = myColors;
+            //_myMesh_.Vertices = myVert;
             _myMesh.Triangles = triangles;
+            //_myMesh_.Triangles = triangles_;
             //RC.ClearColor = new float4(1,1,1,1);
+
+
+
         }
 
         public override void RenderAFrame()
@@ -117,9 +143,13 @@ struct VS_IN
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             if (_myMesh != null)
             {
-                RC.SetShaderParam(VColorParam, new float4(0.0f, 1.0f, 0.0f, 1.0f));
+                
+                RC.SetShaderParam(VColorParam_, new float4(1.0f, 1.0f, 1.0f, 1.0f));
                 RC.Render(_myMesh);
                 
+                    
+                //RC.SetShaderParam(VColorParam, new float4(1.0f, 0.0f, 0.0f, 1.0f));
+                //RC.Render(_myMesh_);
             }
             else
             {
