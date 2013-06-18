@@ -26,7 +26,9 @@
 
 cbuffer Variables : register(b0){
  float4 TestFarbe;
- /*float4 testgwjepgwjpg;*/
+float4 testgwjepgwjpg;
+float4 tester;
+float4 testen;
 } 
 struct VS_IN
 {
@@ -55,5 +57,5 @@ PS_IN VS( VS_IN input )
 float4 PS( PS_IN input ) : SV_Target
 {
     /*return input.col;*/
-    return TestFarbe;
+    return testen;
 }
