@@ -21,6 +21,11 @@ namespace Fusee.Engine
         internal SwapChain _swapChain;
         internal DeviceContext _context;
         internal RenderTargetView _renderView;
+        internal Buffer _cbUniforms;
+        internal Texture2D _depthBuffer;
+        internal SamplerState _sampler;
+        internal ShaderResourceView _textureView;
+        internal DepthStencilView _depthView;
         public int Width { get { return _renderForm.Width; } }
        
         public int Height { get { return _renderForm.Height; } }
@@ -35,11 +40,11 @@ namespace Fusee.Engine
         }
 
         internal RenderForm _renderForm;// RenderForm (Dx)
-          
+        
         public RenderCanvasImp()
         {
             _renderForm = new RenderForm("DX_WINDOW");
-            
+            _renderForm.Resize += OnRenderFormOnResize;
 
             //Fullscreen
             //_renderForm.MaximizeBox = true; 
@@ -64,7 +69,44 @@ namespace Fusee.Engine
             factory.MakeWindowAssociation(_renderForm.Handle,WindowAssociationFlags.IgnoreAll);
             var backBuffer = Texture2D.FromSwapChain<Texture2D>(_swapChain, 0);
             _renderView = new RenderTargetView(_device, backBuffer);
-            _context.OutputMerger.SetTargets(_renderView);
+
+            
+
+            _depthBuffer = new Texture2D(_device, new Texture2DDescription()
+            {
+                Format = Format.D32_Float_S8X24_UInt,
+                ArraySize = 1,
+                MipLevels = 1,
+                Width = _renderForm.ClientSize.Width,
+                Height = _renderForm.ClientSize.Height,
+                SampleDescription = new SampleDescription(1, 0),
+                Usage = ResourceUsage.Default,
+                BindFlags = BindFlags.DepthStencil,
+                CpuAccessFlags = CpuAccessFlags.None,
+                OptionFlags = ResourceOptionFlags.None
+            });
+
+            _depthView = new DepthStencilView(_device, _depthBuffer);
+            _sampler = new SamplerState(_device, new SamplerStateDescription()
+            {
+                Filter = Filter.MinMagMipLinear,
+                AddressU = TextureAddressMode.Wrap,
+                AddressV = TextureAddressMode.Wrap,
+                AddressW = TextureAddressMode.Wrap,
+                BorderColor = Color.Black,
+                ComparisonFunction = Comparison.Never,
+                MaximumAnisotropy = 16,
+                MipLodBias = 0,
+                MinimumLod = 0,
+                MaximumLod = 16,
+            });
+            _context.OutputMerger.SetTargets(_depthView,_renderView);
+
+        }
+
+        private void OnRenderFormOnResize(object sender, EventArgs args)
+        {
+            // Resize  depth bufer ?
 
         }
 
@@ -74,7 +116,7 @@ namespace Fusee.Engine
             //context.ClearRenderTargetView(renderView, SharpDX.Color.CornflowerBlue);
             
             //Funktioniert nicht
-            
+            DoResize();
             _swapChain.Present(0, PresentFlags.None);
         
         }
@@ -84,6 +126,7 @@ namespace Fusee.Engine
         public void Run()
         {
             DoInit();
+           // RenderLoop.Run(_renderForm, DoRender);
             RenderLoop.Run(_renderForm, DoRender);
             Dispose();
         }

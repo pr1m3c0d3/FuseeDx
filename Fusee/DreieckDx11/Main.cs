@@ -9,79 +9,102 @@ namespace Examples.DreieckDx11
     public class DreieckDx11 : RenderCanvas
     {
         private Mesh _myMesh;
-        private Mesh _myMesh_;
-        protected IShaderParam VColorParam;
-        protected IShaderParam VColorParam_;
+        protected IShaderParam _vTextureParam;
+        protected ImageData _imgData1;
+        protected ITexture _iTex1;
         public override void Init()
         {
             // is called on startup
             string Vs = @"cbuffer Variables : register(b0){
  float4 TestFarbe;
-float4 TestF;
+ float4 TestF;
+float4x4 FUSEE_MVP;
 } 
+SamplerState pictureSampler;
+Texture2D imageFG;
+
 struct VS_IN
-                    {
-	                    float4 pos : POSITION;
-	                    float4 col : COLOR;
-                    };
-                    struct PS_IN
-                    {
-	                    float4 pos : SV_POSITION;
-	                    float4 col : COLOR;
-                    };
+{
+	float4 pos : POSITION;
+	float4 tex : TEXCOORD;
+};
 
-                    PS_IN VS( VS_IN input )
-                    {
-	                    PS_IN output = (PS_IN)0;
-	
-	                    output.pos = input.pos;
-	                    output.col = input.col;
-	
-	                    return output;
-                    }
+struct PS_IN
+{
+	float4 pos : SV_POSITION;
+	float4 tex : TEXCOORD;
 
-                    float4 PS( PS_IN input ) : SV_Target
-                    {
-	                     return TestFarbe;
-                    }";
+};
+
+PS_IN VS( VS_IN input )
+{
+	PS_IN output = (PS_IN)0;
+	input.pos.w = 1.0f;
+	output.pos = mul(input.pos,FUSEE_MVP);
+	// output.col = TestFarbe;
+		
+	output.tex = input.tex;
+	
+	return output;
+}
+
+float4 PS( PS_IN input ) : SV_Target
+{
+	/*return input.col;*/
+	/*return TestFarbe;*/
+	return  imageFG.Sample(pictureSampler,input.tex);
+}
+";
             string Ps = @"cbuffer Variables : register(b0){
  float4 TestFarbe;
-float4 TestF;
+ float4 TestF;
+ float4x4 FUSEE_MVP;
 } 
-                    struct VS_IN
-                    {
-	                    float4 pos : POSITION;
-	                    float4 col : COLOR;
-                    };
+SamplerState pictureSampler;
+Texture2D imageFG;
 
-                    struct PS_IN
-                    {
-	                    float4 pos : SV_POSITION;
-	                    float4 col : COLOR;
-                    };
+struct VS_IN
+{
+	float4 pos : POSITION;
+	float4 tex : TEXCOORD;
+};
 
-                    PS_IN VS( VS_IN input )
-                    {
-	                    PS_IN output = (PS_IN)0;
+struct PS_IN
+{
+	float4 pos : SV_POSITION;
+	float4 tex : TEXCOORD;
+
+};
+
+PS_IN VS( VS_IN input )
+{
+	PS_IN output = (PS_IN)0;
+	input.pos.w = 1.0f;
+	output.pos = mul(input.pos,FUSEE_MVP);
+	// output.col = TestFarbe;
+    
+	output.tex = input.tex;
 	
-	                    output.pos = input.pos;
-	                    output.col = input.col;
-	
-	                    return output;
-                    }
+	return output;
+}
 
-                    float4 PS( PS_IN input ) : SV_Target
-                    {
-                       
-	                     return TestFarbe;
-                    }";
+float4 PS( PS_IN input ) : SV_Target
+{
+	/*return input.col;*/
+	/*return TestFarbe;*/
+	return  imageFG.Sample(pictureSampler,input.tex);
+}
+";
+           Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Dreieck.obj.model"));
+           _myMesh = geo2.ToMesh();
+           // _myMesh = new Mesh();
             ShaderProgram sp = RC.CreateShader(Vs, Ps);
             RC.SetShader(sp);
-            VColorParam = sp.GetShaderParam("TestF");
-            VColorParam_ = sp.GetShaderParam("TestFarbe");
-            _myMesh = new Mesh();
-            _myMesh_ = new Mesh();
+            _vTextureParam = sp.GetShaderParam("");
+           
             
+            
+
             var myVertices = new float3[]
             {
                 new float3(0.0f, 0.5f, 0.5f),
@@ -105,10 +128,14 @@ float4 TestF;
             //myVertices[3] = new float3(-0.5f, -2.5f, 0.5f);
 
             var myColors = new float4[4];
-            myColors[0] = new float4(1.0f, 0.0f, 0.0f,1.0f);
+            myColors[0] = new float4(1.0f, 0.0f, 0.0f, 1.0f);
             myColors[1] = new float4(0.0f, 1.0f, 0.0f, 1.0f);
             myColors[2] = new float4(0.0f, 0.0f, 1.0f, 1.0f);
             myColors[3] = new float4(1.0f, 1.0f, 1.0f, 1.0f);
+            var myUvs = new float2[3];
+            myUvs[0] = new float2(1.0f, 0.0f);
+            myUvs[1] = new float2(0.0f, 1.0f);
+            myUvs[2] = new float2(0.0f, 0.0f);
 
             var triangles = new short[]
                 {
@@ -126,15 +153,17 @@ float4 TestF;
                     0
                 };
 
-            _myMesh.Vertices = myVertices;
+            _imgData1 = RC.LoadImage("Assets/cube_tex.jpg");
+            _iTex1 = RC.CreateTexture(_imgData1);
+
+            //_myMesh.Vertices = myVertices;
             //_myMesh.Colors = myColors;
+            //_myMesh.UVs = myUvs;
             //_myMesh_.Vertices = myVert;
-            _myMesh.Triangles = triangles;
-            //_myMesh_.Triangles = triangles_;
-            //RC.ClearColor = new float4(1,1,1,1);
+            //_myMesh.Triangles = triangles;
 
-
-
+            RC.ClearColor = new float4(0.5f, 0.5f, 0.5f, 1);
+            RC.ClearDepth = 1.0f;
         }
 
         public override void RenderAFrame()
@@ -143,13 +172,13 @@ float4 TestF;
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             if (_myMesh != null)
             {
-                
-                RC.SetShaderParam(VColorParam_, new float4(1.0f, 1.0f, 1.0f, 1.0f));
+                float4x4 mtxRot = float4x4.CreateRotationY(5) * float4x4.CreateRotationX(10);
+                float4x4 mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
+
+                RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
+                RC.SetShaderParamTexture(_vTextureParam, _iTex1);
                 RC.Render(_myMesh);
-                
-                    
-                //RC.SetShaderParam(VColorParam, new float4(1.0f, 0.0f, 0.0f, 1.0f));
-                //RC.Render(_myMesh_);
+
             }
             else
             {

@@ -30,4 +30,8 @@ namespace Fusee.Engine
         public DataStream _bufferParams;
         public ShaderReflectionVariable _varValue;
     }
+    internal struct SharpDxShaderTexture
+    {
+        public int _position;
+    }
 }

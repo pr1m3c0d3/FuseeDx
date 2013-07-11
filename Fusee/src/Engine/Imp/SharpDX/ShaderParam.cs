@@ -12,7 +12,8 @@ namespace Fusee.Engine
         internal ShaderType shaderType;
         internal int size;
         internal uint flags; //??
-        
-        
+        internal string name;
+
+
     }
 }

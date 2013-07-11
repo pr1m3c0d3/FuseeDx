@@ -42,6 +42,12 @@ namespace Fusee.Engine
         internal List<SharpDxShaderParamInfo> _sDxShaderParams = new List<SharpDxShaderParamInfo>();
         internal Dictionary<string, Buffer> _sDxShaderBuffers = new Dictionary<string, Buffer>();
         internal Buffer _buff;
+        internal ShaderResourceView _textureView;
+        internal Buffer _cbUniforms;
+        internal SamplerState _sampler;
+        internal DepthStencilView _depthView;
+        internal float4 _cColor;
+        internal float _depth;
         //internal Buffer _vertices;
         //internal Buffer _verticesColor;
         //internal Buffer _trianglesIndex;
@@ -49,56 +55,60 @@ namespace Fusee.Engine
         public RenderContextImp(IRenderCanvasImp renderCanvas)
         {
 
-            RenderCanvasImp dxCanvas = (RenderCanvasImp) renderCanvas;
+            RenderCanvasImp dxCanvas = (RenderCanvasImp)renderCanvas;
             _context = dxCanvas._context;
             _device = dxCanvas._device;
             _swapChain = dxCanvas._swapChain;
             _renderView = dxCanvas._renderView;
-            Viewport(0,0,dxCanvas.Width,dxCanvas.Height);
-           // CreateShader("", "");
+            _textureView = dxCanvas._textureView;
+            _sampler = dxCanvas._sampler;
+            _depthView = dxCanvas._depthView;
+            Viewport(0, 0, dxCanvas.Width, dxCanvas.Height);
+
+            // CreateShader("", "");
 
 
 
-           // // Instantiate Vertex buiffer from vertex data
-           // var vertices = Buffer.Create(_device, BindFlags.VertexBuffer, new[]
-           //                       {
-           //                           new Vector4(-0.9f, -0.2f, 0.0f, 1.0f),
-           //                           new Vector4(0.0f, 0.5f, 0.5f, 1.0f),
-           //                           new Vector4(0.5f, -0.5f, 0.5f, 1.0f), 
-           //                           new Vector4(-0.5f, -0.5f, 0.5f, 1.0f)
-                                     
-           //                       });
-           // // Instantiate Vertex buiffer from vertex data
-           // var verticesColors = Buffer.Create(_device, BindFlags.VertexBuffer, new[]
-           //                       {
-           //                           new Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-           //                           new Vector4(1.0f, 0.0f, 0.0f, 1.0f),
-           //                           new Vector4(0.0f, 1.0f, 0.0f, 1.0f),
-           //                           new Vector4(0.0f, 0.0f, 1.0f, 1.0f)
-           //                       });
-           // var triangles = Buffer.Create(_device, BindFlags.IndexBuffer, new[]
-           //                       {
-           //                           1,
-           //                           2,
-           //                           3
-           //                       });
+            // // Instantiate Vertex buiffer from vertex data
+            // var vertices = Buffer.Create(_device, BindFlags.VertexBuffer, new[]
+            //                       {
+            //                           new Vector4(-0.9f, -0.2f, 0.0f, 1.0f),
+            //                           new Vector4(0.0f, 0.5f, 0.5f, 1.0f),
+            //                           new Vector4(0.5f, -0.5f, 0.5f, 1.0f), 
+            //                           new Vector4(-0.5f, -0.5f, 0.5f, 1.0f)
+
+            //                       });
+            // // Instantiate Vertex buiffer from vertex data
+            // var verticesColors = Buffer.Create(_device, BindFlags.VertexBuffer, new[]
+            //                       {
+            //                           new Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+            //                           new Vector4(1.0f, 0.0f, 0.0f, 1.0f),
+            //                           new Vector4(0.0f, 1.0f, 0.0f, 1.0f),
+            //                           new Vector4(0.0f, 0.0f, 1.0f, 1.0f)
+            //                       });
+            // var triangles = Buffer.Create(_device, BindFlags.IndexBuffer, new[]
+            //                       {
+            //                           1,
+            //                           2,
+            //                           3
+            //                       });
 
 
-           // // Prepare All the stages
-           // _context.InputAssembler.InputLayout = _layout;
-           // _context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
-           // _context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding[]
-           // {
-           //   new VertexBufferBinding(vertices,16, 0),
-           //   new VertexBufferBinding(verticesColors,16, 0)
-           // }
+            // // Prepare All the stages
+            // _context.InputAssembler.InputLayout = _layout;
+            // _context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
+            // _context.InputAssembler.SetVertexBuffers(0, new VertexBufferBinding[]
+            // {
+            //   new VertexBufferBinding(vertices,16, 0),
+            //   new VertexBufferBinding(verticesColors,16, 0)
+            // }
 
-           // );
-           // _context.InputAssembler.SetIndexBuffer(triangles, Format.R32_UInt, 0);
-           // _context.VertexShader.Set(_vertexShader);
-           //Viewport(0,0,dxCanvas.Width,dxCanvas.Height);
-           // _context.PixelShader.Set(_pixelShader);
-           // _context.OutputMerger.SetTargets(_renderView);
+            // );
+            // _context.InputAssembler.SetIndexBuffer(triangles, Format.R32_UInt, 0);
+            // _context.VertexShader.Set(_vertexShader);
+            //Viewport(0,0,dxCanvas.Width,dxCanvas.Height);
+            // _context.PixelShader.Set(_pixelShader);
+            // _context.OutputMerger.SetTargets(_renderView);
 
         }
 
@@ -229,10 +239,39 @@ namespace Fusee.Engine
         /// </summary>
         /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
         /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITexture CreateTexture(ImageData img)
+        public  ITexture CreateTexture(ImageData img)
         {
-           
-            ITexture texID = new Texture { handle = 0 };
+            ITexture texID;
+            Texture2DDescription texDesc = new Texture2DDescription();
+            texDesc.Height = img.Height;
+            texDesc.Width = img.Width;
+            texDesc.SampleDescription = new SampleDescription(1,0);
+            texDesc.Format = Format.B8G8R8X8_UNorm;
+            texDesc.ArraySize = 1;
+            texDesc.MipLevels = 1;
+            texDesc.OptionFlags = ResourceOptionFlags.None;
+            texDesc.BindFlags = BindFlags.ShaderResource;
+            texDesc.Usage = ResourceUsage.Default;
+            
+
+            //var texture = Texture2D.FromFile<Texture2D>(_device, "D:/Thesis/FuseeDx-DevDx/FuseeDx-DevDx/Fusee/DreieckDx11/Assets/GeneticaMortarlessBlocks.jpg");
+            unsafe
+            {
+                
+            
+                fixed (byte* pMemory = img.PixelData)
+                {
+                
+            
+                DataRectangle imgDataRec = new DataRectangle((IntPtr) pMemory,img.Stride);
+                var tex = new Texture2D(_device,texDesc,imgDataRec);
+                //var tex = Texture2D.FromMemory<Texture2D>(_device, img.PixelData);
+            
+                //var textview = new ShaderResourceView(_device, tex);
+                _textureView = new ShaderResourceView(_device, tex);
+                texID  = new Texture { handle = 0 };
+                }
+            }
             return texID;
 
         }
@@ -250,13 +289,16 @@ namespace Fusee.Engine
             {
                 if (paramName == _sDxShaderParams[i]._varName)
                 {
-                    if(_sDxShaderParams[i]._ps!=null)
-                    return new ShaderParam { position = i,shaderType = ShaderType.PixelShader};
+                    if (_sDxShaderParams[i]._ps != null)
+                    {
+                        return new ShaderParam {position = i, shaderType = ShaderType.PixelShader, name = paramName};
+                    }
+                    else
+                    {
+                        return new ShaderParam { position = i, shaderType = ShaderType.VertexShader, name = paramName };
+                    }
                 }
-                else
-                {
-                    return new ShaderParam { position = i, shaderType = ShaderType.VertexShader };
-                }
+                
             }
 
             return null;
@@ -264,14 +306,14 @@ namespace Fusee.Engine
 
         public float GetParamValue(IShaderProgramImp program, IShaderParam handle)
         {
-            
-            
+
+
             return 10.0f;
         }
 
         //public IEnumerable<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
         //{
-            
+
         //}
 
 
@@ -304,7 +346,7 @@ namespace Fusee.Engine
                 }
             }
 
-            
+
         }
 
         public void SetShaderParam(IShaderParam param, float2 val)
@@ -352,15 +394,15 @@ namespace Fusee.Engine
         public void SetShaderParam(IShaderParam param, float4 val)
         {
             //data.Position = ((ShaderParam).param).position;
-            var shaderParamInfo = _sDxShaderParams[((ShaderParam) param).position];
-            if(shaderParamInfo._varSize==16)
+            var shaderParamInfo = _sDxShaderParams[((ShaderParam)param).position];
+            if (shaderParamInfo._varSize == 16)
             {
                 shaderParamInfo._bufferParams.Position = shaderParamInfo._varPositionB;
                 shaderParamInfo._bufferParams.Write(val);
                 shaderParamInfo._bufferParams.Position = 0;
                 _context.UpdateSubresource(new DataBox(shaderParamInfo._bufferParams.PositionPointer, 0, 0),
                                               shaderParamInfo._sdxBuffer, 0);
-                if (((ShaderParam) param).shaderType == ShaderType.PixelShader)
+                if (((ShaderParam)param).shaderType == ShaderType.PixelShader)
                 {
                     _context.PixelShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
                 }
@@ -375,12 +417,28 @@ namespace Fusee.Engine
 
         public void SetShaderParam(IShaderParam param, float4x4 val)
         {
-           
+            var shaderParamInfo = _sDxShaderParams[((ShaderParam)param).position];
+            if (shaderParamInfo._varSize == 64)
+            {
+                shaderParamInfo._bufferParams.Position = shaderParamInfo._varPositionB;
+                shaderParamInfo._bufferParams.Write(val);
+                shaderParamInfo._bufferParams.Position = 0;
+                _context.UpdateSubresource(new DataBox(shaderParamInfo._bufferParams.PositionPointer, 0, 0),
+                                              shaderParamInfo._sdxBuffer, 0);
+                if (((ShaderParam)param).shaderType == ShaderType.PixelShader)
+                {
+                    _context.PixelShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
+                }
+                else
+                {
+                    _context.VertexShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
+                }
+            }
         }
 
         public void SetShaderParam(IShaderParam param, int val)
         {
-           
+
         }
 
         /// <summary>
@@ -390,13 +448,17 @@ namespace Fusee.Engine
         /// <param name="texId">An ITexture probably returned from CreateTexture method</param>
         public void SetShaderParamTexture(IShaderParam param, ITexture texId)
         {
-            
+            _cbUniforms = new Buffer(_device, Utilities.SizeOf<Matrix>(), ResourceUsage.Default,
+                                            BindFlags.ConstantBuffer, CpuAccessFlags.None, ResourceOptionFlags.None, 0);
+            _context.VertexShader.SetConstantBuffer(0, _cbUniforms);
+            _context.PixelShader.SetSampler(0, _sampler);
+            _context.PixelShader.SetShaderResource(0, _textureView);
         }
 
         public float4x4 ModelView
         {
             get { throw new NotImplementedException(); }
-            set {  }
+            set { }
         }
 
         public float4x4 Projection
@@ -407,19 +469,22 @@ namespace Fusee.Engine
 
         public float4 ClearColor
         {
-            get { throw new NotImplementedException(); }
-            set { }
+            get
+            {
+                return _cColor;
+            }
+            set { _cColor = value; }
         }
 
         public float ClearDepth
         {
-            get { throw new NotImplementedException(); }
-            set {  }
+            get { return _depth; }
+            set { _depth = value; }
         }
 
         public IShaderProgramImp CreateShader(string vs, string ps)
         {
-            
+
 
             var vertexShaderByteCode = ShaderBytecode.Compile(vs, "VS", "vs_4_0", ShaderFlags.None, EffectFlags.None);
             _vertexShader = new VertexShader(_device, vertexShaderByteCode);
@@ -429,14 +494,14 @@ namespace Fusee.Engine
 
             
 
-            _layout = new InputLayout(
-                    _device,
-                    ShaderSignature.GetInputSignature(vertexShaderByteCode),
-                    new[]
-                    {
-                        new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
-                        new InputElement("COLOR", 0, Format.R32G32B32A32_Float, 0, 1)
-                    });
+            //_layout = new InputLayout(
+            //        _device,
+            //        ShaderSignature.GetInputSignature(vertexShaderByteCode),
+            //        new[]
+            //        {
+            //            new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+            //            new InputElement("COLOR", 0, Format.R32G32B32A32_Float, 0, 1)
+            //        });
 
 
             _pReflector = new ShaderReflection(pixelShaderByteCode);
@@ -445,6 +510,81 @@ namespace Fusee.Engine
             _vShaderDescription = _vReflector.Description;
             _sDxShaderParams = new List<SharpDxShaderParamInfo>();
             _sDxShaderBuffers = new Dictionary<string, Buffer>();
+            bool color = true;
+            bool norms = false;
+            for (int i = 0; i < _pShaderDescription.InputParameters;i++ )
+            {
+                ShaderParameterDescription paramDesc = _pReflector.GetInputParameterDescription(i);
+                if (paramDesc.SemanticName=="COLOR")
+                {
+                    color = true;
+                }
+                if (paramDesc.SemanticName=="TEXCOORD")
+                {
+                    color = false;
+                }
+                if (paramDesc.SemanticName == "NORMAL")
+                {
+                    norms = true;
+                }
+                else
+                {
+                    norms = false;
+                }
+            }
+            if (color && norms!=true)
+            {
+                _layout = new InputLayout(
+                        _device,
+                        ShaderSignature.GetInputSignature(vertexShaderByteCode),
+                        new[]
+                        {
+                            new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+                            new InputElement("COLOR", 0, Format.R32G32B32A32_Float, 0, 1)
+                        });   
+            }else if (color && norms)
+            {
+                _layout = new InputLayout(
+                       _device,
+                       ShaderSignature.GetInputSignature(vertexShaderByteCode),
+                       new[]
+                        {
+                            new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+                            new InputElement("COLOR", 0, Format.R32G32B32A32_Float, 0, 1),
+                            new InputElement("NORMAL", 0, Format.R32G32B32A32_Float, 0, 2),
+                            new InputElement("TEXCOORD", 0, Format.R32G32B32A32_Float, 0, 2)
+                        }); 
+            }
+            else if (norms && color != true)
+            {
+                _layout = new InputLayout(
+                        _device,
+                        ShaderSignature.GetInputSignature(vertexShaderByteCode),
+                        new[]
+                        {
+                            new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+                            new InputElement("TEXCOORD", 0, Format.R32G32B32_Float, 0, 1),
+                            new InputElement("NORMAL", 0, Format.R32G32B32_Float, 0, 2)
+                        });
+            }
+            else
+            {
+                
+                _layout = new InputLayout(
+                        _device,
+                        ShaderSignature.GetInputSignature(vertexShaderByteCode),
+                        new[]
+                        {
+                            new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+                            new InputElement("TEXCOORD", 0, Format.R32G32B32_Float, 0, 1)
+                        });
+            }
+           /*--------------------------------------------------------------------------------------------------
+            * 
+            * PixelShader-ConstantBuffers
+            * 
+            * -------------------------------------------------------------------------------------------------
+            */
             for (int i = 0; i < _pShaderDescription.ConstantBuffers; ++i)
             {
 
@@ -463,10 +603,12 @@ namespace Fusee.Engine
                         _psparams._ps = _pixelShader;
                         _psparams._psByteCode = pixelShaderByteCode;
                         _psparams._buffername = cbDEsc.Name;
+
                         _psparams._sdxBuffer = _buff;
                         _psparams._flags = shaderRefVar.Description.Flags;
                         _psparams._varCount = cbDEsc.VariableCount;
                         _psparams._varName = shaderRefVar.Description.Name;
+                        
                         _psparams._varSize = shaderRefVar.Description.Size;
                         _psparams._varPositionB = shaderRefVar.Description.StartOffset;
                         _psparams._flags = shaderRefVar.Description.Flags;
@@ -476,7 +618,9 @@ namespace Fusee.Engine
                         _sDxShaderParams.Add(_psparams);
 
                     }
-                }else{
+                }
+                else
+                {
                     //cbDEsc.Name Liefert den Namen der Struktur
                     var bufferSize = cbDEsc.Size;
                     var _buffer = new Buffer(_device, new BufferDescription
@@ -502,6 +646,7 @@ namespace Fusee.Engine
                         _psparams._flags = shaderRefVar.Description.Flags;
                         _psparams._varCount = cbDEsc.VariableCount;
                         _psparams._varName = shaderRefVar.Description.Name;
+                        
                         _psparams._varSize = shaderRefVar.Description.Size;
                         _psparams._varPositionB = shaderRefVar.Description.StartOffset;
                         _psparams._flags = shaderRefVar.Description.Flags;
@@ -543,11 +688,14 @@ namespace Fusee.Engine
                         _vsparams._flags = shaderRefVar.Description.Flags;
                         _vsparams._varCount = cbDEsc.VariableCount;
                         _vsparams._varName = shaderRefVar.Description.Name;
+                   
                         _vsparams._varSize = shaderRefVar.Description.Size;
+                     
                         _vsparams._varPositionB = shaderRefVar.Description.StartOffset;
                         _vsparams._flags = shaderRefVar.Description.Flags;
                         _vsparams._varPositionI = j;
                         _vsparams._varType = shaderRefType.Description.Type;
+              
                         _vsparams._bufferParams.Write(shaderRefVar.Description.DefaultValue);
                         _sDxShaderParams.Add(_vsparams);
 
@@ -580,12 +728,15 @@ namespace Fusee.Engine
                         _vsparams._flags = shaderRefVar.Description.Flags;
                         _vsparams._varCount = cbDEsc.VariableCount;
                         _vsparams._varName = shaderRefVar.Description.Name;
+                  
                         _vsparams._varSize = shaderRefVar.Description.Size;
                         _vsparams._varPositionB = shaderRefVar.Description.StartOffset;
+      
                         _vsparams._flags = shaderRefVar.Description.Flags;
                         _vsparams._varPositionI = j;
                         _vsparams._varType = shaderRefType.Description.Type;
                         _vsparams._bufferParams.Write(shaderRefVar.Description.DefaultValue);
+        
                         _sDxShaderParams.Add(_vsparams);
 
                     }
@@ -613,7 +764,7 @@ namespace Fusee.Engine
             //        ShaderReflectionVariable shaderRefVar = cbTemp.GetVariable(j);
             //        ShaderReflectionType shaderRefType = cbTemp.GetVariable(j).GetVariableType();
             //        ShaderTypeDescription shaderRefTypeDesc = shaderRefType.Description;
-                    
+
             //        _vparams._vs = _vertexShader;
             //        _vparams._vsByteCode = vertexShaderByteCode;
             //        _vparams._buffername = cbDEsc.Name;
@@ -629,7 +780,7 @@ namespace Fusee.Engine
 
             //    }
             //}
-            return new ShaderProgramImp {};
+            return new ShaderProgramImp { };
         }
 
 
@@ -643,8 +794,21 @@ namespace Fusee.Engine
         {
             //hat keinen Effekt
 
-            _context.ClearRenderTargetView(_renderView, SharpDX.Color.CadetBlue);
+            if ((flags & ClearFlags.Color) != (ClearFlags) 0)
+            {
+                Color4 clearColor = new Color4();
+                clearColor.Red = _cColor.x;
+                clearColor.Green = _cColor.y;
+                clearColor.Blue = _cColor.z;
+                clearColor.Alpha = _cColor.w;
+                _context.ClearRenderTargetView(_renderView, clearColor);
+            }
+            if ((flags & ClearFlags.Depth) != (ClearFlags) 0)
+            {
+                _context.ClearDepthStencilView(_depthView, DepthStencilClearFlags.Depth, _depth, 0);//tiefenwert durch benutzer ändern
+            }
            
+            
         }
 
 
@@ -654,9 +818,9 @@ namespace Fusee.Engine
             {
                 throw new ArgumentException("Vertices must not be null or empty");
             }
-            
+
             ((MeshImp)mr).VertexBufferObject = Buffer.Create(_device, BindFlags.VertexBuffer, vertices);
-            
+
         }
 
 
@@ -666,7 +830,7 @@ namespace Fusee.Engine
             {
                 throw new ArgumentException("Vertices must not be null or empty");
             }
-            
+
             ((MeshImp)mr).NormalBufferObject = Buffer.Create(_device, BindFlags.VertexBuffer, normals);
         }
 
@@ -676,7 +840,7 @@ namespace Fusee.Engine
             {
                 throw new ArgumentException("Vertices must not be null or empty");
             }
-            
+
             ((MeshImp)mr).UVBufferObject = Buffer.Create(_device, BindFlags.VertexBuffer, uvs);
         }
 
@@ -688,9 +852,9 @@ namespace Fusee.Engine
             {
                 throw new ArgumentException("Vertices must not be null or empty");
             }
-            
+
             ((MeshImp)mr).ColorBufferObject = Buffer.Create(_device, BindFlags.VertexBuffer, colors);
-            
+
         }
 
 
@@ -700,21 +864,21 @@ namespace Fusee.Engine
             {
                 throw new ArgumentException("Vertices must not be null or empty");
             }
-            
+
             ((MeshImp)mr).ElementBufferObject = Buffer.Create(_device, BindFlags.IndexBuffer, triangleIndices);
-            ((MeshImp) mr).NElements = triangleIndices.Length;
+            ((MeshImp)mr).NElements = triangleIndices.Length;
 
         }
 
         public void Render(IMeshImp mr)
         {
             var maxCount = 4;
-            if (((MeshImp) mr).VertexBufferBindingObject == null)
+            if (((MeshImp)mr).VertexBufferBindingObject == null)
             {
                 List<VertexBufferBinding> binding = new List<VertexBufferBinding>(4);
                 if (((MeshImp)mr).VertexBufferObject != null)
                 {
-                     binding.Add(new VertexBufferBinding(((MeshImp)mr).VertexBufferObject,12, 0)); 
+                    binding.Add(new VertexBufferBinding(((MeshImp)mr).VertexBufferObject, 12, 0));
                 }
 
                 if (((MeshImp)mr).ColorBufferObject != null)
@@ -730,12 +894,12 @@ namespace Fusee.Engine
                 if (((MeshImp)mr).NormalBufferObject != null)
                 {
 
-                    binding.Add(new VertexBufferBinding(((MeshImp) mr).NormalBufferObject, 12, 0));
+                    binding.Add(new VertexBufferBinding(((MeshImp)mr).NormalBufferObject, 12, 0));
                 }
                 ((MeshImp)mr).VertexBufferBindingObject = binding.ToArray();
 
             }
-            _context.InputAssembler.SetVertexBuffers(0,((MeshImp)mr).VertexBufferBindingObject);
+            _context.InputAssembler.SetVertexBuffers(0, ((MeshImp)mr).VertexBufferBindingObject);
 
 
             if (((MeshImp)mr).ElementBufferObject != null)
@@ -744,11 +908,13 @@ namespace Fusee.Engine
                 _context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
 
                 _context.InputAssembler.SetIndexBuffer(((MeshImp)mr).ElementBufferObject, Format.R16_UInt, 0);
+
+                
                 _context.DrawIndexed(((MeshImp)mr).NElements, 0, 0);
             }
-       
-            
-            
+
+
+
 
         }
 
@@ -759,17 +925,17 @@ namespace Fusee.Engine
 
         public void Viewport(int x, int y, int width, int height)
         {
-            _context.Rasterizer.SetViewports(new Viewport(x,y,width,height, 0.0f,1.0f));
+            _context.Rasterizer.SetViewports(new Viewport(x, y, width, height, 0.0f, 1.0f));
         }
 
         public void ColorMask(bool red, bool green, bool blue, bool alpha)
         {
-            
+
         }
 
         public void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)
         {
-           
+
         }
     }
 }
