@@ -41,58 +41,8 @@ namespace Fusee.SceneManagement
         /// The _ renderer stack
         /// </summary>
         private Stack<Renderer> _RendererStack;
-        /// <summary>
-        /// The _delta time
-        /// </summary>
-        private double _deltaTime;
-        /// <summary>
-        /// The _input
-        /// </summary>
-        private Input _input;
 
 
-
-        /// <summary>
-        /// Sets the delta time.
-        /// </summary>
-        /// <param name="delta">The delta.</param>
-        public void SetDeltaTime(double delta)
-        {
-            _deltaTime = delta;
-        }
-
-
-
-
-        /// <summary>
-        /// Gets or sets the input.
-        /// </summary>
-        /// <value>
-        /// The input.
-        /// </value>
-        public Input Input
-        {
-            set { _input = value; }
-            get
-            {
-                if (_input != null)
-                {
-                    return _input;
-                }else
-                {
-                    return null;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets the delta time.
-        /// </summary>
-        /// <param name="deltaTime">The delta time.</param>
-        public void GetDeltaTime(out double deltaTime)
-        {
-            deltaTime = _deltaTime;
-        }
 
 
         /// <summary>
@@ -109,7 +59,7 @@ namespace Fusee.SceneManagement
             _hasTransform = new Stack<bool>();
             _hasRenderer = new Stack<bool>();
             _hasMesh = new Stack<bool>();
-            _mtxModelViewStack.Push(float4x4.Identity);
+            //_mtxModelViewStack.Push(float4x4.Identity);
             //PrepareDoubleDispatch();
             /*
             
@@ -151,7 +101,6 @@ namespace Fusee.SceneManagement
             {
                 AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
             }
-
         }
 
 
@@ -159,17 +108,55 @@ namespace Fusee.SceneManagement
         /// <summary>
         /// Adds the transform to the internal stack.
         /// </summary>
-        /// <param name="mtx">The MTX.</param>
-        private void AddTransform(float4x4 mtx)
+        /// <param name="transform">The transformation.</param>
+        private void AddTransform(Transformation transform)
         {
-            _hasTransform.Pop();
-                _mtxModelViewStack.Push(mtx * _mtxModelViewStack.Pop());
-
-            
-            _hasTransform.Push(true);
-            if (HasRenderingTriple())
+            if (_mtxModelViewStack.Count > 0)
             {
-                AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
+
+
+                if (transform.GlobalMatrixDirty)
+                {
+                    transform.Matrix = float4x4.Invert(_mtxModelViewStack.Peek())*transform.GlobalMatrix;
+                    transform.SetGlobalMat(transform.Matrix * _mtxModelViewStack.Peek());
+                    _hasTransform.Pop();
+                    _mtxModelViewStack.Push(transform.Matrix*_mtxModelViewStack.Pop());
+                    _hasTransform.Push(true);
+
+                    if (HasRenderingTriple())
+                    {
+                        AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
+                    }
+
+                    return;
+                }
+                transform.SetGlobalMat(transform.Matrix*_mtxModelViewStack.Peek());
+                _hasTransform.Pop();
+                _mtxModelViewStack.Push(transform.Matrix*_mtxModelViewStack.Pop());
+                _hasTransform.Push(true);
+
+                if (HasRenderingTriple())
+                {
+                    AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
+                }
+
+            }else
+            {
+
+
+                if(_hasTransform.Count > 0)
+                {
+                    _hasTransform.Pop();
+                }
+
+                _hasTransform.Push(true);
+                _mtxModelViewStack.Push(transform.GlobalMatrix);
+
+                if (HasRenderingTriple())
+                {
+                    AddRenderJob(_mtxModelViewStack.Peek(), _meshStack.Peek(), _RendererStack.Peek());
+                }
+                
             }
         }
 
@@ -191,7 +178,7 @@ namespace Fusee.SceneManagement
         /// </summary>
         private void Push()
         {
-
+            if(_mtxModelViewStack.Count > 0)
                 _mtxModelViewStack.Push(_mtxModelViewStack.Peek());
 
             
@@ -207,16 +194,19 @@ namespace Fusee.SceneManagement
         {
             _mtxModelViewStack.Pop();
             _hasTransform.Pop();
+            _hasMesh.Pop();
+            _hasRenderer.Pop();
             if(_meshStack.Count > 0)
             {
+
                 _meshStack.Pop();
-                _hasMesh.Pop();  
+                  
             }
             
             if(_RendererStack.Count > 0)
             {
                 _RendererStack.Pop();
-                _hasRenderer.Pop();
+                
             }
             
             
@@ -274,10 +264,12 @@ namespace Fusee.SceneManagement
             //Console.WriteLine("_hasTransform+"+_hasTransform.Count+"_hasMesh+"+_hasMesh.Count+"_hasRenderer"+_hasRenderer.Count);
             RenderMatrix renderMatrix = new RenderMatrix(matrix);
             _queue.AddRenderJob(renderMatrix);
-            RenderMesh renderMesh = new RenderMesh(mesh);
-            _queue.AddRenderJob(renderMesh);
+
             RenderRenderer renderRenderer = new RenderRenderer(renderer);
             _queue.AddRenderJob(renderRenderer);
+            RenderMesh renderMesh = new RenderMesh(mesh);
+            _queue.AddRenderJob(renderMesh);
+            //Debug.WriteLine("Transforms: "+_hasTransform.Count+" Renderers: "+_hasRenderer.Count+" Meshes: "+_hasMesh.Count);
         }
 
 
@@ -342,8 +334,12 @@ namespace Fusee.SceneManagement
         /// <param name="renderer">The renderer.</param>
         override public void Visit(Renderer renderer)
         {
-            StoreMesh(renderer.mesh);
-            StoreRenderer(renderer);
+            if(renderer.mesh != null && renderer.material != null)
+            {
+                StoreMesh(renderer.mesh);
+                StoreRenderer(renderer); 
+            }
+            
         }
         /// <summary>
         /// Visits the specified transform.
@@ -351,8 +347,9 @@ namespace Fusee.SceneManagement
         /// <param name="transform">The transform.</param>
         override public void Visit(Transformation transform)
         {
-            AddTransform(transform.Matrix);
+            AddTransform(transform);
         }
+
         /// <summary>
         /// Visits the specified directional light to collect data if required by the current Visitor derivate.
         /// </summary>
@@ -384,7 +381,7 @@ namespace Fusee.SceneManagement
         override public void Visit(Camera camera)
         {
 
-            if (_mtxModelViewStack.Peek() != null)
+            if (_mtxModelViewStack != null)
             {
                 camera.ViewMatrix = _mtxModelViewStack.Peek();
                 _queue.AddCamera(camera.SubmitWork());

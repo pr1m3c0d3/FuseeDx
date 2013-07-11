@@ -91,7 +91,7 @@ namespace Fusee.SceneManagement
         /// <param name="cameramatrix">The cameramatrix.</param>
         public void AddCamera(RenderCamera cameramatrix)
         {
-            RenderJobs[0].Add(cameramatrix);
+            RenderJobs[1].Add(cameramatrix);
         }
 
         /// <summary>
@@ -104,21 +104,19 @@ namespace Fusee.SceneManagement
 
             foreach (var sceneMember in SceneMembers)
             {
-                
-                //_traversalRender.SetDeltaTime(renderCanvas.DeltaTime);
-                _sceneVisitorRendering.SetDeltaTime(Time.Instance.DeltaTime);
-                //sceneMember.Traverse(_traversalRender);
                 sceneMember.Accept(_sceneVisitorRendering);
             }
 
             // Order: Matrix, Mesh, Renderer
-            for (int i = 0; i < RenderJobs.Length; i++ )
+            for (int i = 1; i < RenderJobs.Length; i++ )
             {
 
                 
                 
                 for (int k = 0; k < RenderJobs[i].Count;k++)
                 {
+
+                    
                     RenderJobs[i][k].SubmitWork(RC);
 
                 }
@@ -131,6 +129,14 @@ namespace Fusee.SceneManagement
             foreach (var renderjob in RenderJobs)
             {
                 renderjob.Clear();
+            }
+        }
+
+        public void UpdateLights()
+        {
+            for (int j = 0; j < RenderJobs[0].Count; j++)
+            {
+                RenderJobs[0][j].SubmitWork(RC);
             }
         }
 
@@ -150,7 +156,7 @@ namespace Fusee.SceneManagement
         /// <param name="job">The job.</param>
         public void AddLightJob(RenderJob job)
         {
-            RenderJobs[1].Add(job);
+            RenderJobs[0].Add(job);
         }
 
 
@@ -187,6 +193,14 @@ namespace Fusee.SceneManagement
             return result;
         }
 
+        public void StartActionCode()
+        {
+            SceneVisitorStartAction startactions = new SceneVisitorStartAction();
+            foreach (var sceneMember in SceneMembers)
+            {
+                sceneMember.Accept(startactions);
+            }
+        }
 
 
     }

@@ -277,7 +277,7 @@ namespace Fusee.Engine
         }
 
 
-        public IEnumerable<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
+        public IList<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
         {
             throw new NotImplementedException();
         }
@@ -917,6 +917,17 @@ namespace Fusee.Engine
 
 
         }
+        /*
+         * 
+         * 
+         * 
+         */
+        //NEU
+        public void DebugLine(float3 start, float3 end, float4 color) 
+        {
+           
+        }
+
 
         public IMeshImp CreateMeshImp()
         {

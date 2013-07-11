@@ -27,7 +27,6 @@ namespace Fusee.Engine
                     // TODO: Remove this hardcoded hack to OpenTK
 
                     Assembly impAsm = Assembly.LoadFrom("Fusee.Engine.Imp.SharpDX.dll");
-                   
                     if (impAsm == null)
                         throw new Exception("Couldn't load implementor assembly (Fusee.Engine.Imp.SharpDX.dll).");
 

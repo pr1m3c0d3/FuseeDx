@@ -106,7 +106,7 @@
             <param name="param">Shader Parameter used for texture binding.</param>
             <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
         </member>
-        <member name="M:Fusee.Engine.RenderContext.SetLightActive(System.Int32,System.Int32)">
+        <member name="M:Fusee.Engine.RenderContext.SetLightActive(System.Int32,System.Single)">
             <summary>
             Activates the light with the given index.
             </summary>
@@ -580,25 +580,28 @@
         </member>
         <member name="M:Fusee.Engine.Geometry.GetAllFacesContainingVertex(System.Int32,System.Collections.Generic.IList{System.Int32}@)">
             <summary>
-            Gets all faces containing vertex.
+            Gets all faces containing a certain vertex.
             </summary>
-            <param name="iV">The i V.</param>
-            <param name="vertInFace">The vert in face.</param>
-            <returns></returns>
+            <param name="iV">The index of the vertex.</param>
+            <param name="vertInFace">Out parameter: A list of indices of the vertex in each respecitve face.</param>
+            <returns>A list of indices containing the vertex.</returns>
         </member>
         <member name="M:Fusee.Engine.Geometry.CalcFaceNormal(Fusee.Engine.Geometry.Face)">
             <summary>
-            Calcs the face normal.
+            Calculates the normal vector for a given face.
             </summary>
-            <param name="f">The face.</param>
-            <returns>The nomal vectorfor the face.</returns>
-            <exception cref="T:System.Exception">"Cannot calculate normal of degenerate face with only  + f.InxVert.Length +  vertices."</exception>
+            <param name="f">The face to calculate the normal for.</param>
+            <returns>The nomal vector for the face.</returns>
+            <exception cref="T:System.Exception">The face doesn't consist of 3 or more vertices.</exception>
         </member>
         <member name="M:Fusee.Engine.Geometry.CreateNormals(System.Double)">
             <summary>
-            Creates the normals.
+            Creates normals for the entire geometry based on a given smoothing angle.
             </summary>
             <param name="smoothingAngle">The smoothing angle.</param>
+            <remarks>
+            If 
+            </remarks>
         </member>
         <member name="M:Fusee.Engine.Geometry.ToMesh">
             <summary>
@@ -914,6 +917,19 @@
             Provides the Instance of the Time Class.
             </summary>
         </member>
+        <member name="T:Fusee.Engine.MoreShaders">
+            <summary>
+            Contains all pixel and vertex shaders and a method to create a ShaderProgram in Rendercontext.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.MoreShaders.GetShader(System.String,Fusee.Engine.RenderContext)">
+            <summary>
+            Creates the shader in RenderContext and returns a ShaderProgram.
+            </summary>
+            <param name="name">ShaderName.</param>
+            <param name="rc">RenderContext.</param>
+            <returns></returns>
+        </member>
         <member name="T:Fusee.Engine.Input">
             <summary>
             The Input class provides takes care of al imputs. It is accessible from everywhere.
@@ -933,6 +949,12 @@
             <returns>
             The current deflection of the given axis.
             </returns>
+        </member>
+        <member name="M:Fusee.Engine.Input.GetMousePos">
+            <summary>
+            Gets the mouse position.
+            </summary>
+            <returns>A <see cref="T:Fusee.Engine.Point"/> with x and y values.</returns>
         </member>
         <member name="M:Fusee.Engine.Input.IsKeyDown(Fusee.Engine.KeyCodes)">
             <summary>
@@ -1048,6 +1070,14 @@
             </summary>
             <value>
             The height in pixels.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvas.VSync">
+            <summary>
+            Gets or sets a value indicating whether VSync is active.
+            </summary>
+            <value>
+              <c>true</c> if VSync is active; otherwise, <c>false</c>.
             </value>
         </member>
         <member name="T:Fusee.Engine.Diagnostics">

@@ -22,11 +22,11 @@ D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\src\Engine\Components\SceneManagemen
 D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\src\Engine\Components\SceneManagement\obj\x86\Debug\SceneManagement.csproj.GenerateResource.Cache
 D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\src\Engine\Components\SceneManagement\obj\x86\Debug\Fusee.SceneManagement.SceneManagement.dll
 D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\src\Engine\Components\SceneManagement\obj\x86\Debug\Fusee.SceneManagement.SceneManagement.pdb
-C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Fusee.SceneManagement.SceneManagement.XML
-C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Fusee.SceneManagement.SceneManagement.dll
-C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Fusee.SceneManagement.SceneManagement.pdb
 C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Components\SceneManagement\obj\x86\Debug\SceneManagement.csprojResolveAssemblyReference.cache
 C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Components\SceneManagement\obj\x86\Debug\Fusee.SceneManagement.Properties.Resources.resources
 C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Components\SceneManagement\obj\x86\Debug\SceneManagement.csproj.GenerateResource.Cache
-C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Components\SceneManagement\obj\x86\Debug\Fusee.SceneManagement.SceneManagement.dll
-C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Components\SceneManagement\obj\x86\Debug\Fusee.SceneManagement.SceneManagement.pdb
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Fusee.Engine.SceneManagement.xml
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Fusee.Engine.SceneManagement.dll
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Fusee.Engine.SceneManagement.pdb
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Components\SceneManagement\obj\x86\Debug\Fusee.Engine.SceneManagement.dll
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Components\SceneManagement\obj\x86\Debug\Fusee.Engine.SceneManagement.pdb

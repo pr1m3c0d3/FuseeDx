@@ -26,7 +26,10 @@
         </member>
         <member name="T:Fusee.Engine.IAudioStream">
             <summary>
-            Loaded files with <see cref="!:Audio"/> class can be controlled via this IAudioStream interface.
+            Loaded files with <see>
+                                  <cref>Audio</cref>
+                              </see>
+                class can be controlled via this IAudioStream interface.
             </summary>
         </member>
         <member name="M:Fusee.Engine.IAudioStream.Play">
@@ -152,6 +155,67 @@
             The position.
             </value>
         </member>
+        <member name="T:Fusee.Engine.LightType">
+            <summary>
+            Specifies the type of the light.
+            A light is specified by one of three types represented by integers between 0 and 2.
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.LightType.Directional">
+            <summary>
+            Directional light is represented by 0.
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.LightType.Point">
+            <summary>
+            Point light is represented by 1.
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.LightType.Spot">
+            <summary>
+            Spot light is represented by 2.
+            </summary>
+        </member>
+        <member name="T:Fusee.Engine.Light">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Light.Active">
+            <summary>
+            Represents the light status.
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Light.AmbientColor">
+            <summary>
+            Represents the ambient color.
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Light.DiffuseColor">
+            <summary>
+            Represents the diffuse color.
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Light.SpecularColor">
+            <summary>
+            Represents the diffuse color.
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Light.Position">
+            <summary>
+            Represents the specular color.
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Light.Direction">
+            <summary>
+            Represents the position of the light.
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.Light.Type">
+            <summary>
+            Represents the direction of the light.
+            </summary>
+        </member>
         <member name="T:Fusee.Engine.IInputImp">
             <summary>
             To be implemented on certain platforms
@@ -226,6 +290,31 @@
         <member name="F:Fusee.Engine.ImageData.PixelData">
             <summary>
             The pixel data array
+            </summary>
+        </member>
+        <member name="T:Fusee.Engine.ShaderParamInfo">
+            <summary>
+            Holds information for any shader parameter.
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.ShaderParamInfo.Size">
+            <summary>
+            Holds the size in bytes.
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.ShaderParamInfo.Type">
+            <summary>
+            Holds the type of the shader parameter.
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.ShaderParamInfo.Name">
+            <summary>
+            Holds the name of the shader parameter the shader contains.
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.ShaderParamInfo.Handle">
+            <summary>
+            The Handle represents the shader parameter.
             </summary>
         </member>
         <member name="T:Fusee.Engine.ITexture">

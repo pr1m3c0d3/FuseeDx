@@ -25,7 +25,6 @@ D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\Bin\Debug\Examples\Simple\Examples.S
 D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\src\Engine\Examples\Simple\obj\x86\Debug\Simple.csprojResolveAssemblyReference.cache
 D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\src\Engine\Examples\Simple\obj\x86\Debug\Examples.Simple.exe
 D:\Thesis\FuseeDx-DevDx\FuseeDx-DevDx\Fusee\src\Engine\Examples\Simple\obj\x86\Debug\Examples.Simple.pdb
-C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\Simple\Assets\cube_tex.jpg
 C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\Simple\Assets\world_map.jpg
 C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\Simple\Assets\Face.obj.model
 C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\Simple\Assets\Teapot.obj.model

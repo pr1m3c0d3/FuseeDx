@@ -68,8 +68,7 @@ namespace Fusee.Engine
         /// </summary>
         public Input()
         {
-            
-            
+            // not implamented
         }
 
         /// <summary>
@@ -85,6 +84,15 @@ namespace Fusee.Engine
         }
 
         /// <summary>
+        /// Gets the mouse position.
+        /// </summary>
+        /// <returns>A <see cref="Point"/> with x and y values.</returns>
+        public Point GetMousePos()
+        {
+            return _inputImp.GetMousePos();
+        }
+
+        /// <summary>
         /// Check if a given key is pressed during the current frame.
         /// </summary>
         /// <param name="key">The key to check.</param>
@@ -94,6 +102,26 @@ namespace Fusee.Engine
         public bool IsKeyDown(KeyCodes key)
         {
             return _keysPressed.ContainsKey((int)key);
+        }
+
+        public bool OnKeyDown(KeyCodes key)
+        {
+            if(_keysPressed.ContainsKey((int)key))
+            {
+                _keysPressed.Remove((int) key);
+                return true;
+            }
+            return false;  
+        }
+
+        public bool OnKeyUp(KeyCodes key)
+        {
+            if (!_keysPressed.ContainsKey((int)key))
+            {
+                _keysPressed.Add((int)key, true);
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -108,21 +136,43 @@ namespace Fusee.Engine
             return _buttonsPressed.ContainsKey((int)button);
         }
 
+        public bool OnButtonDown(MouseButtons button)
+        {
+            if (_buttonsPressed.ContainsKey((int)button))
+            {
+                _buttonsPressed.Remove((int)button);
+                return true;
+            }
+            return false;  
+        }
+
+        public bool OnButtonUp(MouseButtons button)
+        {
+            if (!_buttonsPressed.ContainsKey((int)button))
+            {
+                _buttonsPressed.Add((int)button, true);
+                return true;
+            }
+            return false;
+        }
+
         internal void OnUpdateFrame(double deltaTime)
         {
-            Point p = _inputImp.GetMousePos();
-            float curr = (float) p.x;
-            _axes[(int)InputAxis.MouseX] = (curr - _axesPreviousAbsolute[(int)InputAxis.MouseX]) * ((float) deltaTime);
-            _axesPreviousAbsolute[(int) InputAxis.MouseX] = curr;
+            var p = _inputImp.GetMousePos();
 
+            float currX = p.x;
+            float currY = p.y;
+            float currR = _inputImp.GetMouseWheelPos();
 
-            curr = (float) p.y;
-            _axes[(int)InputAxis.MouseY] = (curr - _axesPreviousAbsolute[(int)InputAxis.MouseY]) * ((float) deltaTime);
-           _axesPreviousAbsolute[(int) InputAxis.MouseY] = curr;
+            const float deltaFix = 0.005f;
 
-            curr = _inputImp.GetMouseWheelPos();
-            _axes[(int)InputAxis.MouseWheel] = (curr - _axesPreviousAbsolute[(int)InputAxis.MouseWheel]) * ((float) deltaTime);
-            _axesPreviousAbsolute[(int)InputAxis.MouseWheel] = curr;
+            _axes[(int) InputAxis.MouseX] = (currX - _axesPreviousAbsolute[(int) InputAxis.MouseX])*deltaFix;
+            _axes[(int) InputAxis.MouseY] = (currY - _axesPreviousAbsolute[(int) InputAxis.MouseY])*deltaFix;
+            _axes[(int) InputAxis.MouseWheel] = (currR - _axesPreviousAbsolute[(int) InputAxis.MouseWheel])*deltaFix;
+
+            _axesPreviousAbsolute[(int)InputAxis.MouseX] = currX;
+            _axesPreviousAbsolute[(int)InputAxis.MouseY] = currY;
+            _axesPreviousAbsolute[(int)InputAxis.MouseWheel] = currR; 
         }
 
         /// <summary>
@@ -132,7 +182,7 @@ namespace Fusee.Engine
         {
             get
             {
-                if (_instance  == null)
+                if (_instance == null)
                 {
                     _instance = new Input();
                 }

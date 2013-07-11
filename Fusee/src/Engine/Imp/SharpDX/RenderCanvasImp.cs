@@ -39,6 +39,18 @@ namespace Fusee.Engine
             }
         }
 
+        /*
+        * 
+        * 
+        * 
+        */
+        //NEU
+        public bool VerticalSync
+        {
+            get { throw new NotImplementedException(); }
+            set {  }
+        }
+
         internal RenderForm _renderForm;// RenderForm (Dx)
         
         public RenderCanvasImp()
