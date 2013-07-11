@@ -18,3 +18,4 @@ C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\DreieckDx11\Asset
 C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\DreieckDx11\Assets\Face.obj.model
 C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\DreieckDx11\Assets\Teapot.obj.model
 C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\DreieckDx11\Assets\Dreieck.obj.model
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\DreieckDx11\Assets\Cube.obj.model

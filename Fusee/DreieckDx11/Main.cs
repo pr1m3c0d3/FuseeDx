@@ -12,12 +12,7 @@ namespace Examples.DreieckDx11
         protected IShaderParam _vTextureParam;
         protected ImageData _imgData1;
         protected ITexture _iTex1;
-        public override void Init()
-        {
-            // is called on startup
-            string Vs = @"cbuffer Variables : register(b0){
- float4 TestFarbe;
- float4 TestF;
+        string Vs = @"cbuffer Variables : register(b0){
 float4x4 FUSEE_MVP;
 } 
 SamplerState pictureSampler;
@@ -27,22 +22,23 @@ struct VS_IN
 {
 	float4 pos : POSITION;
 	float4 tex : TEXCOORD;
+    float4 normal : NORMAL;
 };
 
 struct PS_IN
 {
 	float4 pos : SV_POSITION;
 	float4 tex : TEXCOORD;
-
+    float4 normal : NORMAL;
 };
 
 PS_IN VS( VS_IN input )
 {
 	PS_IN output = (PS_IN)0;
-	input.pos.w = 1.0f;
+
 	output.pos = mul(input.pos,FUSEE_MVP);
 	// output.col = TestFarbe;
-		
+	output.normal = input.normal;	
 	output.tex = input.tex;
 	
 	return output;
@@ -55,10 +51,8 @@ float4 PS( PS_IN input ) : SV_Target
 	return  imageFG.Sample(pictureSampler,input.tex);
 }
 ";
-            string Ps = @"cbuffer Variables : register(b0){
- float4 TestFarbe;
- float4 TestF;
- float4x4 FUSEE_MVP;
+        string Ps = @"cbuffer Variables : register(b0){
+float4x4 FUSEE_MVP;
 } 
 SamplerState pictureSampler;
 Texture2D imageFG;
@@ -67,22 +61,24 @@ struct VS_IN
 {
 	float4 pos : POSITION;
 	float4 tex : TEXCOORD;
+    float4 normal : NORMAL;
 };
 
 struct PS_IN
 {
 	float4 pos : SV_POSITION;
 	float4 tex : TEXCOORD;
+    float4 normal : NORMAL;
 
 };
 
 PS_IN VS( VS_IN input )
 {
 	PS_IN output = (PS_IN)0;
-	input.pos.w = 1.0f;
+
 	output.pos = mul(input.pos,FUSEE_MVP);
 	// output.col = TestFarbe;
-    
+    output.normal = input.normal;
 	output.tex = input.tex;
 	
 	return output;
@@ -95,6 +91,12 @@ float4 PS( PS_IN input ) : SV_Target
 	return  imageFG.Sample(pictureSampler,input.tex);
 }
 ";
+        public override void Init()
+        {
+            // is called on startup
+            RC.ClearColor = new float4(0.5f, 0.5f, 0.5f, 1);
+            RC.ClearDepth = 1.0f;
+
            Geometry geo2 = MeshReader.ReadWavefrontObj(new StreamReader(@"Assets/Dreieck.obj.model"));
            _myMesh = geo2.ToMesh();
            // _myMesh = new Mesh();
@@ -153,17 +155,16 @@ float4 PS( PS_IN input ) : SV_Target
                     0
                 };
 
-            _imgData1 = RC.LoadImage("Assets/cube_tex.jpg");
+            _imgData1 = RC.LoadImage("Assets/world_map.jpg");
             _iTex1 = RC.CreateTexture(_imgData1);
 
             //_myMesh.Vertices = myVertices;
             //_myMesh.Colors = myColors;
-            //_myMesh.UVs = myUvs;
+            _myMesh.UVs = myUvs;
             //_myMesh_.Vertices = myVert;
             //_myMesh.Triangles = triangles;
 
-            RC.ClearColor = new float4(0.5f, 0.5f, 0.5f, 1);
-            RC.ClearDepth = 1.0f;
+           
         }
 
         public override void RenderAFrame()
@@ -176,6 +177,8 @@ float4 PS( PS_IN input ) : SV_Target
                 float4x4 mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
 
                 RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
+                
+
                 RC.SetShaderParamTexture(_vTextureParam, _iTex1);
                 RC.Render(_myMesh);
 
