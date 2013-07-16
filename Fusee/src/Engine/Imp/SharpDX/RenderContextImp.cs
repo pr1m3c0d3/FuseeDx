@@ -530,6 +530,35 @@ namespace Fusee.Engine
             _vReflector = new ShaderReflection(vertexShaderByteCode);
             _pShaderDescription = _pReflector.Description;
             _vShaderDescription = _vReflector.Description;
+
+            /*
+             * 
+             * Get SamplerState Texture2D Names (PixelShader)
+             * 
+             */
+            int ResourceCountP = _pReflector.Description.BoundResources;
+            InputBindingDescription descPT;
+            for (int i = 0; i < ResourceCountP; i++)
+            {
+                descPT = _pReflector.GetResourceBindingDescription(i);
+                MessageBox.Show(descPT.Name);
+                MessageBox.Show(descPT.Type.ToString());
+            }
+            /*
+             * 
+             * Get SamplerState Texture2D Names (VertexShader)
+             * 
+             */
+            int ResourceCountV = _vReflector.Description.BoundResources;
+            InputBindingDescription descVT;
+            for (int i = 0; i < ResourceCountP; i++)
+            {
+                descVT = _pReflector.GetResourceBindingDescription(i);
+                MessageBox.Show(descVT.Name);
+                MessageBox.Show(descVT.Type.ToString());
+            }
+            
+         
             _sDxShaderParams = new List<SharpDxShaderParamInfo>();
             _sDxShaderBuffers = new Dictionary<string, Buffer>();
             bool color = true;
