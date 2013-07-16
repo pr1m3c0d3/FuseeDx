@@ -417,8 +417,35 @@ namespace Fusee.Engine
 
         public void SetShaderParam(IShaderParam param, float4x4 val)
         {
+            unsafe
+            {
+                float mF = *(float*) (&val);
+                var shaderParamInfo = _sDxShaderParams[((ShaderParam) param).position];
+                if (shaderParamInfo._varSize == 64)
+                {
+                    shaderParamInfo._bufferParams.Position = shaderParamInfo._varPositionB;
+                    shaderParamInfo._bufferParams.Write( mF);
+                    shaderParamInfo._bufferParams.Position = 0;
+                    _context.UpdateSubresource(new DataBox(shaderParamInfo._bufferParams.PositionPointer, 0, 0),
+                                               shaderParamInfo._sdxBuffer, 0);
+                    if (((ShaderParam) param).shaderType == ShaderType.PixelShader)
+                    {
+                        _context.PixelShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
+                       
+                    }
+                    else
+                    {
+                        _context.VertexShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
+                       
+                    }
+                }
+            }
+        }
+
+        public void SetShaderParam(IShaderParam param, int val)
+        {
             var shaderParamInfo = _sDxShaderParams[((ShaderParam)param).position];
-            if (shaderParamInfo._varSize == 64)
+            if (shaderParamInfo._varSize == 4)
             {
                 shaderParamInfo._bufferParams.Position = shaderParamInfo._varPositionB;
                 shaderParamInfo._bufferParams.Write(val);
@@ -434,11 +461,6 @@ namespace Fusee.Engine
                     _context.VertexShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
                 }
             }
-        }
-
-        public void SetShaderParam(IShaderParam param, int val)
-        {
-
         }
 
         /// <summary>
@@ -910,6 +932,7 @@ namespace Fusee.Engine
                 _context.InputAssembler.SetIndexBuffer(((MeshImp)mr).ElementBufferObject, Format.R16_UInt, 0);
 
                 
+                
                 _context.DrawIndexed(((MeshImp)mr).NElements, 0, 0);
             }
 
@@ -944,9 +967,6 @@ namespace Fusee.Engine
 
         }
 
-        public void Frustum(double left, double right, double bottom, double top, double zNear, double zFar)
-        {
 
-        }
     }
 }

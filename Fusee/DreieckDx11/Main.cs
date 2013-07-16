@@ -36,7 +36,7 @@ PS_IN VS( VS_IN input )
 {
 	PS_IN output = (PS_IN)0;
 
-	output.pos = mul(input.pos,FUSEE_MVP);
+	output.pos = input.pos;
 	// output.col = TestFarbe;
 	output.normal = input.normal;	
 	output.tex = input.tex;
@@ -76,7 +76,7 @@ PS_IN VS( VS_IN input )
 {
 	PS_IN output = (PS_IN)0;
 
-	output.pos = mul(input.pos,FUSEE_MVP);
+	output.pos = input.pos;
 	// output.col = TestFarbe;
     output.normal = input.normal;
 	output.tex = input.tex;
