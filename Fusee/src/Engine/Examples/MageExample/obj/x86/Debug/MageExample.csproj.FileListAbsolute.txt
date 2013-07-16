@@ -1,0 +1,12 @@
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\MageExample\Assets\HandAOMap.jpg
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\MageExample\Assets\HandschuhNormalMap.jpg
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\MageExample\Assets\TextureAtlas.jpg
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\MageExample\Assets\TextureAtlasNormal.jpg
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\MageExample\Assets\mageBodyOBJ.obj.model
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\MageExample\Assets\mageGloveLOBJ.obj.model
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\MageExample\Assets\mageGloveROBJ.obj.model
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\MageExample\Examples.MageExample.exe
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\MageExample\Examples.MageExample.pdb
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Examples\MageExample\obj\x86\Debug\MageExample.csprojResolveAssemblyReference.cache
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Examples\MageExample\obj\x86\Debug\Examples.MageExample.exe
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Examples\MageExample\obj\x86\Debug\Examples.MageExample.pdb

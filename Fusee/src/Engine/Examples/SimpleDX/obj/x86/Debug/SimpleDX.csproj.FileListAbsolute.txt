@@ -1,0 +1,17 @@
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\Simple\Assets\cube_tex.jpg
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\Simple\Assets\world_map.jpg
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\Simple\Assets\Face.obj.model
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\Simple\Assets\Teapot.obj.model
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\Simple\Examples.Simple.exe
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\Simple\Examples.Simple.pdb
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Examples\SimpleDX\obj\x86\Debug\SimpleDX.csprojResolveAssemblyReference.cache
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\Simple\Assets\Dreieck.obj.model
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\SimpleDX\Assets\Dreieck.obj.model
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\SimpleDX\Assets\Face.obj.model
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\SimpleDX\Assets\Teapot.obj.model
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\SimpleDX\Assets\cube_tex.jpg
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\SimpleDX\Assets\world_map.jpg
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\SimpleDX\Examples.SimpleDX.exe
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\SimpleDX\Examples.SimpleDX.pdb
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Examples\SimpleDX\obj\x86\Debug\Examples.SimpleDX.exe
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Examples\SimpleDX\obj\x86\Debug\Examples.SimpleDX.pdb

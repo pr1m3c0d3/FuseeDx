@@ -1,0 +1,7 @@
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\WorldRendering\Assets\cube_tex.jpg
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\WorldRendering\Assets\Cube.obj.model
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\WorldRendering\Examples.WorldRendering.exe
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\WorldRendering\Examples.WorldRendering.pdb
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Examples\WorldRendering\obj\x86\Debug\WorldRendering.csprojResolveAssemblyReference.cache
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Examples\WorldRendering\obj\x86\Debug\Examples.WorldRendering.exe
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Examples\WorldRendering\obj\x86\Debug\Examples.WorldRendering.pdb
