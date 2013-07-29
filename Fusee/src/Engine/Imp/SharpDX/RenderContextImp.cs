@@ -419,24 +419,24 @@ namespace Fusee.Engine
         {
             unsafe
             {
-                float mF = *(float*) (&val);
-                var shaderParamInfo = _sDxShaderParams[((ShaderParam) param).position];
+                float* mF = (float*)(&val);
+                var shaderParamInfo = _sDxShaderParams[((ShaderParam)param).position];
                 if (shaderParamInfo._varSize == 64)
                 {
                     shaderParamInfo._bufferParams.Position = shaderParamInfo._varPositionB;
-                    shaderParamInfo._bufferParams.Write( mF);
+                    shaderParamInfo._bufferParams.Write((IntPtr)mF, 0, 64);
                     shaderParamInfo._bufferParams.Position = 0;
                     _context.UpdateSubresource(new DataBox(shaderParamInfo._bufferParams.PositionPointer, 0, 0),
                                                shaderParamInfo._sdxBuffer, 0);
-                    if (((ShaderParam) param).shaderType == ShaderType.PixelShader)
+                    if (((ShaderParam)param).shaderType == ShaderType.PixelShader)
                     {
                         _context.PixelShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
-                       
+
                     }
                     else
                     {
                         _context.VertexShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
-                       
+
                     }
                 }
             }
@@ -531,6 +531,12 @@ namespace Fusee.Engine
             _pShaderDescription = _pReflector.Description;
             _vShaderDescription = _vReflector.Description;
 
+            
+            
+         
+            _sDxShaderParams = new List<SharpDxShaderParamInfo>();
+            _sDxShaderBuffers = new Dictionary<string, Buffer>();
+
             /*
              * 
              * Get SamplerState Texture2D Names (PixelShader)
@@ -541,26 +547,25 @@ namespace Fusee.Engine
             for (int i = 0; i < ResourceCountP; i++)
             {
                 descPT = _pReflector.GetResourceBindingDescription(i);
-                MessageBox.Show(descPT.Name);
-                MessageBox.Show(descPT.Type.ToString());
+                SharpDxShaderParamInfo _psparams = new SharpDxShaderParamInfo();
+                _psparams._varName = descPT.Name;
+                _sDxShaderParams.Add(_psparams);
+               
             }
             /*
              * 
              * Get SamplerState Texture2D Names (VertexShader)
              * 
              */
-            int ResourceCountV = _vReflector.Description.BoundResources;
-            InputBindingDescription descVT;
-            for (int i = 0; i < ResourceCountP; i++)
-            {
-                descVT = _pReflector.GetResourceBindingDescription(i);
-                MessageBox.Show(descVT.Name);
-                MessageBox.Show(descVT.Type.ToString());
-            }
-            
-         
-            _sDxShaderParams = new List<SharpDxShaderParamInfo>();
-            _sDxShaderBuffers = new Dictionary<string, Buffer>();
+            //int ResourceCountV = _vReflector.Description.BoundResources;
+            //InputBindingDescription descVT;
+            //for (int i = 0; i < ResourceCountV; i++)
+            //{
+            //    descVT = _pReflector.GetResourceBindingDescription(i);
+              
+               
+            //}
+
             bool color = true;
             bool norms = false;
             for (int i = 0; i < _pShaderDescription.InputParameters;i++ )

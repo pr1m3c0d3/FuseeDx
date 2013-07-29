@@ -25,11 +25,11 @@ namespace Fusee.Engine
                 if (_renderingImplementor == null)
                 {
                     // TODO: Remove this hardcoded hack to OpenTK
-
+                    //Assembly impAsm = Assembly.LoadFrom("Fusee.Engine.Imp.OpenTK.dll");
                     Assembly impAsm = Assembly.LoadFrom("Fusee.Engine.Imp.SharpDX.dll");
                     if (impAsm == null)
-                        throw new Exception("Couldn't load implementor assembly (Fusee.Engine.Imp.SharpDX.dll).");
-
+                    //    throw new Exception("Couldn't load implementor assembly (Fusee.Engine.Imp.OpenTK.dll).");
+                    throw new Exception("Couldn't load implementor assembly (Fusee.Engine.Imp.SharpDX.dll).");
                     _renderingImplementor = impAsm.GetType("Fusee.Engine.RenderingImplementor");
                 }
                 return _renderingImplementor;

@@ -33,3 +33,4 @@ C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\Simple\Examples.S
 C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Examples\Simple\obj\x86\Debug\Simple.csprojResolveAssemblyReference.cache
 C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Examples\Simple\obj\x86\Debug\Examples.Simple.exe
 C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\src\Engine\Examples\Simple\obj\x86\Debug\Examples.Simple.pdb
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Examples\Simple\Assets\Dreieck.obj.model
