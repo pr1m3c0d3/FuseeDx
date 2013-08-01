@@ -1,13 +1,13 @@
 ﻿using System;
 using Fusee.Engine;
 using Fusee.Math;
-
+using SharpDX.DirectInput;
 
 namespace Examples.SimpleDX
 {
     public class SimpleDX : RenderCanvas
     {
-        //Pixel and Vertex Shader
+        //Pixel and Vertex Shader    ((float3x3)fMatrix) = transpose((float3x3)fMatrix);
         public string Vs = @"cbuffer Variables : register(b0){
 float4 Testfarbe;
 float4x4 FUSEE_TMVP;
@@ -16,66 +16,125 @@ float4x4 FUSEE_IMV;
 struct VS_IN
 {
 	float4 pos : POSITION;
-	float4 tex : TEXCOORD;
-    float4 normal : NORMAL;
+	float2 tex : TEXCOORD;
+    float3 normal : NORMAL;
 };
 struct PS_IN
 {
 	float4 pos : SV_POSITION;
     float4 col : COLOR;
-	float4 tex : TEXCOORD;
-    float4 normal : NORMAL;
+	float2 tex : TEXCOORD;
+    float3 normal : NORMAL;
 };
 PS_IN VS( VS_IN input )
 {
 	PS_IN output = (PS_IN)0;
     input.pos.w = 1.0f;
 	output.pos = mul(input.pos,FUSEE_TMVP);
-    output.normal = input.normal;
-    output.col = Testfarbe;
-	/*output.col = FUSEE_MV._m00_m01_m02_m03;*/
-/*    output.normal = input.normal;
-	output.tex = input.tex;*/
-/* if (FUSEE_MVP._m44 == 1.0f)
-        output.col = float4(1,0,0,1);
-    else
-        output.col = float4(0,0,1,1);*/
+    float3x3 fMatrix = {FUSEE_IMV[0].xyz,FUSEE_IMV[1].xyz,FUSEE_IMV[2].xyz};
 
+    output.normal = normalize(mul(input.normal,(float3x3)fMatrix));
+    output.col = Testfarbe;
+    output.tex = input.tex;
 	return output;
 }
 ";
 
         string Ps = @"
-SamplerState pictureSampler;
-Texture2D imageFG;
+
 struct PS_IN
 {
 	float4 pos : SV_POSITION;
     float4 col : COLOR;
-	float4 tex : TEXCOORD;
-    float4 normal : NORMAL;
+	float2 tex : TEXCOORD;
+    float3 normal : NORMAL;
 };
 
 
 
 float4 PS( PS_IN input ) : SV_Target
 {
-	return input.col;
+float3 vec3 = {0,0,1};
+float res =   dot(input.normal, vec3);
+	return mul(input.col,res);
 	/*return  imageFG.Sample(pictureSampler,input.tex);*/
     }
 ";
+
+
+
+
+        private const string VsTexture = @"cbuffer Variablenn : register(b0){
+
+float4x4 FUSEE_TMVP;
+float4x4 FUSEE_IMV;
+} 
+struct VS_IN
+{
+	float4 pos : POSITION;
+	float2 tex : TEXCOORD;
+    float3 normal : NORMAL;
+};
+struct PS_IN
+{
+	float4 pos : SV_POSITION;
+
+	float2 tex : TEXCOORD;
+    float3 normal : NORMAL;
+};
+PS_IN VS( VS_IN input )
+{
+	PS_IN output = (PS_IN)0;
+    input.pos.w = 1.0f;
+	output.pos = mul(input.pos,FUSEE_TMVP);
+    float3x3 fMatrix = {FUSEE_IMV[0].xyz,FUSEE_IMV[1].xyz,FUSEE_IMV[2].xyz};
+
+    output.normal = normalize(mul(input.normal,(float3x3)fMatrix));
+    output.tex = input.tex;
+	return output;
+}
+";
+
+
+        private const string PsTexture = @"
+SamplerState pictureSampler;
+Texture2D texture1;
+struct PS_IN
+{
+	float4 pos : SV_POSITION;
+    float4 col : COLOR;
+	float2 tex : TEXCOORD;
+    float3 normal : NORMAL;
+};
+
+
+
+float4 PS( PS_IN input ) : SV_Target
+{
+float3 vec3 = {0,0,1};
+float res =   dot(input.normal, vec3);
+	
+	return texture1.Sample(pictureSampler,input.tex);
+    }";
+
+
+
+
+
+
+
         //angle variable
         private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, RotationSpeed = 1.0f, Damping = 0.92f;
         //modell variable
-        private Mesh Mesh, MeshFace;
+        private Mesh Mesh, _meshFace;
         //variable for color
-        private IShaderParam VColorParam;
-        private IShaderParam _vTextureParam;
+        private IShaderParam _colorParam;
+        private IShaderParam _textureParam;
         private ImageData _imgData1;
         private ImageData _imgData2;
         private ITexture _iTex1;
         private ITexture _iTex2;
-        private ShaderProgram sp;
+        private ShaderProgram sp,_spTexture;
 
         public override void Init()
         {
@@ -83,18 +142,24 @@ float4 PS( PS_IN input ) : SV_Target
             RC.ClearDepth = 1.0f;
             //initialize the variable
              Mesh = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
+
+             _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
+
+             sp = RC.CreateShader(Vs, Ps);
             
+             _colorParam = sp.GetShaderParam("Testfarbe");
+
+             //_spTexture = RC.CreateShader(VsTexture, PsTexture);
 
 
-            //ShaderProgram sp = RC.CreateShader(Vs, Ps);
-            sp = RC.CreateShader(Vs, Ps);
-            _vTextureParam = sp.GetShaderParam("Testfarbe");
-            
+             //_textureParam = _spTexture.GetShaderParam("pictureSampler");
 
-            _imgData1 = RC.LoadImage("Assets/world_map.jpg");
-            
+             //// load texture
+             //var imgData = RC.LoadImage("Assets/world_map.jpg");
 
-            _iTex1 = RC.CreateTexture(_imgData1);
+
+
+             //_iTex1 = RC.CreateTexture(imgData);
 
         }
 
@@ -110,8 +175,15 @@ float4 PS( PS_IN input ) : SV_Target
 
             //RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
 
+            var di = new DirectInput();
+            var keyboard = new Keyboard(di);
+            keyboard.Acquire();
+            var keyboardState = keyboard.GetCurrentState();
+
 
             // move per mouse
+
+
             if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
                 _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
@@ -129,16 +201,17 @@ float4 PS( PS_IN input ) : SV_Target
             _angleVert += _angleVelVert;
 
             // move per keyboard
-            if (Input.Instance.IsKeyDown(KeyCodes.Left))
-                _angleHorz -= RotationSpeed * (float)Time.Instance.DeltaTime;
-
-            if (Input.Instance.IsKeyDown(KeyCodes.Right))
+            if (keyboardState.IsPressed(Key.Left))
+            {
+                _angleHorz -= RotationSpeed*(float) Time.Instance.DeltaTime;
+            }
+            if (keyboardState.IsPressed(Key.Right))
                 _angleHorz += RotationSpeed * (float)Time.Instance.DeltaTime;
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Up))
+            if (keyboardState.IsPressed(Key.UpArrow))
                 _angleVert -= RotationSpeed * (float)Time.Instance.DeltaTime;
 
-            if (Input.Instance.IsKeyDown(KeyCodes.Down))
+            if (keyboardState.IsPressed(Key.Down))
                 _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
 
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
@@ -152,9 +225,20 @@ float4 PS( PS_IN input ) : SV_Target
         
 
             //mapping
-            RC.SetShaderParam(_vTextureParam, new float4(0.0f,1.0f, 0.0f, 1.0f));
+            RC.SetShaderParam(_colorParam, new float4(0.0f, 1.0f, 0.0f, 1.0f));
             RC.Render(Mesh);
 
+
+
+
+
+            // //second mesh
+            //RC.ModelView = mtxRot * float4x4.CreateTranslation(150, 0, 0) * mtxCam;
+
+            //RC.SetShader(_spTexture);
+            //RC.SetShaderParamTexture(_textureParam, _iTex1);
+
+            //RC.Render(_meshFace);
             
             Present();
         }
