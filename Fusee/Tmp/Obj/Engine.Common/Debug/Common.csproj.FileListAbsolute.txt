@@ -20,3 +20,4 @@ C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Fusee.Engine.Common.pdb
 C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Tmp\Obj\Engine.Common\Debug\Common.csprojResolveAssemblyReference.cache
 C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Tmp\Obj\Engine.Common\Debug\Fusee.Engine.Common.dll
 C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Tmp\Obj\Engine.Common\Debug\Fusee.Engine.Common.pdb
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Fusee.Engine.Common.XML

@@ -1,4 +1,6 @@
 ﻿
+using SharpDX.Direct3D11;
+
 namespace Fusee.Engine
 {
     /// <summary>
@@ -6,6 +8,6 @@ namespace Fusee.Engine
     /// </summary>
     class Texture : ITexture
     {
-        internal int handle;
+        internal ShaderResourceView handle;
     }
 }

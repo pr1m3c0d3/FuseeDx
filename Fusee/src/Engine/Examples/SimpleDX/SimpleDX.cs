@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Windows.Forms;
 using Fusee.Engine;
 using Fusee.Math;
 using SharpDX.DirectInput;
+using MouseButtons = Fusee.Engine.MouseButtons;
 
 namespace Examples.SimpleDX
 {
@@ -10,8 +12,8 @@ namespace Examples.SimpleDX
         //Pixel and Vertex Shader    ((float3x3)fMatrix) = transpose((float3x3)fMatrix);
         public string Vs = @"cbuffer Variables : register(b0){
 float4 Testfarbe;
-float4x4 FUSEE_TMVP;
-float4x4 FUSEE_IMV;
+float4x4 FUSEE_MVP;
+float4x4 FUSEE_ITMV;
 } 
 struct VS_IN
 {
@@ -30,8 +32,8 @@ PS_IN VS( VS_IN input )
 {
 	PS_IN output = (PS_IN)0;
     input.pos.w = 1.0f;
-	output.pos = mul(input.pos,FUSEE_TMVP);
-    float3x3 fMatrix = {FUSEE_IMV[0].xyz,FUSEE_IMV[1].xyz,FUSEE_IMV[2].xyz};
+	output.pos = mul(input.pos,FUSEE_MVP);
+    float3x3 fMatrix = {FUSEE_ITMV[0].xyz,FUSEE_ITMV[1].xyz,FUSEE_ITMV[2].xyz};
 
     output.normal = normalize(mul(input.normal,(float3x3)fMatrix));
     output.col = Testfarbe;
@@ -66,8 +68,8 @@ float res =   dot(input.normal, vec3);
 
         private const string VsTexture = @"cbuffer Variablenn : register(b0){
 
-float4x4 FUSEE_TMVP;
-float4x4 FUSEE_IMV;
+float4x4 FUSEE_MVP;
+float4x4 FUSEE_ITMV;
 } 
 struct VS_IN
 {
@@ -86,9 +88,9 @@ PS_IN VS( VS_IN input )
 {
 	PS_IN output = (PS_IN)0;
     input.pos.w = 1.0f;
-	output.pos = mul(input.pos,FUSEE_TMVP);
-    float3x3 fMatrix = {FUSEE_IMV[0].xyz,FUSEE_IMV[1].xyz,FUSEE_IMV[2].xyz};
-
+	output.pos = mul(input.pos,FUSEE_MVP);
+    float3x3 fMatrix = {FUSEE_ITMV[0].xyz,FUSEE_ITMV[1].xyz,FUSEE_ITMV[2].xyz};
+  
     output.normal = normalize(mul(input.normal,(float3x3)fMatrix));
     output.tex = input.tex;
 	return output;
@@ -113,14 +115,9 @@ float4 PS( PS_IN input ) : SV_Target
 {
 float3 vec3 = {0,0,1};
 float res =   dot(input.normal, vec3);
-	
+	/*return mul(input.col,res);*/
 	return texture1.Sample(pictureSampler,input.tex);
     }";
-
-
-
-
-
 
 
         //angle variable
@@ -134,32 +131,34 @@ float res =   dot(input.normal, vec3);
         private ImageData _imgData2;
         private ITexture _iTex1;
         private ITexture _iTex2;
-        private ShaderProgram sp,_spTexture;
+        private ShaderProgram sp, _spTexture;
 
         public override void Init()
         {
             RC.ClearColor = new float4(0.5f, 0.5f, 0.5f, 1);
             RC.ClearDepth = 1.0f;
             //initialize the variable
-             Mesh = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
+            Mesh = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
 
-             _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
+            _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
 
-             sp = RC.CreateShader(Vs, Ps);
-            
-             _colorParam = sp.GetShaderParam("Testfarbe");
+            sp = RC.CreateShader(Vs, Ps);
 
-             //_spTexture = RC.CreateShader(VsTexture, PsTexture);
+            _colorParam = sp.GetShaderParam("Testfarbe");
 
-
-             //_textureParam = _spTexture.GetShaderParam("pictureSampler");
-
-             //// load texture
-             //var imgData = RC.LoadImage("Assets/world_map.jpg");
+            _spTexture = RC.CreateShader(VsTexture, PsTexture);
 
 
 
-             //_iTex1 = RC.CreateTexture(imgData);
+            _textureParam = sp.GetShaderParam("texture1");
+
+            // load texture
+            var imgData = RC.LoadImage("Assets/world_map.jpg");
+
+
+
+
+            _iTex1 = RC.CreateTexture(imgData);
 
         }
 
@@ -168,22 +167,7 @@ float res =   dot(input.normal, vec3);
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
 
-            //float4x4 mtxRot = float4x4.CreateRotationY(0) * float4x4.CreateRotationZ(0);
-            //float4x4 mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
-
-            //float4x4 mtxCam = float4x4.LookAt(0, 200, 400, 0, 50, 0, 0, 1, 0);
-
-            //RC.ModelView = mtxRot * float4x4.CreateTranslation(-100, 0, 0) * mtxCam;
-
-            var di = new DirectInput();
-            var keyboard = new Keyboard(di);
-            keyboard.Acquire();
-            var keyboardState = keyboard.GetCurrentState();
-
-
             // move per mouse
-
-
             if (Input.Instance.IsButtonDown(MouseButtons.Left))
             {
                 _angleVelHorz = RotationSpeed * Input.Instance.GetAxis(InputAxis.MouseX);
@@ -200,46 +184,43 @@ float res =   dot(input.normal, vec3);
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            // move per keyboard
-            if (keyboardState.IsPressed(Key.Left))
-            {
-                _angleHorz -= RotationSpeed*(float) Time.Instance.DeltaTime;
-            }
-            if (keyboardState.IsPressed(Key.Right))
+
+            if (Input.Instance.IsKeyDown(KeyCodes.Left))
+                _angleHorz -= RotationSpeed * (float)Time.Instance.DeltaTime;
+
+            if (Input.Instance.IsKeyDown(KeyCodes.Right))
                 _angleHorz += RotationSpeed * (float)Time.Instance.DeltaTime;
 
-            if (keyboardState.IsPressed(Key.UpArrow))
+            if (Input.Instance.IsKeyDown(KeyCodes.Up))
                 _angleVert -= RotationSpeed * (float)Time.Instance.DeltaTime;
 
-            if (keyboardState.IsPressed(Key.Down))
+            if (Input.Instance.IsKeyDown(KeyCodes.Down))
                 _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
 
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
             var mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
 
-            // first mesh
-          
-            RC.ModelView = float4x4.CreateTranslation(0, -50, 0) * mtxRot * float4x4.CreateTranslation(-150, 0, 0) * mtxCam;
+
             
+            // first mesh
+
+            RC.ModelView = float4x4.CreateTranslation(0, -50, 0) * mtxRot * float4x4.CreateTranslation(-150, 0, 0) * mtxCam;
+
             RC.SetShader(sp);
-        
+
 
             //mapping
-            RC.SetShaderParam(_colorParam, new float4(0.0f, 1.0f, 0.0f, 1.0f));
-            RC.Render(Mesh);
+           RC.SetShaderParam(_colorParam, new float4(0.0f, 1.0f, 0.0f, 1.0f));
+           RC.Render(Mesh);
+  
+            //second mesh
+            RC.ModelView = mtxRot * float4x4.CreateTranslation(150, 0, 0) * mtxCam;
 
+           RC.SetShader(_spTexture);
+           RC.SetShaderParamTexture(_textureParam, _iTex1);
 
+           RC.Render(_meshFace);
 
-
-
-            // //second mesh
-            //RC.ModelView = mtxRot * float4x4.CreateTranslation(150, 0, 0) * mtxCam;
-
-            //RC.SetShader(_spTexture);
-            //RC.SetShaderParamTexture(_textureParam, _iTex1);
-
-            //RC.Render(_meshFace);
-            
             Present();
         }
 
@@ -248,8 +229,8 @@ float res =   dot(input.normal, vec3);
             RC.Viewport(0, 0, Width, Height);
 
             float aspectRatio = Width / (float)Height;
-           //RC.Projection = float4x4.Identity;
-           RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
+            //RC.Projection = float4x4.Identity;
+            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 5000);
         }
 
         public static void Main()
@@ -257,7 +238,7 @@ float res =   dot(input.normal, vec3);
 
             SimpleDX app = new SimpleDX();
             app.Run();
-           
+
         }
 
     }

@@ -14,7 +14,7 @@ using Device = SharpDX.Direct3D11.Device;
 
 namespace Fusee.Engine
 {
-      
+
     public class RenderCanvasImp : IRenderCanvasImp
     {
         internal Device _device;
@@ -27,10 +27,10 @@ namespace Fusee.Engine
         internal ShaderResourceView _textureView;
         internal DepthStencilView _depthView;
         public int Width { get { return _renderForm.Width; } }
-       
+
         public int Height { get { return _renderForm.Height; } }
-       
-     // Device device;
+
+        // Device device;
         public double DeltaTime
         {
             get
@@ -48,16 +48,16 @@ namespace Fusee.Engine
         public bool VerticalSync
         {
             get { throw new NotImplementedException(); }
-            set {  }
+            set { }
         }
 
         internal RenderForm _renderForm;// RenderForm (Dx)
-        
+
         public RenderCanvasImp()
         {
             _renderForm = new RenderForm("DX_WINDOW");
             _renderForm.Resize += OnRenderFormOnResize;
-
+            
             //Fullscreen
             //_renderForm.MaximizeBox = true; 
             // SwapChain description
@@ -74,15 +74,16 @@ namespace Fusee.Engine
                 Usage = Usage.RenderTargetOutput
             };
             Device.CreateWithSwapChain(DriverType.Hardware, DeviceCreationFlags.None, desc, out _device, out _swapChain);
-
             _context = _device.ImmediateContext;
 
+           
+
             var factory = _swapChain.GetParent<Factory>();
-            factory.MakeWindowAssociation(_renderForm.Handle,WindowAssociationFlags.IgnoreAll);
+            factory.MakeWindowAssociation(_renderForm.Handle, WindowAssociationFlags.IgnoreAll);
             var backBuffer = Texture2D.FromSwapChain<Texture2D>(_swapChain, 0);
             _renderView = new RenderTargetView(_device, backBuffer);
 
-            
+
 
             _depthBuffer = new Texture2D(_device, new Texture2DDescription()
             {
@@ -112,7 +113,7 @@ namespace Fusee.Engine
                 MinimumLod = 0,
                 MaximumLod = 16,
             });
-            _context.OutputMerger.SetTargets(_depthView,_renderView);
+            _context.OutputMerger.SetTargets(_depthView, _renderView);
 
         }
 
@@ -126,11 +127,11 @@ namespace Fusee.Engine
         {
             //gehört in Clear von Render Context funktioniert aber dort nicht
             //context.ClearRenderTargetView(renderView, SharpDX.Color.CornflowerBlue);
-            
+
             //Funktioniert nicht
             DoResize();
             _swapChain.Present(0, PresentFlags.None);
-        
+           
         }
 
 
@@ -138,23 +139,25 @@ namespace Fusee.Engine
         public void Run()
         {
             DoInit();
-           // RenderLoop.Run(_renderForm, DoRender);
+            // RenderLoop.Run(_renderForm, DoRender);
             RenderLoop.Run(_renderForm, DoRender);
-            Dispose();
+          
         }
 
-      public void Dispose()
-      {
-         
-          _renderView.Dispose();
-    
-          //context.ClearState();
-          //context.Flush();
-          //device.Dispose();
-          //context.Dispose();
-          //swapChain.Dispose();
-          
-      }
+        public void Dispose()
+        {
+
+            _renderView.Dispose();
+            _context.Dispose();
+            _device.Dispose();
+           _swapChain.Dispose();
+            //context.ClearState();
+            //context.Flush();
+            //device.Dispose();
+            //context.Dispose();
+            //swapChain.Dispose();
+
+        }
 
         public event EventHandler<InitEventArgs> Init;
         public event EventHandler<InitEventArgs> UnLoad;
@@ -188,9 +191,9 @@ namespace Fusee.Engine
                 Resize(this, new ResizeEventArgs());
         }
 
-        
+
 
     }
 
-    
+
 }

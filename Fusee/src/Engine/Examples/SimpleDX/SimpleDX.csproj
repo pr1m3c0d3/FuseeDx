@@ -85,12 +85,13 @@
   <ItemGroup>
     <Reference Include="SharpDX, Version=2.4.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\..\..\..\Program Files (x86)\SharpDX\Bin\Standard-net40\SharpDX.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\..\..\..\Program Files (x86)\SharpDX-2.5\Bin\DirectX11-net40\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.DirectInput, Version=2.4.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\..\..\..\Program Files (x86)\SharpDX\Bin\Standard-net40\SharpDX.DirectInput.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\..\..\..\Program Files (x86)\SharpDX-2.5\Bin\DirectX11-net40\SharpDX.DirectInput.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)/Microsoft.CSharp.targets" />
   <PropertyGroup>

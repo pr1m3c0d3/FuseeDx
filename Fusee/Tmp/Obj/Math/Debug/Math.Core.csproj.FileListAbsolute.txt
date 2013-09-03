@@ -20,3 +20,4 @@ C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Fusee.Math.Core.pdb
 C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Tmp\Obj\Math\Debug\Math.Core.csprojResolveAssemblyReference.cache
 C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Tmp\Obj\Math\Debug\Fusee.Math.Core.dll
 C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Tmp\Obj\Math\Debug\Fusee.Math.Core.pdb
+C:\Users\ali\Documents\GitHub\FuseeDx\Fusee\Bin\Debug\Fusee.Math.Core.xml
