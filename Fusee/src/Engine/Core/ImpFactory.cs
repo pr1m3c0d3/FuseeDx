@@ -28,7 +28,7 @@ namespace Fusee.Engine
                     //Assembly impAsm = Assembly.LoadFrom("Fusee.Engine.Imp.OpenTK.dll");
                     Assembly impAsm = Assembly.LoadFrom("Fusee.Engine.Imp.SharpDX.dll");
                     if (impAsm == null)
-                    //    throw new Exception("Couldn't load implementor assembly (Fusee.Engine.Imp.OpenTK.dll).");
+                    //throw new Exception("Couldn't load implementor assembly (Fusee.Engine.Imp.OpenTK.dll).");
                     throw new Exception("Couldn't load implementor assembly (Fusee.Engine.Imp.SharpDX.dll).");
                     _renderingImplementor = impAsm.GetType("Fusee.Engine.RenderingImplementor");
                 }

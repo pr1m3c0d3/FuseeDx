@@ -27,8 +27,7 @@ namespace Fusee.Engine
     public class RenderContextImp : IRenderContextImp
     {
 
-        private int _currentTextureUnit;
-        private Dictionary<int, int> _shaderParam2TexUnit;
+       
         internal Device _device;
         internal SwapChain _swapChain;
         internal DeviceContext _context;
@@ -40,16 +39,17 @@ namespace Fusee.Engine
         //internal ShaderReflection _vReflector;
         //internal ShaderDescription _pShaderDescription;
         //internal ShaderDescription _vShaderDescription;
-        internal List<SharpDxShaderParamInfo> _sDxShaderParams = new List<SharpDxShaderParamInfo>();
-        internal Dictionary<string, Buffer> _sDxShaderBuffers = new Dictionary<string, Buffer>();
+        internal List<SharpDxShaderParamInfo> _sDxShaderParams;
+        //internal Dictionary<string, Buffer> _sDxShaderBuffers = new Dictionary<string, Buffer>();
         internal Buffer _buff;
         //internal ShaderResourceView _textureView;
-        internal Buffer _cbUniforms;
+        //internal Buffer _cbUniforms;
         internal SamplerState _sampler;
         internal DepthStencilView _depthView;
         internal float4 _cColor;
         internal float _depth;
-        internal List<int> oldPos = new List<int>();
+        internal bool _layoutCreated;
+        //internal List<int> oldPos = new List<int>();
         internal int _pos;
       
         //internal Buffer _vertices;
@@ -84,12 +84,12 @@ namespace Fusee.Engine
                 IsFrontCounterClockwise = false,
                 IsMultisampleEnabled = false,
                 IsScissorEnabled = false,
-                SlopeScaledDepthBias = .0f
+                SlopeScaledDepthBias = 0.0f
             };
 
             // Create the rasterizer state from the description we just filled out.
             RasterizerState rasterState = new RasterizerState(_device, rasterDesc);
-
+            
             // Now set the rasterizer state.
             _context.Rasterizer.State = rasterState;
         }
@@ -268,17 +268,17 @@ namespace Fusee.Engine
         public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
         {
 
-            for (int i = 0; i < _sDxShaderParams.Count; i++)
+            for (int i = 0; i < ((ShaderProgramImp)shaderProgram)._sDXShaderParams.Count; i++)
             {
-                if (paramName == _sDxShaderParams[i]._varName)
+                if (paramName == ((ShaderProgramImp)shaderProgram)._sDXShaderParams[i]._varName)
                 {
-                    if (_sDxShaderParams[i]._ps != null)
+                    if (((ShaderProgramImp)shaderProgram)._sDXShaderParams[i]._ps != null)
                     {
-                        return new ShaderParam { position = i, shaderType = ShaderType.PixelShader, name = paramName };
+                        return new ShaderParam { position = i, shaderType = ShaderType.PixelShader, name = paramName, size = ((ShaderProgramImp)shaderProgram)._sDXShaderParams[i]._varSize, _bufferParams = ((ShaderProgramImp)shaderProgram)._sDXShaderParams[i]._bufferParams, _sdxBuffer = ((ShaderProgramImp)shaderProgram)._sDXShaderParams[i]._sdxBuffer, _varPositionB = ((ShaderProgramImp)shaderProgram)._sDXShaderParams[i]._varPositionB};
                     }
                     else
                     {
-                        return new ShaderParam { position = i, shaderType = ShaderType.VertexShader, name = paramName };
+                        return new ShaderParam { position = i, shaderType = ShaderType.VertexShader, name = paramName, size = ((ShaderProgramImp)shaderProgram)._sDXShaderParams[i]._varSize, _bufferParams = ((ShaderProgramImp)shaderProgram)._sDXShaderParams[i]._bufferParams, _sdxBuffer = ((ShaderProgramImp)shaderProgram)._sDXShaderParams[i]._sdxBuffer, _varPositionB = ((ShaderProgramImp)shaderProgram)._sDXShaderParams[i]._varPositionB };
                     }
                 }
 
@@ -311,21 +311,21 @@ namespace Fusee.Engine
              *  cb.B = 0.0f;
              *  cb.A = 1.0f;
              */
-            var shaderParamInfo = _sDxShaderParams[((ShaderParam)param).position];
-            if (shaderParamInfo._varSize == 4)
+            //var shaderParamInfo = _sDxShaderParams[((ShaderParam)param).position];
+            if (((ShaderParam)param).size == 4)
             {
-                shaderParamInfo._bufferParams.Position = shaderParamInfo._varPositionB;
-                shaderParamInfo._bufferParams.Write(val);
-                shaderParamInfo._bufferParams.Position = 0;
-                _context.UpdateSubresource(new DataBox(shaderParamInfo._bufferParams.PositionPointer, 0, 0),
-                                              shaderParamInfo._sdxBuffer, 0);
+                ((ShaderParam)param)._bufferParams.Position = ((ShaderParam)param)._varPositionB;
+                ((ShaderParam)param)._bufferParams.Write(val);
+                ((ShaderParam)param)._bufferParams.Position = 0;
+                _context.UpdateSubresource(new DataBox(((ShaderParam)param)._bufferParams.PositionPointer, 0, 0),
+                                              ((ShaderParam)param)._sdxBuffer, 0);
                 if (((ShaderParam)param).shaderType == ShaderType.PixelShader)
                 {
-                    _context.PixelShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
+                    _context.PixelShader.SetConstantBuffer(0, ((ShaderParam)param)._sdxBuffer);
                 }
                 else
                 {
-                    _context.VertexShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
+                    _context.VertexShader.SetConstantBuffer(0, ((ShaderParam)param)._sdxBuffer);
                 }
             }
 
@@ -334,42 +334,42 @@ namespace Fusee.Engine
 
         public void SetShaderParam(IShaderParam param, float2 val)
         {
-            var shaderParamInfo = _sDxShaderParams[((ShaderParam)param).position];
-            if (shaderParamInfo._varSize == 8)
+            //var shaderParamInfo = _sDxShaderParams[((ShaderParam)param).position];
+            if (((ShaderParam)param).size == 8)
             {
-                shaderParamInfo._bufferParams.Position = shaderParamInfo._varPositionB;
-                shaderParamInfo._bufferParams.Write(val);
-                shaderParamInfo._bufferParams.Position = 0;
-                _context.UpdateSubresource(new DataBox(shaderParamInfo._bufferParams.PositionPointer, 0, 0),
-                                              shaderParamInfo._sdxBuffer, 0);
+                ((ShaderParam)param)._bufferParams.Position = ((ShaderParam)param)._varPositionB;
+                ((ShaderParam)param)._bufferParams.Write(val);
+                ((ShaderParam)param)._bufferParams.Position = 0;
+                _context.UpdateSubresource(new DataBox(((ShaderParam)param)._bufferParams.PositionPointer, 0, 0),
+                                              ((ShaderParam)param)._sdxBuffer, 0);
                 if (((ShaderParam)param).shaderType == ShaderType.PixelShader)
                 {
-                    _context.PixelShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
+                    _context.PixelShader.SetConstantBuffer(0, ((ShaderParam)param)._sdxBuffer);
                 }
                 else
                 {
-                    _context.VertexShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
+                    _context.VertexShader.SetConstantBuffer(0, ((ShaderParam)param)._sdxBuffer);
                 }
             }
         }
 
         public void SetShaderParam(IShaderParam param, float3 val)
         {
-            var shaderParamInfo = _sDxShaderParams[((ShaderParam)param).position];
-            if (shaderParamInfo._varSize == 12)
+            //var shaderParamInfo = _sDxShaderParams[((ShaderParam)param).position];
+            if (((ShaderParam)param).size == 12)
             {
-                shaderParamInfo._bufferParams.Position = shaderParamInfo._varPositionB;
-                shaderParamInfo._bufferParams.Write(val);
-                shaderParamInfo._bufferParams.Position = 0;
-                _context.UpdateSubresource(new DataBox(shaderParamInfo._bufferParams.PositionPointer, 0, 0),
-                                              shaderParamInfo._sdxBuffer, 0);
+                ((ShaderParam)param)._bufferParams.Position = ((ShaderParam)param)._varPositionB;
+                ((ShaderParam)param)._bufferParams.Write(val);
+                ((ShaderParam)param)._bufferParams.Position = 0;
+                _context.UpdateSubresource(new DataBox(((ShaderParam)param)._bufferParams.PositionPointer, 0, 0),
+                                              ((ShaderParam)param)._sdxBuffer, 0);
                 if (((ShaderParam)param).shaderType == ShaderType.PixelShader)
                 {
-                    _context.PixelShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
+                    _context.PixelShader.SetConstantBuffer(0, ((ShaderParam)param)._sdxBuffer);
                 }
                 else
                 {
-                    _context.VertexShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
+                    _context.VertexShader.SetConstantBuffer(0, ((ShaderParam)param)._sdxBuffer);
                 }
             }
         }
@@ -377,23 +377,43 @@ namespace Fusee.Engine
         public void SetShaderParam(IShaderParam param, float4 val)
         {
             //data.Position = ((ShaderParam).param).position;
-            var shaderParamInfo = _sDxShaderParams[((ShaderParam)param).position];
-            if (shaderParamInfo._varSize == 16)
+            //var shaderParamInfo = _sDxShaderParams[((ShaderParam)param).position];
+            //if (shaderParamInfo._varSize == 16)
+            //{
+            //    shaderParamInfo._bufferParams.Position = shaderParamInfo._varPositionB;
+            //    shaderParamInfo._bufferParams.Write(val);
+            //    shaderParamInfo._bufferParams.Position = 0;
+            //    _context.UpdateSubresource(new DataBox(shaderParamInfo._bufferParams.PositionPointer, 0, 0),
+            //                                  shaderParamInfo._sdxBuffer, 0);
+            //    if (((ShaderParam)param).shaderType == ShaderType.PixelShader)
+            //    {
+            //        _context.PixelShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
+            //    }
+            //    else
+            //    {
+            //        _context.VertexShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
+            //    }
+            //}
+
+            
+            if (((ShaderParam)param).size == 16)
             {
-                shaderParamInfo._bufferParams.Position = shaderParamInfo._varPositionB;
-                shaderParamInfo._bufferParams.Write(val);
-                shaderParamInfo._bufferParams.Position = 0;
-                _context.UpdateSubresource(new DataBox(shaderParamInfo._bufferParams.PositionPointer, 0, 0),
-                                              shaderParamInfo._sdxBuffer, 0);
+               ((ShaderParam) param)._bufferParams.Position = ((ShaderParam) param)._varPositionB;
+               ((ShaderParam)param)._bufferParams.Write(val);
+                ((ShaderParam) param)._bufferParams.Position = 0;
+
+                _context.UpdateSubresource(new DataBox(((ShaderParam)param)._bufferParams.PositionPointer, 0, 0),
+                                              ((ShaderParam)param)._sdxBuffer, 0);
                 if (((ShaderParam)param).shaderType == ShaderType.PixelShader)
                 {
-                    _context.PixelShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
+                    _context.PixelShader.SetConstantBuffer(0, ((ShaderParam)param)._sdxBuffer);
                 }
                 else
                 {
-                    _context.VertexShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
+                    _context.VertexShader.SetConstantBuffer(0, ((ShaderParam)param)._sdxBuffer);
                 }
             }
+
         }
 
         // TODO add vector implementations
@@ -405,22 +425,22 @@ namespace Fusee.Engine
             unsafe
             {
                 float* mF = (float*)(&val);
-                var shaderParamInfo = _sDxShaderParams[((ShaderParam)param).position];
-                if (shaderParamInfo._varSize == 64)
+                //var shaderParamInfo = _sDxShaderParams[((ShaderParam)param).position];
+                if (((ShaderParam)param).size == 64)
                 {
-                    shaderParamInfo._bufferParams.Position = shaderParamInfo._varPositionB;
-                    shaderParamInfo._bufferParams.Write((IntPtr)mF, 0, 64);
-                    shaderParamInfo._bufferParams.Position = 0;
-                    _context.UpdateSubresource(new DataBox(shaderParamInfo._bufferParams.PositionPointer, 0, 0),
-                                               shaderParamInfo._sdxBuffer, 0);
+                    ((ShaderParam)param)._bufferParams.Position = ((ShaderParam)param)._varPositionB;
+                    ((ShaderParam)param)._bufferParams.Write((IntPtr)mF, 0, 64);
+                    ((ShaderParam)param)._bufferParams.Position = 0;
+                    _context.UpdateSubresource(new DataBox(((ShaderParam)param)._bufferParams.PositionPointer, 0, 0),
+                                               ((ShaderParam)param)._sdxBuffer, 0);
                     if (((ShaderParam)param).shaderType == ShaderType.PixelShader)
                     {
-                        _context.PixelShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
+                        _context.PixelShader.SetConstantBuffer(0, ((ShaderParam)param)._sdxBuffer);
 
                     }
                     else
                     {
-                        _context.VertexShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
+                        _context.VertexShader.SetConstantBuffer(0, ((ShaderParam)param)._sdxBuffer);
 
                     }
                 }
@@ -429,21 +449,21 @@ namespace Fusee.Engine
 
         public void SetShaderParam(IShaderParam param, int val)
         {
-            var shaderParamInfo = _sDxShaderParams[((ShaderParam)param).position];
-            if (shaderParamInfo._varSize == 4)
+            //var shaderParamInfo = _sDxShaderParams[((ShaderParam)param).position];
+            if (((ShaderParam)param).size == 4)
             {
-                shaderParamInfo._bufferParams.Position = shaderParamInfo._varPositionB;
-                shaderParamInfo._bufferParams.Write(val);
-                shaderParamInfo._bufferParams.Position = 0;
-                _context.UpdateSubresource(new DataBox(shaderParamInfo._bufferParams.PositionPointer, 0, 0),
-                                              shaderParamInfo._sdxBuffer, 0);
+                ((ShaderParam)param)._bufferParams.Position = ((ShaderParam)param)._varPositionB;
+                ((ShaderParam)param)._bufferParams.Write(val);
+                ((ShaderParam)param)._bufferParams.Position = 0;
+                _context.UpdateSubresource(new DataBox(((ShaderParam)param)._bufferParams.PositionPointer, 0, 0),
+                                              ((ShaderParam)param)._sdxBuffer, 0);
                 if (((ShaderParam)param).shaderType == ShaderType.PixelShader)
                 {
-                    _context.PixelShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
+                    _context.PixelShader.SetConstantBuffer(0, ((ShaderParam)param)._sdxBuffer);
                 }
                 else
                 {
-                    _context.VertexShader.SetConstantBuffer(0, shaderParamInfo._sdxBuffer);
+                    _context.VertexShader.SetConstantBuffer(0, ((ShaderParam)param)._sdxBuffer);
                 }
             }
         }
@@ -455,7 +475,7 @@ namespace Fusee.Engine
         /// <param name="texId">An ITexture probably returned from CreateTexture method</param>
         public void SetShaderParamTexture(IShaderParam param, ITexture texId)
         {
-            
+           
             _context.PixelShader.SetSampler(0, _sampler);
             _context.PixelShader.SetShaderResource(0, ((Texture)texId).handle);
 
@@ -488,22 +508,45 @@ namespace Fusee.Engine
             set { _depth = value; }
         }
 
+
+        private void createLayout(ShaderBytecode vertexShaderByteCode)
+        {
+            _layout = new InputLayout(
+               _device,
+               ShaderSignature.GetInputSignature(vertexShaderByteCode),
+               new[]
+                        {
+                            new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+                            new InputElement("COLOR", 0, Format.R32G32B32A32_Float, 0, 1),
+                            new InputElement("NORMAL", 0, Format.R32G32B32A32_Float, 0, 2),
+                            new InputElement("TEXCOORD", 0, Format.R32G32B32A32_Float, 0, 3)
+                        });
+            _layoutCreated = true;
+           
+        }
+
         public IShaderProgramImp CreateShader(string vs, string ps)
         {
-
+           
 
             var vertexShaderByteCode = ShaderBytecode.Compile(vs, "VS", "vs_4_0", ShaderFlags.None, EffectFlags.None);
             VertexShader vertexShader = new VertexShader(_device, vertexShaderByteCode);
+
+            
             
             var pixelShaderByteCode = ShaderBytecode.Compile(ps, "PS", "ps_4_0", ShaderFlags.None, EffectFlags.None);
             PixelShader pixelShader = new PixelShader(_device, pixelShaderByteCode);
             
 
 
+
             ShaderProgramImp shaderProgram = new ShaderProgramImp();
             shaderProgram._ps = pixelShader;
             shaderProgram._vs = vertexShader;
-            
+            _sDxShaderParams = new List<SharpDxShaderParamInfo>();
+
+            shaderProgram._sDXShaderParams = new List<SharpDxShaderParamInfo>();
+
             //if (oldPos.Count==0)
             //{
             //    oldPos.Add(_pos);
@@ -525,8 +568,8 @@ namespace Fusee.Engine
             //            new InputElement("COLOR", 0, Format.R32G32B32A32_Float, 0, 1)
             //        });
 
-           _sDxShaderParams = new List<SharpDxShaderParamInfo>();
-           _sDxShaderBuffers = new Dictionary<string, Buffer>();
+           
+           //_sDxShaderBuffers = new Dictionary<string, Buffer>();
 
             ShaderReflection pReflector = new ShaderReflection(pixelShaderByteCode);
             ShaderReflection vReflector = new ShaderReflection(vertexShaderByteCode);
@@ -543,10 +586,10 @@ namespace Fusee.Engine
             for (int i = 0; i < ResourceCountP; i++)
             {
                 descPT = pReflector.GetResourceBindingDescription(i);
-                SharpDxShaderParamInfo _psparams = new SharpDxShaderParamInfo();
-                _psparams._varName = descPT.Name;
-                _sDxShaderParams.Add(_psparams);
-
+                SharpDxShaderParamInfo psparams = new SharpDxShaderParamInfo();
+                psparams._varName = descPT.Name;
+                _sDxShaderParams.Add(psparams);
+                shaderProgram._sDXShaderParams.Add(psparams);
             }
             /*
              * 
@@ -562,76 +605,83 @@ namespace Fusee.Engine
 
             //}
 
-            bool color = true;
-            bool norms = false;
-            for (int i = 0; i < pShaderDescription.InputParameters; i++)
+            //bool color = true;
+            //bool norms = false;
+            //for (int i = 0; i < pShaderDescription.InputParameters; i++)
+            //{
+            //    ShaderParameterDescription paramDesc = pReflector.GetInputParameterDescription(i);
+            //    if (paramDesc.SemanticName == "COLOR")
+            //    {
+            //        color = true;
+            //    }
+            //    if (paramDesc.SemanticName == "TEXCOORD")
+            //    {
+            //        color = false;
+            //    }
+            //    if (paramDesc.SemanticName == "NORMAL")
+            //    {
+            //        norms = true;
+            //    }
+            //    else
+            //    {
+            //        norms = false;
+            //    }
+            //}
+            if (_layoutCreated != true)
             {
-                ShaderParameterDescription paramDesc = pReflector.GetInputParameterDescription(i);
-                if (paramDesc.SemanticName == "COLOR")
-                {
-                    color = true;
-                }
-                if (paramDesc.SemanticName == "TEXCOORD")
-                {
-                    color = false;
-                }
-                if (paramDesc.SemanticName == "NORMAL")
-                {
-                    norms = true;
-                }
-                else
-                {
-                    norms = false;
-                }
+                
+                createLayout(vertexShaderByteCode);
             }
-            if (color && norms != true)
-            {
-                _layout = new InputLayout(
-                        _device,
-                        ShaderSignature.GetInputSignature(vertexShaderByteCode),
-                        new[]
-                        {
-                            new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
-                            new InputElement("COLOR", 0, Format.R32G32B32A32_Float, 0, 1)
-                        });
-            }
-            else if (color && norms)
-            {
-                _layout = new InputLayout(
-                       _device,
-                       ShaderSignature.GetInputSignature(vertexShaderByteCode),
-                       new[]
-                        {
-                            new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
-                            new InputElement("COLOR", 0, Format.R32G32B32A32_Float, 0, 1),
-                            new InputElement("NORMAL", 0, Format.R32G32B32A32_Float, 0, 2),
-                            new InputElement("TEXCOORD", 0, Format.R32G32B32A32_Float, 0, 3)
-                        });
-            }
-            else if (norms && color != true)
-            {
-                _layout = new InputLayout(
-                        _device,
-                        ShaderSignature.GetInputSignature(vertexShaderByteCode),
-                        new[]
-                        {
-                            new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
-                            new InputElement("TEXCOORD", 0, Format.R32G32B32_Float, 0, 1),
-                            new InputElement("NORMAL", 0, Format.R32G32B32_Float, 0, 2)
-                        });
-            }
-            else
-            {
+          
+            //if (color && norms == false)
+            //{
+            //    _layout = new InputLayout(
+            //            _device,
+            //            ShaderSignature.GetInputSignature(vertexShaderByteCode),
+            //            new[]
+            //            {
+            //                new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+            //                new InputElement("COLOR", 0, Format.R32G32B32A32_Float, 0, 1)
+            //            });
+            //}
+            //else if (color && norms)
+            //{
+            //_layout = new InputLayout(
+            //       _device,
+            //       ShaderSignature.GetInputSignature(vertexShaderByteCode),
+            //       new[]
+            //            {
+            //                new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+            //                new InputElement("COLOR", 0, Format.R32G32B32A32_Float, 0, 1),
+            //                new InputElement("NORMAL", 0, Format.R32G32B32A32_Float, 0, 2),
+            //                new InputElement("TEXCOORD", 0, Format.R32G32B32A32_Float, 0, 3)
+            //            });
+            //}
+            //else if (norms && color == false)
+            //{
+            //    _layout = new InputLayout(
+            //            _device,
+            //            ShaderSignature.GetInputSignature(vertexShaderByteCode),
+            //            new[]
+            //            {
+            //                new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+            //                new InputElement("TEXCOORD", 0, Format.R32G32B32_Float, 0, 1),
+            //                new InputElement("NORMAL", 0, Format.R32G32B32_Float, 0, 2)
+            //            });
+            //}
+            //else
+            //{
 
-                _layout = new InputLayout(
-                        _device,
-                        ShaderSignature.GetInputSignature(vertexShaderByteCode),
-                        new[]
-                        {
-                            new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
-                            new InputElement("TEXCOORD", 0, Format.R32G32B32_Float, 0, 1)
-                        });
-            }
+            //    _layout = new InputLayout(
+            //            _device,
+            //            ShaderSignature.GetInputSignature(vertexShaderByteCode),
+            //            new[]
+            //            {
+            //                new InputElement("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+            //                new InputElement("TEXCOORD", 0, Format.R32G32B32_Float, 0, 1),
+            //                new InputElement("NORMAL", 0, Format.R32G32B32_Float, 0, 2)
+            //            });
+            //}
             /*--------------------------------------------------------------------------------------------------
              * 
              * PixelShader-ConstantBuffers
@@ -644,43 +694,43 @@ namespace Fusee.Engine
 
                 ConstantBuffer cbTemp = pReflector.GetConstantBuffer(i);
                 ConstantBufferDescription cbDEsc = cbTemp.Description;
-                if (_sDxShaderBuffers.ContainsKey(cbDEsc.Name))
-                {
-                    _sDxShaderBuffers.TryGetValue(cbDEsc.Name, out _buff);
-                    _sDxShaderBuffers.Add(cbDEsc.Name, _buff);
+                //if (_sDxShaderBuffers.ContainsKey(cbDEsc.Name))
+                //{
+                //    _sDxShaderBuffers.TryGetValue(cbDEsc.Name, out _buff);
+                //    _sDxShaderBuffers.Add(cbDEsc.Name, _buff);
 
                     
 
-                    SharpDxShaderParamInfo _psparams = new SharpDxShaderParamInfo();
-                    for (int j = 0; j < cbDEsc.VariableCount; j++)
-                    {
-                        ShaderReflectionVariable shaderRefVar = cbTemp.GetVariable(j);
-                        ShaderReflectionType shaderRefType = cbTemp.GetVariable(j).GetVariableType();
-                        ShaderTypeDescription shaderRefTypeDesc = shaderRefType.Description;
-                        _psparams._ps = pixelShader;
-                        _psparams._psByteCode = pixelShaderByteCode;
-                        _psparams._buffername = cbDEsc.Name;
+                //    SharpDxShaderParamInfo psparams = new SharpDxShaderParamInfo();
+                //    for (int j = 0; j < cbDEsc.VariableCount; j++)
+                //    {
+                //        ShaderReflectionVariable shaderRefVar = cbTemp.GetVariable(j);
+                //        ShaderReflectionType shaderRefType = cbTemp.GetVariable(j).GetVariableType();
+                //        ShaderTypeDescription shaderRefTypeDesc = shaderRefType.Description;
+                //        psparams._ps = pixelShader;
+                //        psparams._psByteCode = pixelShaderByteCode;
+                //        psparams._buffername = cbDEsc.Name;
 
-                        _psparams._sdxBuffer = _buff;
-                        _psparams._flags = shaderRefVar.Description.Flags;
-                        _psparams._varCount = cbDEsc.VariableCount;
-                        _psparams._varName = shaderRefVar.Description.Name;
+                //        psparams._sdxBuffer = _buff;
+                //        psparams._flags = shaderRefVar.Description.Flags;
+                //        psparams._varCount = cbDEsc.VariableCount;
+                //        psparams._varName = shaderRefVar.Description.Name;
 
-                        _psparams._varSize = shaderRefVar.Description.Size;
-                        _psparams._varPositionB = shaderRefVar.Description.StartOffset;
-                        _psparams._flags = shaderRefVar.Description.Flags;
-                        _psparams._varPositionI = j;
-                        _psparams._varType = shaderRefType.Description.Type;
-                        _psparams._bufferParams.Write(shaderRefVar.Description.DefaultValue);
-                        _sDxShaderParams.Add(_psparams);
+                //        psparams._varSize = shaderRefVar.Description.Size;
+                //        psparams._varPositionB = shaderRefVar.Description.StartOffset;
+                //        psparams._flags = shaderRefVar.Description.Flags;
+                //        psparams._varPositionI = j;
+                //        psparams._varType = shaderRefType.Description.Type;
+                //        psparams._bufferParams.Write(shaderRefVar.Description.DefaultValue);
+                //        _sDxShaderParams.Add(psparams);
                         
-                    }
-                }
-                else
-                {
+                //    }
+                //}
+                //else
+                //{
                     //cbDEsc.Name Liefert den Namen der Struktur
                     var bufferSize = cbDEsc.Size;
-                    var _buffer = new Buffer(_device, new BufferDescription
+                    var buffer = new Buffer(_device, new BufferDescription
                     {
                         Usage = ResourceUsage.Default,
                         SizeInBytes = bufferSize,
@@ -688,35 +738,36 @@ namespace Fusee.Engine
                         CpuAccessFlags = 0
                     });
 
-                    _sDxShaderBuffers.Add(cbDEsc.Name, _buffer);
+                    
 
                    
 
-                    SharpDxShaderParamInfo _psparams = new SharpDxShaderParamInfo();
-                    _psparams._bufferParams = new DataStream(cbDEsc.Size, true, true);
+                    SharpDxShaderParamInfo psparams = new SharpDxShaderParamInfo();
+                    psparams._sdxBuffer = buffer;
+                    psparams._bufferParams = new DataStream(cbDEsc.Size, true, true);
                     for (int j = 0; j < cbDEsc.VariableCount; j++)
                     {
                         ShaderReflectionVariable shaderRefVar = cbTemp.GetVariable(j);
                         ShaderReflectionType shaderRefType = cbTemp.GetVariable(j).GetVariableType();
                         ShaderTypeDescription shaderRefTypeDesc = shaderRefType.Description;
-                        _psparams._ps = pixelShader;
-                        _psparams._psByteCode = pixelShaderByteCode;
-                        _psparams._buffername = cbDEsc.Name;
-                        _psparams._sdxBuffer = _buffer;
-                        _psparams._flags = shaderRefVar.Description.Flags;
-                        _psparams._varCount = cbDEsc.VariableCount;
-                        _psparams._varName = shaderRefVar.Description.Name;
+                        psparams._ps = pixelShader;
+                        psparams._psByteCode = pixelShaderByteCode;
+                        psparams._buffername = cbDEsc.Name;
+                        psparams._sdxBuffer = buffer;
+                        psparams._flags = shaderRefVar.Description.Flags;
+                        psparams._varCount = cbDEsc.VariableCount;
+                        psparams._varName = shaderRefVar.Description.Name;
 
-                        _psparams._varSize = shaderRefVar.Description.Size;
-                        _psparams._varPositionB = shaderRefVar.Description.StartOffset;
-                        _psparams._flags = shaderRefVar.Description.Flags;
-                        _psparams._varPositionI = j;
-                        _psparams._varType = shaderRefType.Description.Type;
-                        _psparams._bufferParams.Write(shaderRefVar.Description.DefaultValue);
-                        _sDxShaderParams.Add(_psparams);
-
+                        psparams._varSize = shaderRefVar.Description.Size;
+                        psparams._varPositionB = shaderRefVar.Description.StartOffset;
+                        psparams._flags = shaderRefVar.Description.Flags;
+                        psparams._varPositionI = j;
+                        psparams._varType = shaderRefType.Description.Type;
+                        psparams._bufferParams.Write(shaderRefVar.Description.DefaultValue);
+                        _sDxShaderParams.Add(psparams);
+                        shaderProgram._sDXShaderParams.Add(psparams);
                     }
-                }
+               //}
             }
 
 
@@ -732,44 +783,44 @@ namespace Fusee.Engine
 
                 ConstantBuffer cbTemp = vReflector.GetConstantBuffer(i);
                 ConstantBufferDescription cbDEsc = cbTemp.Description;
-                if (_sDxShaderBuffers.ContainsKey(cbDEsc.Name))
-                {
-                    _sDxShaderBuffers.TryGetValue(cbDEsc.Name, out _buff);
-                    _sDxShaderBuffers.Add(cbDEsc.Name, _buff);
+                //if (_sDxShaderBuffers.ContainsKey(cbDEsc.Name))
+                //{
+                //    _sDxShaderBuffers.TryGetValue(cbDEsc.Name, out _buff);
+                //    _sDxShaderBuffers.Add(cbDEsc.Name, _buff);
 
                     
 
-                    SharpDxShaderParamInfo _vsparams = new SharpDxShaderParamInfo();
-                    for (int j = 0; j < cbDEsc.VariableCount; j++)
-                    {
-                        ShaderReflectionVariable shaderRefVar = cbTemp.GetVariable(j);
-                        ShaderReflectionType shaderRefType = cbTemp.GetVariable(j).GetVariableType();
-                        ShaderTypeDescription shaderRefTypeDesc = shaderRefType.Description;
-                        _vsparams._vs = vertexShader;
-                        _vsparams._vsByteCode = vertexShaderByteCode;
-                        _vsparams._buffername = cbDEsc.Name;
-                        _vsparams._sdxBuffer = _buff;
-                        _vsparams._flags = shaderRefVar.Description.Flags;
-                        _vsparams._varCount = cbDEsc.VariableCount;
-                        _vsparams._varName = shaderRefVar.Description.Name;
+                //    SharpDxShaderParamInfo vsparams = new SharpDxShaderParamInfo();
+                //    for (int j = 0; j < cbDEsc.VariableCount; j++)
+                //    {
+                //        ShaderReflectionVariable shaderRefVar = cbTemp.GetVariable(j);
+                //        ShaderReflectionType shaderRefType = cbTemp.GetVariable(j).GetVariableType();
+                //        ShaderTypeDescription shaderRefTypeDesc = shaderRefType.Description;
+                //        vsparams._vs = vertexShader;
+                //        vsparams._vsByteCode = vertexShaderByteCode;
+                //        vsparams._buffername = cbDEsc.Name;
+                //        vsparams._sdxBuffer = _buff;
+                //        vsparams._flags = shaderRefVar.Description.Flags;
+                //        vsparams._varCount = cbDEsc.VariableCount;
+                //        vsparams._varName = shaderRefVar.Description.Name;
 
-                        _vsparams._varSize = shaderRefVar.Description.Size;
+                //        vsparams._varSize = shaderRefVar.Description.Size;
 
-                        _vsparams._varPositionB = shaderRefVar.Description.StartOffset;
-                        _vsparams._flags = shaderRefVar.Description.Flags;
-                        _vsparams._varPositionI = j;
-                        _vsparams._varType = shaderRefType.Description.Type;
+                //        vsparams._varPositionB = shaderRefVar.Description.StartOffset;
+                //        vsparams._flags = shaderRefVar.Description.Flags;
+                //        vsparams._varPositionI = j;
+                //        vsparams._varType = shaderRefType.Description.Type;
 
-                        _vsparams._bufferParams.Write(shaderRefVar.Description.DefaultValue);
-                        _sDxShaderParams.Add(_vsparams);
+                //        vsparams._bufferParams.Write(shaderRefVar.Description.DefaultValue);
+                //        _sDxShaderParams.Add(vsparams);
 
-                    }
-                }
-                else
-                {
+                //    }
+                //}
+                //else
+                //{
                     //cbDEsc.Name Liefert den Namen der Struktur
                     var bufferSize = cbDEsc.Size;
-                    var _buffer = new Buffer(_device, new BufferDescription
+                    var buffer = new Buffer(_device, new BufferDescription
                     {
                         Usage = ResourceUsage.Default,
                         SizeInBytes = bufferSize,
@@ -777,36 +828,34 @@ namespace Fusee.Engine
                         CpuAccessFlags = 0
                     });
 
-                    _sDxShaderBuffers.Add(cbDEsc.Name, _buffer);
-
-                 
-                    SharpDxShaderParamInfo _vsparams = new SharpDxShaderParamInfo();
-                    _vsparams._bufferParams = new DataStream(cbDEsc.Size, true, true);
+                    SharpDxShaderParamInfo vsparams = new SharpDxShaderParamInfo();
+                    vsparams._sdxBuffer = buffer;
+                    vsparams._bufferParams = new DataStream(cbDEsc.Size, true, true);
                     for (int j = 0; j < cbDEsc.VariableCount; j++)
                     {
                         ShaderReflectionVariable shaderRefVar = cbTemp.GetVariable(j);
                         ShaderReflectionType shaderRefType = cbTemp.GetVariable(j).GetVariableType();
                         ShaderTypeDescription shaderRefTypeDesc = shaderRefType.Description;
-                        _vsparams._vs = vertexShader;
-                        _vsparams._vsByteCode = vertexShaderByteCode;
-                        _vsparams._buffername = cbDEsc.Name;
-                        _vsparams._sdxBuffer = _buffer;
-                        _vsparams._flags = shaderRefVar.Description.Flags;
-                        _vsparams._varCount = cbDEsc.VariableCount;
-                        _vsparams._varName = shaderRefVar.Description.Name;
+                        vsparams._vs = vertexShader;
+                        vsparams._vsByteCode = vertexShaderByteCode;
+                        vsparams._buffername = cbDEsc.Name;
+                        vsparams._sdxBuffer = buffer;
+                        vsparams._flags = shaderRefVar.Description.Flags;
+                        vsparams._varCount = cbDEsc.VariableCount;
+                        vsparams._varName = shaderRefVar.Description.Name;
 
-                        _vsparams._varSize = shaderRefVar.Description.Size;
-                        _vsparams._varPositionB = shaderRefVar.Description.StartOffset;
+                        vsparams._varSize = shaderRefVar.Description.Size;
+                        vsparams._varPositionB = shaderRefVar.Description.StartOffset;
 
-                        _vsparams._flags = shaderRefVar.Description.Flags;
-                        _vsparams._varPositionI = j;
-                        _vsparams._varType = shaderRefType.Description.Type;
-                        _vsparams._bufferParams.Write(shaderRefVar.Description.DefaultValue);
+                        vsparams._flags = shaderRefVar.Description.Flags;
+                        vsparams._varPositionI = j;
+                        vsparams._varType = shaderRefType.Description.Type;
+                        vsparams._bufferParams.Write(shaderRefVar.Description.DefaultValue);
 
-                        _sDxShaderParams.Add(_vsparams);
-
+                        _sDxShaderParams.Add(vsparams);
+                        shaderProgram._sDXShaderParams.Add(vsparams);
                     }
-                }
+                //}
             }
             vertexShaderByteCode.Dispose();
             pixelShaderByteCode.Dispose();
@@ -826,8 +875,6 @@ namespace Fusee.Engine
             _context.PixelShader.Set(((ShaderProgramImp)program)._ps);
             _context.VertexShader.Set(((ShaderProgramImp)program)._vs);
            
-            
-
             //_context.VertexShader.Set(_vertexShader);
             //_context.PixelShader.Set(_pixelShader);
         }
@@ -946,6 +993,7 @@ namespace Fusee.Engine
 
             if (((MeshImp)mr).ElementBufferObject != null)
             {
+
                 _context.InputAssembler.InputLayout = _layout;
                 _context.InputAssembler.PrimitiveTopology = PrimitiveTopology.TriangleList;
 
@@ -955,14 +1003,7 @@ namespace Fusee.Engine
 
                 _context.DrawIndexed(((MeshImp)mr).NElements, 0, 0);
                
-            }
-
-
-
-
-
-
-            
+            }       
         }
         /*
          * 

@@ -48,36 +48,40 @@ namespace Examples.Simple
             }";
 
         //angle variable
-        private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, RotationSpeed = 1.0f, Damping = 0.92f;
-        //modell variable
-        private Mesh Mesh, MeshFace;
-        //variable for color
-        private IShaderParam VColorParam;
-        private IShaderParam _vTextureParam;
-        private ImageData _imgData1;
-        private ImageData _imgData2;
-        private ITexture _iTex1;
-        private ITexture _iTex2;
-        private ShaderProgram sp;
+        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
+
+        private const float RotationSpeed = 1f;
+        private const float Damping = 0.92f;
+
+        // model variables
+        private Mesh _meshTea, _meshFace;
+
+        // variables for shader
+        private ShaderProgram _spColor;
+        private ShaderProgram _spTexture;
+
+        private IShaderParam _colorParam;
+        private IShaderParam _textureParam;
+
+        private ITexture _iTex;
 
         public override void Init()
         {
             RC.ClearColor = new float4(0.5f, 0.5f, 0.5f, 1);
             RC.ClearDepth = 1.0f;
-            //initialize the variable
-            Mesh = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
+            // initialize the variables
+            _meshTea = MeshReader.LoadMesh(@"Assets/Teapot.obj.model");
+            _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
 
+            _spColor = MoreShaders.GetShader("simple", RC);
+            _spTexture = MoreShaders.GetShader("texture", RC);
 
+            _colorParam = _spColor.GetShaderParam("vColor");
+            _textureParam = _spTexture.GetShaderParam("texture1");
 
-            //ShaderProgram sp = RC.CreateShader(Vs, Ps);
-            sp = RC.CreateShader(Vs, Ps);
-            _vTextureParam = sp.GetShaderParam("vColor");
-
-
-            _imgData1 = RC.LoadImage("Assets/world_map.jpg");
-
-
-            _iTex1 = RC.CreateTexture(_imgData1);
+            // load texture
+            var imgData = RC.LoadImage("Assets/world_map.jpg");
+            _iTex = RC.CreateTexture(imgData);
 
         }
 
@@ -137,22 +141,19 @@ namespace Examples.Simple
 
             // first mesh
             RC.ModelView = float4x4.CreateTranslation(0, -50, 0) * mtxRot * float4x4.CreateTranslation(-150, 0, 0) * mtxCam;
-            //var mtxRot = float4x4.CreateRotationY(0) * float4x4.CreateRotationZ(0);
 
+            RC.SetShader(_spColor);
+            RC.SetShaderParam(_colorParam, new float4(0.5f, 0.8f, 0, 1));
 
-            //// first mesh
-            ////RC.ModelView = float4x4.CreateTranslation(0, 0, 0) * mtxRot * float4x4.CreateTranslation(-0, 0, 0) * mtxCam;
-            //RC.ModelView = mtxRot * (new float4x4(1.0f, 0.0f, 0.0f, 0.0f,
-            //                                     0.0f, 1.0f, 0.0f, 0.0f,
-            //                                     0.0f, 0.0f, 1.0f, 0.0f,
-            //                                     0.0f, 0.0f, 0.0f, 1.0f));
-            RC.SetShader(sp);
+            RC.Render(_meshFace);
 
-            //mapping
-            RC.SetShaderParam(_vTextureParam, new float4(0.0f, 1.0f, 0.0f, 1.0f));
-            RC.Render(Mesh);
+            // second mesh
+            RC.ModelView = mtxRot * float4x4.CreateTranslation(150, 0, 0) * mtxCam;
 
+            RC.SetShader(_spTexture);
+            RC.SetShaderParamTexture(_textureParam, _iTex);
 
+            RC.Render(_meshTea);
             Present();
         }
 

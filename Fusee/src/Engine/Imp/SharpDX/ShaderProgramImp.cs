@@ -16,6 +16,8 @@ namespace Fusee.Engine
         internal IList<PixelShader> _psList = new List<PixelShader>();
         internal IList<VertexShader> _vsList = new List<VertexShader>();
         internal int pos;
-
+        internal DataStream _bufferParams;
+        internal Buffer _sdxBuffer;
+        public int _varPositionB;
     }
 }

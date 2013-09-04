@@ -121,16 +121,19 @@ float res =   dot(input.normal, vec3);
 
 
         //angle variable
-        private static float _angleHorz = 0.0f, _angleVert = 0.0f, _angleVelHorz = 0, _angleVelVert = 0, RotationSpeed = 1.0f, Damping = 0.92f;
+        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
+
+        private const float RotationSpeed = 1f;
+        private const float Damping = 0.92f;
         //modell variable
         private Mesh Mesh, _meshFace;
         //variable for color
         private IShaderParam _colorParam;
         private IShaderParam _textureParam;
         private ImageData _imgData1;
-        private ImageData _imgData2;
+
         private ITexture _iTex1;
-        private ITexture _iTex2;
+  
         private ShaderProgram sp, _spTexture;
 
         public override void Init()
@@ -143,22 +146,15 @@ float res =   dot(input.normal, vec3);
             _meshFace = MeshReader.LoadMesh(@"Assets/Face.obj.model");
 
             sp = RC.CreateShader(Vs, Ps);
-
-            _colorParam = sp.GetShaderParam("Testfarbe");
-
             _spTexture = RC.CreateShader(VsTexture, PsTexture);
-
-
-
-            _textureParam = sp.GetShaderParam("texture1");
+            _colorParam = sp.GetShaderParam("Testfarbe");
+            
+            _textureParam = _spTexture.GetShaderParam("texture1");
 
             // load texture
-            var imgData = RC.LoadImage("Assets/world_map.jpg");
+            _imgData1 = RC.LoadImage("Assets/cube_tex.jpg");
 
-
-
-
-            _iTex1 = RC.CreateTexture(imgData);
+            _iTex1 = RC.CreateTexture(_imgData1);
 
         }
 
@@ -197,6 +193,12 @@ float res =   dot(input.normal, vec3);
             if (Input.Instance.IsKeyDown(KeyCodes.Down))
                 _angleVert += RotationSpeed * (float)Time.Instance.DeltaTime;
 
+
+            //if (Input.Instance.IsButtonDown(MouseButtons.Left))
+            //{
+            //    MessageBox.Show(Input.Instance.GetAxis(InputAxis.MouseX).ToString() + Input.Instance.GetAxis(InputAxis.MouseX).ToString());
+            //}
+
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
             var mtxCam = float4x4.LookAt(0, 200, 500, 0, 0, 0, 0, 1, 0);
 
@@ -210,18 +212,20 @@ float res =   dot(input.normal, vec3);
 
 
             //mapping
-           RC.SetShaderParam(_colorParam, new float4(0.0f, 1.0f, 0.0f, 1.0f));
-           RC.Render(Mesh);
-  
+            RC.SetShaderParam(_colorParam, new float4(0.0f, 1.0f, 0.0f, 1.0f));
+            RC.Render(_meshFace);
+            
             //second mesh
             RC.ModelView = mtxRot * float4x4.CreateTranslation(150, 0, 0) * mtxCam;
+            //RC.ModelView = float4x4.CreateTranslation(0, -50, 0) * mtxRot * float4x4.CreateTranslation(-150, 0, 0) * mtxCam;
 
-           RC.SetShader(_spTexture);
-           RC.SetShaderParamTexture(_textureParam, _iTex1);
 
-           RC.Render(_meshFace);
+            RC.SetShader(_spTexture);
+            RC.SetShaderParamTexture(_textureParam, _iTex1);
 
-            Present();
+            RC.Render(Mesh);
+
+           Present();
         }
 
         public override void Resize()

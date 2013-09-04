@@ -67,34 +67,35 @@ namespace Fusee.Engine
         protected void OnGameWinMouseDown(object sender, System.Windows.Forms.MouseEventArgs mouseEventArgs)
         {
             _mouseState=  _mouse.GetCurrentState();
-
             
-            if (MouseButtonDown != null)
+            if (_mouseState.Buttons[1] == true || _mouseState.Buttons[0] == true || _mouseState.Buttons[2] == true)
             {
-                var mb = MouseButtons.Unknown;
-                switch (mouseEventArgs.Button)
+                if (MouseButtonDown != null)
                 {
-                    case System.Windows.Forms.MouseButtons.Left:
-                        mb = MouseButtons.Left;
-                        break;
-                    case System.Windows.Forms.MouseButtons.Right:
-                        mb = MouseButtons.Right;
-                        break;
-                    case System.Windows.Forms.MouseButtons.Middle:
-                        mb = MouseButtons.Middle;
-                        break;
+                    var mb = MouseButtons.Unknown;
+                    switch (mouseEventArgs.Button)
+                    {
+                        case System.Windows.Forms.MouseButtons.Left:
+                            mb = MouseButtons.Left;
+                            break;
+                        case System.Windows.Forms.MouseButtons.Right:
+                            mb = MouseButtons.Right;
+                            break;
+                        case System.Windows.Forms.MouseButtons.Middle:
+                            mb = MouseButtons.Middle;
+                            break;
 
-                    default:
-                        throw new ArgumentOutOfRangeException("button");
+                        default:
+                            throw new ArgumentOutOfRangeException("button");
+                    }
+                    MouseButtonDown(this, new MouseEventArgs
+                        {
+                            Button = mb,
+                            Position = new Point { x = mouseEventArgs.X, y = mouseEventArgs.Y }
+                        });
                 }
-                MouseButtonDown(this, new MouseEventArgs
-                {
-                    Button =  mb,
-                    Position = new Point { x = _mouseState.X, y = _mouseState.Y }
-                });
+
             }
-            
-           
         }
 
         public event EventHandler<MouseEventArgs> MouseButtonUp;
@@ -102,31 +103,32 @@ namespace Fusee.Engine
         protected void OnGameWinMouseUp(object sender, System.Windows.Forms.MouseEventArgs mouseEventArgs)
         {
             _mouseState = _mouse.GetCurrentState();
-
-
-            if (MouseButtonUp != null)
+            if (_mouseState.Buttons[1] == false && _mouseState.Buttons[0]==false && _mouseState.Buttons[2]==false)
             {
-                var mb = MouseButtons.Unknown;
-                switch (mouseEventArgs.Button)
+                if (MouseButtonUp != null)
                 {
-                    case System.Windows.Forms.MouseButtons.Left:
-                        mb = MouseButtons.Left;
-                        break;
-                    case System.Windows.Forms.MouseButtons.Right:
-                        mb = MouseButtons.Right;
-                        break;
-                    case System.Windows.Forms.MouseButtons.Middle:
-                        mb = MouseButtons.Middle;
-                        break;
+                    var mb = MouseButtons.Unknown;
+                    switch (mouseEventArgs.Button)
+                    {
+                        case System.Windows.Forms.MouseButtons.Left:
+                            mb = MouseButtons.Left;
+                            break;
+                        case System.Windows.Forms.MouseButtons.Right:
+                            mb = MouseButtons.Right;
+                            break;
+                        case System.Windows.Forms.MouseButtons.Middle:
+                            mb = MouseButtons.Middle;
+                            break;
 
-                    default:
-                        throw new ArgumentOutOfRangeException("button");
+                        default:
+                            throw new ArgumentOutOfRangeException("button");
+                    }
+                    MouseButtonUp(this, new MouseEventArgs
+                    {
+                        Button = mb,
+                        Position = new Point { x = mouseEventArgs.X, y = mouseEventArgs.Y }
+                    });
                 }
-                MouseButtonUp(this, new MouseEventArgs
-                {
-                    Button = mb,
-                    Position = new Point { x = _mouseState.X, y = _mouseState.Y }
-                });
             }
            
         }

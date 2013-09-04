@@ -141,21 +141,19 @@ namespace Fusee.Engine
             DoInit();
             // RenderLoop.Run(_renderForm, DoRender);
             RenderLoop.Run(_renderForm, DoRender);
-          
+         
         }
 
         public void Dispose()
         {
 
             _renderView.Dispose();
-            _context.Dispose();
+           
             _device.Dispose();
            _swapChain.Dispose();
-            //context.ClearState();
-            //context.Flush();
-            //device.Dispose();
-            //context.Dispose();
-            //swapChain.Dispose();
+            _context.ClearState();
+            _context.Flush();
+
 
         }
 
